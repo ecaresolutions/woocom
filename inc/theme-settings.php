@@ -49,7 +49,7 @@ function woocom_keep_settings_tab_after_save($location, $status) {
         return $location;
     }
 
-    $allowed_tabs = array('branding', 'header', 'ticker', 'banners', 'layout', 'collections', 'cart', 'contact', 'footer', 'language', 'analytics');
+    $allowed_tabs = array('branding', 'header', 'ticker', 'banners', 'layout', 'collections', 'cart', 'contact', 'footer', 'language', 'analytics', 'demo_import');
     $active_tab = sanitize_key(wp_unslash($_POST['woocom_active_tab']));
 
     if (!in_array($active_tab, $allowed_tabs, true)) {
@@ -104,6 +104,8 @@ function woocom_register_unified_settings() {
     register_setting('woocom-settings-group', 'hero_banner_2_link');
     register_setting('woocom-settings-group', 'hero_side_banner');
     register_setting('woocom-settings-group', 'hero_side_banner_link');
+    register_setting('woocom-settings-group', 'hero_bottom_banner');
+    register_setting('woocom-settings-group', 'hero_bottom_banner_link');
     register_setting('woocom-settings-group', 'promo_banner_1');
     register_setting('woocom-settings-group', 'promo_banner_1_link');
     register_setting('woocom-settings-group', 'promo_banner_2');
@@ -136,6 +138,11 @@ function woocom_register_unified_settings() {
     register_setting('woocom-settings-group', 'woocom_featured_categories');
     register_setting('woocom-settings-group', 'woocom_category_sections');
     register_setting('woocom-settings-group', 'woocom_combo_bundles', 'woocom_sanitize_combo_bundles');
+    register_setting('woocom-settings-group', 'woocom_flash_sale_p1', 'sanitize_text_field');
+    register_setting('woocom-settings-group', 'woocom_flash_sale_p2', 'sanitize_text_field');
+    register_setting('woocom-settings-group', 'woocom_flash_sale_p3', 'sanitize_text_field');
+    register_setting('woocom-settings-group', 'woocom_flash_sale_p4', 'sanitize_text_field');
+    register_setting('woocom-settings-group', 'woocom_flash_sale_p5', 'sanitize_text_field');
     // Cart & Checkout
     register_setting('woocom-settings-group', 'enable_cart_drawer');
     register_setting('woocom-settings-group', 'cart_drawer_floating_visibility');
@@ -334,7 +341,7 @@ function woocom_get_footer_links($group) {
 
 // Unified Settings Page Output
 function woocom_unified_theme_settings_page() {
-    $allowed_tabs = array('branding', 'header', 'ticker', 'banners', 'layout', 'collections', 'cart', 'contact', 'footer', 'language', 'analytics');
+    $allowed_tabs = array('branding', 'header', 'ticker', 'banners', 'layout', 'collections', 'cart', 'contact', 'footer', 'language', 'analytics', 'demo_import');
     $active_tab = isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'branding';
     if (!in_array($active_tab, $allowed_tabs, true)) {
         $active_tab = 'branding';
@@ -696,6 +703,9 @@ function woocom_unified_theme_settings_page() {
                 <a href="?page=woocom-settings&tab=analytics" class="woocom-admin-nav-item <?php echo $active_tab == 'analytics' ? 'active' : ''; ?>">
                     <span class="dashicons dashicons-chart-bar"></span> Analytics & Tracking
                 </a>
+                <a href="?page=woocom-settings&tab=demo_import" class="woocom-admin-nav-item <?php echo $active_tab == 'demo_import' ? 'active' : ''; ?>">
+                    <span class="dashicons dashicons-admin-appearance"></span> Demo Import
+                </a>
             </div>
 
             <div class="woocom-admin-content">
@@ -1004,13 +1014,14 @@ function woocom_unified_theme_settings_page() {
 
                             <hr style="border:none;border-top:2px solid #f1f5f9;margin:4px 0 24px;">
 
-                            <?php /* ════ OTHER BANNERS (side, promo) ════ */ ?>
-                            <?php 
+                            <?php
                             $other_banners = array(
-                                'hero_side_banner' => array('label' => 'Right Side Mini Banner', 'size' => '400 × 400 px'),
-                                'promo_banner_1'   => array('label' => 'Dual Banner - Left',     'size' => '600 × 250 px'),
-                                'promo_banner_2'   => array('label' => 'Dual Banner - Right',    'size' => '600 × 250 px'),
+                                'hero_side_banner'   => array('label' => 'Right Side Mini Banner', 'size' => '400 × 400 px'),
+                                'hero_bottom_banner' => array('label' => 'Hero Bottom Full Banner', 'size' => '1920 × 400 px'),
+                                'promo_banner_1'     => array('label' => 'Dual Banner - Left',     'size' => '600 × 250 px'),
+                                'promo_banner_2'     => array('label' => 'Dual Banner - Right',    'size' => '600 × 250 px'),
                             );
+
                             foreach($other_banners as $id => $data):
                                 $val      = get_option($id);
                                 $link_id  = $id . '_link';
@@ -1351,6 +1362,48 @@ function woocom_unified_theme_settings_page() {
                                 <h3 style="margin:0;color:var(--admin-primary);font-size:16px;font-weight:700;">Top Selling Section (Featured Products Only)</h3>
                             </div>
                             <p style="margin:0;color:#475569;font-size:13px;line-height:1.7;">Mark products as <strong>Featured</strong> in <strong>Products → All Products</strong> (Star icon). The theme auto-shows the latest 4 featured products.</p>
+                        </div>
+
+                        <!-- Flash Sale Products -->
+                        <div style="background:#fff;border:1px solid #e2e8f0;padding:24px 28px;border-radius:14px;margin-bottom:40px;box-shadow: 0 1px 3px 0 rgba(0,0,0,0.05);">
+                            <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+                                <div style="width:36px;height:36px;border-radius:8px;background:#ef4444;display:flex;align-items:center;justify-content:center;color:white;flex-shrink:0;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L3 14h9l-1 9 10-12h-9l1-9z"/></svg>
+                                </div>
+                                <h3 style="margin:0;color:#0f172a;font-size:16px;font-weight:700;">Flash Sale Section</h3>
+                            </div>
+                            <p style="margin:0 0 16px 0;color:#475569;font-size:13px;line-height:1.7;">
+                                Select up to 5 products to display in the Flash Sale section. 
+                                <br>💡 <strong>Tip:</strong> If left unselected, the section will automatically display all products currently marked with a <strong>Sale Price (ছাড়ের মূল্য)</strong> in WooCommerce!
+                            </p>
+                            
+                            <?php
+                            $all_products = get_posts(array(
+                                'post_type'      => 'product',
+                                'posts_per_page' => -1,
+                                'post_status'    => 'publish',
+                                'orderby'        => 'title',
+                                'order'          => 'ASC',
+                            ));
+                            ?>
+                            <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:16px;margin-top:16px;">
+                                <?php for($i = 1; $i <= 5; $i++) : 
+                                    $option_name = 'woocom_flash_sale_p' . $i;
+                                    $selected_val = get_option($option_name);
+                                ?>
+                                <div>
+                                    <label style="display:block;font-size:12px;font-weight:600;color:#64748b;margin-bottom:6px;">Product <?php echo $i; ?></label>
+                                    <select name="<?php echo $option_name; ?>" class="form-input-text" style="width:100%;">
+                                        <option value="">-- None / Select Product --</option>
+                                        <?php foreach($all_products as $p) : ?>
+                                            <option value="<?php echo $p->ID; ?>" <?php selected($selected_val, $p->ID); ?>>
+                                                <?php echo esc_html($p->post_title); ?> (ID: <?php echo $p->ID; ?>)
+                                            </option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <?php endfor; ?>
+                            </div>
                         </div>
 
                         <!-- Combo Bundle Builder -->
@@ -1857,6 +1910,79 @@ function woocom_unified_theme_settings_page() {
                             </div>
                         </div>
 
+                    <?php elseif ($active_tab == 'demo_import') : ?>
+                        <div class="section-header">
+                            <h2>Demo & Layout Importer</h2>
+                            <p>Transform your fresh WordPress site into a fully ready eCommerce store with one click. Select your template below.</p>
+                        </div>
+
+                        <!-- Demo Cards Grid -->
+                        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 30px; margin-bottom: 40px;">
+                            <?php 
+                            $demos = Woocom_Demo_Importer::get_demos();
+                            foreach ($demos as $slug => $demo) : 
+                            ?>
+                            <div style="background: white; border: 1px solid var(--border); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03); transition: all 0.3s; display: flex; flex-direction: column;">
+                                <div style="position: relative; padding-top: 56.25%; background: #f1f5f9; overflow: hidden; border-bottom: 1px solid var(--border);">
+                                    <img src="<?php echo esc_url($demo['screenshot']); ?>" style="position: absolute; top:0; left:0; width:100%; height:100%; object-fit: cover;">
+                                </div>
+                                <div style="padding: 24px; display: flex; flex-direction: column; flex-grow: 1;">
+                                    <h3 style="margin: 0 0 10px 0; font-size: 18px; font-weight: 700; color: #0f172a;"><?php echo esc_html($demo['name']); ?></h3>
+                                    <p style="margin: 0 0 20px 0; font-size: 13px; color: #64748b; line-height: 1.5; flex-grow: 1;"><?php echo esc_html($demo['description']); ?></p>
+                                    
+                                    <div style="display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-top: auto;">
+                                        <a href="<?php echo esc_url($demo['preview_url']); ?>" target="_blank" class="button button-secondary" style="padding: 6px 15px; font-weight: 600; border-radius: 8px;">Live Preview</a>
+                                        <button type="button" class="button button-primary start-import-btn" data-demo="<?php echo esc_attr($slug); ?>" style="background: var(--admin-primary) !important; border:none !important; color: white !important; font-weight: 700 !important; border-radius: 8px !important; padding: 10px 20px !important; cursor: pointer;">Import Template</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endforeach; ?>
+                        </div>
+
+                        <!-- Import Settings -->
+                        <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 14px; padding: 24px 28px; margin-bottom: 30px;">
+                            <h3 style="margin: 0 0 16px 0; font-size: 16px; font-weight: 700; color: #0f172a;">Importer Settings</h3>
+                            <div style="display: flex; align-items: center; gap: 14px;">
+                                <label class="switch">
+                                    <input type="checkbox" id="clean_install_checkbox" value="1">
+                                    <span class="slider"></span>
+                                </label>
+                                <div>
+                                    <strong style="display: block; font-size: 14px; color: #334155;">Clean Install (Purge Existing Site Data First)</strong>
+                                    <span style="font-size: 12px; color: #64748b;">Warning: Enabling this will permanently delete all existing posts, pages, WooCommerce products, and widgets before importing the demo.</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Console Logger -->
+                        <div id="importer-console-container" style="display: none; background: #ffffff; border: 1px solid var(--border); border-radius: 16px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 30px;">
+                            <h3 id="importer-progress-title" style="margin: 0 0 15px 0; font-size: 16px; font-weight: 700; color: #0f172a;">Preparing Import Engine...</h3>
+                            
+                            <div style="background: #cbd5e1; border-radius: 10px; height: 10px; width: 100%; overflow: hidden; margin-bottom: 15px;">
+                                <div id="importer-progress-bar" style="background: var(--admin-primary); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+                            </div>
+                            
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                                <span id="importer-status-text" style="font-size: 13px; font-weight: 600; color: #475569;">Initializing...</span>
+                                <span id="importer-percentage" style="font-size: 13px; font-weight: 700; color: var(--admin-primary);">0%</span>
+                            </div>
+
+                            <div id="importer-console-log" style="font-family: Menlo, Monaco, Consolas, monospace; font-size: 12px; background: #0f172a; color: #38bdf8; padding: 20px; border-radius: 10px; height: 180px; overflow-y: auto; line-height: 1.6; text-align: left; box-shadow: inset 0 2px 8px rgba(0,0,0,0.3);">
+                            </div>
+                        </div>
+
+                        <!-- Developer Tools Panel -->
+                        <div style="background: #fdfdfd; border: 2px dashed #cbd5e1; border-radius: 16px; padding: 30px; margin-top: 60px;">
+                            <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 15px;">
+                                <span class="dashicons dashicons-admin-tools" style="font-size: 28px; width:28px; height:28px; color: var(--admin-primary);"></span>
+                                <h3 style="margin: 0; font-size: 18px; font-weight: 800; color: #0f172a;">Developer Tools: Export Current Layout</h3>
+                            </div>
+                            <p style="margin: 0 0 20px 0; font-size: 13px; color: #64748b; line-height: 1.5;">Freeze the current Grocery layouts, primary/secondary colors, slide configurations, and active sidebar/footer widgets into options and widgets JSON files. Move them to <code>inc/demo-data/grocery/</code> along with <code>content.xml</code> exported via <code>Tools -> Export</code>.</p>
+                            <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                                <a href="<?php echo esc_url(admin_url('admin-post.php?action=woocom_export_options')); ?>" class="button button-secondary" style="font-weight: 600; border-radius: 8px; padding: 5px 15px;">Export Customizer Options (options.json)</a>
+                                <a href="<?php echo esc_url(admin_url('admin-post.php?action=woocom_export_widgets')); ?>" class="button button-secondary" style="font-weight: 600; border-radius: 8px; padding: 5px 15px;">Export Widgets Settings (widgets.json)</a>
+                            </div>
+                        </div>
                     <?php endif; ?>
 
                     <!-- Important: Persist all options regardless of active tab -->
@@ -1907,9 +2033,11 @@ function woocom_unified_theme_settings_page() {
                     }
                     ?>
 
+                    <?php if ($active_tab !== 'demo_import') : ?>
                     <div class="submit-footer">
                         <?php submit_button('Save Theme Settings', 'primary woocom-save-btn'); ?>
                     </div>
+                    <?php endif; ?>
                 </form>
             </div>
         </div>
@@ -1966,6 +2094,219 @@ function woocom_unified_theme_settings_page() {
                 row.append('<input type="text" name="' + option + '[' + index + '][url]" value="" class="form-input-text" placeholder="https://example.com/page">');
                 rows.append(row);
                 row.find('input:first').focus();
+            });
+
+            // Demo Importer AJAX Execution
+            $('.start-import-btn').on('click', function(e) {
+                e.preventDefault();
+                var btn = $(this);
+                var demo = btn.data('demo');
+                var cleanInstall = $('#clean_install_checkbox').is(':checked') ? 'true' : 'false';
+
+                if (cleanInstall === 'true' && !confirm('WARNING: Are you sure you want to perform a Clean Install? This will permanently delete all existing content, products, pages, and widgets!')) {
+                    return;
+                }
+
+                var consoleContainer = $('#importer-console-container');
+                var consoleLog = $('#importer-console-log');
+                var progressBar = $('#importer-progress-bar');
+                var statusText = $('#importer-status-text');
+                var percentageText = $('#importer-percentage');
+                var progressTitle = $('#importer-progress-title');
+
+                // Reset console UI
+                consoleContainer.slideDown(300);
+                consoleLog.empty();
+                progressBar.css('width', '0%');
+                statusText.text('Initializing connection...');
+                percentageText.text('0%');
+                progressTitle.text('Starting Import: ' + btn.closest('div').parent().find('h3').text());
+
+                // Disable UI
+                $('.start-import-btn, #clean_install_checkbox').prop('disabled', true);
+
+                logConsole('>> Initializing import session for theme demo "' + demo + '"...', 'info');
+
+                $.ajax({
+                    url: ajaxurl,
+                    type: 'POST',
+                    data: {
+                        action: 'woocom_import_start',
+                        demo: demo,
+                        clean_install: cleanInstall,
+                        nonce: '<?php echo wp_create_nonce("woocom_import_nonce"); ?>'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            logConsole('>> Import session initialized successfully.', 'success');
+                            if (cleanInstall === 'true') {
+                                logConsole('>> Database purged successfully. Fresh template container ready.', 'success');
+                            }
+                            var totalItems = response.data.total_items;
+                            logConsole('>> Total database content nodes to import: ' + totalItems, 'info');
+                            importContentChunk(0, totalItems, demo);
+                        } else {
+                            logConsole('>> Error starting session: ' + response.data.message, 'error');
+                            finalizeConsoleError();
+                        }
+                    },
+                    error: function() {
+                        logConsole('>> Fatal connection error while initiating import.', 'error');
+                        finalizeConsoleError();
+                    }
+                });
+
+                function importContentChunk(processed, total, demoSlug) {
+                    statusText.text('Importing content elements...');
+                    var pct = Math.round((processed / total) * 90);
+                    progressBar.css('width', pct + '%');
+                    percentageText.text(pct + '%');
+
+                    $.ajax({
+                        url: ajaxurl,
+                        type: 'POST',
+                        data: {
+                            action: 'woocom_import_content_chunk',
+                            nonce: '<?php echo wp_create_nonce("woocom_import_nonce"); ?>'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                logConsole(response.data.message, 'success');
+                                var newProcessed = response.data.processed;
+                                
+                                if (newProcessed < total) {
+                                    importContentChunk(newProcessed, total, demoSlug);
+                                } else {
+                                    importThemeOptions(demoSlug);
+                                }
+                            } else {
+                                logConsole('>> Content chunk import failed: ' + response.data.message, 'error');
+                                finalizeConsoleError();
+                            }
+                        },
+                        error: function() {
+                            logConsole('>> Connection lost during chunk import. Retrying chunk...', 'error');
+                            importContentChunk(processed, total, demoSlug);
+                        }
+                    });
+                }
+
+                function importThemeOptions(demoSlug) {
+                    statusText.text('Applying theme options...');
+                    progressBar.css('width', '92%');
+                    percentageText.text('92%');
+                    logConsole('>> Content import completed. Applying custom options and color configurations...', 'info');
+
+                    $.ajax({
+                        url: ajaxurl,
+                        type: 'POST',
+                        data: {
+                            action: 'woocom_import_options',
+                            nonce: '<?php echo wp_create_nonce("woocom_import_nonce"); ?>'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                logConsole('>> ' + response.data.message, 'success');
+                                importWidgets(demoSlug);
+                            } else {
+                                logConsole('>> Options import failed: ' + response.data.message, 'error');
+                                finalizeConsoleError();
+                            }
+                        },
+                        error: function() {
+                            logConsole('>> Connection error while importing theme options.', 'error');
+                            finalizeConsoleError();
+                        }
+                    });
+                }
+
+                function importWidgets(demoSlug) {
+                    statusText.text('Configuring sidebars and widgets...');
+                    progressBar.css('width', '95%');
+                    percentageText.text('95%');
+                    logConsole('>> Active theme settings loaded. Injecting widget templates...', 'info');
+
+                    $.ajax({
+                        url: ajaxurl,
+                        type: 'POST',
+                        data: {
+                            action: 'woocom_import_widgets',
+                            nonce: '<?php echo wp_create_nonce("woocom_import_nonce"); ?>'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                logConsole('>> ' + response.data.message, 'success');
+                                finalizeImport();
+                            } else {
+                                logConsole('>> Widgets import failed: ' + response.data.message, 'error');
+                                finalizeConsoleError();
+                            }
+                        },
+                        error: function() {
+                            logConsole('>> Connection error while placing widgets.', 'error');
+                            finalizeConsoleError();
+                        }
+                    });
+                }
+
+                function finalizeImport() {
+                    statusText.text('Finalizing setup configurations...');
+                    progressBar.css('width', '98%');
+                    percentageText.text('98%');
+                    logConsole('>> Configuring static Front Page and shop navigation maps...', 'info');
+
+                    $.ajax({
+                        url: ajaxurl,
+                        type: 'POST',
+                        data: {
+                            action: 'woocom_import_finalize',
+                            nonce: '<?php echo wp_create_nonce("woocom_import_nonce"); ?>'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                progressBar.css('width', '100%');
+                                percentageText.text('100%');
+                                statusText.text('Import Complete!');
+                                progressTitle.text('Template Installed!');
+                                logConsole('>> ' + response.data.message, 'success');
+                                logConsole('========================================================', 'success');
+                                logConsole('🎉 CONGRATULATIONS! THE DEMO WAS IMPORTED SUCCESSFULLY!', 'success');
+                                logConsole('========================================================', 'success');
+                                
+                                $('.start-import-btn, #clean_install_checkbox').prop('disabled', false);
+                                alert('Success! Your site has been successfully converted into ' + btn.closest('div').parent().find('h3').text());
+                                window.location.href = '<?php echo esc_url(admin_url("admin.php?page=woocom-settings")); ?>';
+                            } else {
+                                logConsole('>> Finalization failed: ' + response.data.message, 'error');
+                                finalizeConsoleError();
+                            }
+                        },
+                        error: function() {
+                            logConsole('>> Connection error while finalizing template.', 'error');
+                            finalizeConsoleError();
+                        }
+                    });
+                }
+
+                function logConsole(message, type) {
+                    var color = '#38bdf8';
+                    if (type === 'success') {
+                        color = '#4ade80';
+                    } else if (type === 'error') {
+                        color = '#f87171';
+                    }
+                    
+                    var timestamp = new Date().toLocaleTimeString();
+                    consoleLog.append('<div style="color: ' + color + '; margin-bottom:4px;">[' + timestamp + '] ' + message + '</div>');
+                    consoleLog.scrollTop(consoleLog[0].scrollHeight);
+                }
+
+                function finalizeConsoleError() {
+                    statusText.text('Import Failed!');
+                    progressTitle.text('Template Setup Interrupted');
+                    logConsole('>> Processing stopped. Please check server logs or reset settings.', 'error');
+                    $('.start-import-btn, #clean_install_checkbox').prop('disabled', false);
+                }
             });
         });
     </script>

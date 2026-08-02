@@ -97,9 +97,66 @@ defined( 'ABSPATH' ) || exit;
                             <span class="text-gray-500 font-medium">Subtotal</span>
                             <span class="text-gray-800 font-bold"><?php echo $order->get_subtotal_to_display(); ?></span>
                         </div>
+                        
+                        <?php 
+                        foreach ( $order->get_order_item_totals() as $key => $total ) {
+                            if ( in_array( $key, array( 'cart_subtotal', 'order_total' ) ) ) continue;
+                            ?>
+                            <div class="flex justify-between text-sm pt-3 border-t border-gray-200/50">
+                                <span class="text-gray-500 font-medium"><?php echo esc_html( wp_strip_all_tags( $total['label'] ) ); ?></span>
+                                <span class="text-gray-800 font-bold"><?php echo wp_kses_post( $total['value'] ); ?></span>
+                            </div>
+                            <?php
+                        }
+                        ?>
+                        
                         <div class="flex justify-between text-sm pt-3 border-t border-gray-200">
                             <span class="text-gray-800 font-extrabold text-lg">Total</span>
                             <span class="text-secondary font-extrabold text-xl"><?php echo $order->get_formatted_order_total(); ?></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Address Card -->
+                <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-8 text-left">
+                    <h3 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                        <span class="w-1.5 h-5 bg-secondary rounded-full"></span>
+                        Customer Address
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Billing Address -->
+                        <div class="p-5 bg-gray-50 rounded-xl border border-gray-100">
+                            <h4 class="text-sm font-extrabold text-gray-800 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-secondary"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                                Billing Address
+                            </h4>
+                            <address class="text-sm text-gray-600 space-y-1.5 not-italic">
+                                <?php echo $order->get_formatted_billing_address() ? $order->get_formatted_billing_address() : 'N/A'; ?>
+                                <?php if ( $order->get_billing_phone() ) : ?>
+                                    <p class="pt-2 flex items-center gap-1.5 text-gray-800 font-medium border-t border-gray-200/50 mt-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-secondary"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                        <?php echo esc_html( $order->get_billing_phone() ); ?>
+                                    </p>
+                                <?php endif; ?>
+                            </address>
+                        </div>
+                        
+                        <!-- Shipping Address -->
+                        <div class="p-5 bg-gray-50 rounded-xl border border-gray-100">
+                            <h4 class="text-sm font-extrabold text-gray-800 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-secondary"><rect x="1" y="3" width="15" height="13" rx="2" ry="2"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                                Shipping Address
+                            </h4>
+                            <address class="text-sm text-gray-600 space-y-1.5 not-italic">
+                                <?php echo $order->get_formatted_shipping_address() ? $order->get_formatted_shipping_address() : $order->get_formatted_billing_address(); ?>
+                                <?php if ( $order->get_billing_phone() ) : ?>
+                                    <p class="pt-2 flex items-center gap-1.5 text-gray-800 font-medium border-t border-gray-200/50 mt-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="text-secondary"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                        <?php echo esc_html( $order->get_billing_phone() ); ?>
+                                    </p>
+                                <?php endif; ?>
+                            </address>
                         </div>
                     </div>
                 </div>

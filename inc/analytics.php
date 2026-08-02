@@ -50,7 +50,7 @@ function woocom_pixel_base_snippet() {
 /** ViewContent / view_item — single product page */
 add_action( 'wp_footer', 'woocom_track_view_item', 5 );
 function woocom_track_view_item() {
-	if ( ! is_product() ) return;
+	if ( ! function_exists( 'is_product' ) || ! is_product() ) return;
 	if ( ! woocom_any_analytics_active() ) return;
 
 	global $product;
@@ -89,7 +89,7 @@ function woocom_track_view_item() {
 /** InitiateCheckout / begin_checkout */
 add_action( 'wp_footer', 'woocom_track_begin_checkout', 5 );
 function woocom_track_begin_checkout() {
-	if ( ! is_checkout() || is_wc_endpoint_url( 'order-received' ) ) return;
+	if ( ! function_exists( 'is_checkout' ) || ! is_checkout() || ( function_exists( 'is_wc_endpoint_url' ) && is_wc_endpoint_url( 'order-received' ) ) ) return;
 	if ( ! woocom_any_analytics_active() ) return;
 	if ( ! function_exists( 'WC' ) || ! WC()->cart ) return;
 

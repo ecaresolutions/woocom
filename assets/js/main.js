@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+function initWoocomTheme() {
     // Constants
     // Settings from WordPress
     const settings = window.woocom_settings || {
@@ -65,6 +65,8 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Cart State
+    console.log('woocom: cartDrawer =', cartDrawer, 'cartOverlay =', cartOverlay);
+
     let cartState = {
         items: [],
         total: 0
@@ -72,21 +74,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Open Drawer function
     function openCartDrawer() {
-        if (!cartDrawer || !cartOverlay) return;
+        console.log('woocom: openCartDrawer called');
+        if (window.woocom_suppress_drawer) {
+            window.woocom_suppress_drawer = false;
+            console.log('woocom: openCartDrawer suppressed by flag');
+            return;
+        }
+        if (!cartDrawer || !cartOverlay) {
+            console.warn('woocom: openCartDrawer aborted, missing drawer or overlay element');
+            return;
+        }
         cartOverlay.style.display = 'block';
+        cartDrawer.classList.remove('translate-x-full');
         setTimeout(() => {
             cartOverlay.style.opacity = '1';
             cartDrawer.style.transform = 'translateX(0)';
+            console.log('woocom: openCartDrawer styles applied');
         }, 10);
     }
 
     // Close Drawer function
     function closeCartDrawer() {
+        console.log('woocom: closeCartDrawer called');
         if (!cartDrawer || !cartOverlay) return;
         cartOverlay.style.opacity = '0';
         cartDrawer.style.transform = 'translateX(100%)';
         setTimeout(() => {
             cartOverlay.style.display = 'none';
+            cartDrawer.classList.add('translate-x-full');
+            console.log('woocom: closeCartDrawer completed');
         }, 300);
     }
 
@@ -135,12 +151,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 300);
     }
 
-    // Global listener for WooCommerce "Added to Cart" event
-    if (window.jQuery) {
-        jQuery(document.body).on('added_to_cart', function(event, fragments, cart_hash, $button) {
-            openCartDrawer();
-        });
-    }
+
 
     // Cart Rendering Functions
     function cartFormatPrice(num) {
@@ -266,9 +277,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const item = cartState.items[idx];
         
         // AJAX to server
-        fetch(`${woocom_ajax.ajax_url}?action=woocom_remove_cart_item&cart_item_key=${encodeURIComponent(item.key)}`)
+        fetch(`${woocom_ajax.ajax_url}?action=woocom_remove_cart_item&cart_item_key=${encodeURIComponent(item.key)}&nonce=${woocom_ajax.cart_nonce}`)
             .then(() => {
-                fetch(`${woocom_ajax.ajax_url}?action=woocom_get_cart_data`)
+                fetch(`${woocom_ajax.ajax_url}?action=woocom_get_cart_data&nonce=${woocom_ajax.cart_nonce}`)
                     .then(res => res.json())
                     .then(data => cartUpdateStateAndCrossSells(data));
             })
@@ -302,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function() {
         item.qty = newQty;
 
         // AJAX to server
-        fetch(`${woocom_ajax.ajax_url}?action=woocom_update_cart_qty&cart_item_key=${encodeURIComponent(item.key)}&qty=${newQty}`)
+        fetch(`${woocom_ajax.ajax_url}?action=woocom_update_cart_qty&cart_item_key=${encodeURIComponent(item.key)}&qty=${newQty}&nonce=${woocom_ajax.cart_nonce}`)
             .catch(err => console.error('Error updating qty:', err));
 
         cartRenderAll();
@@ -501,7 +512,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
 
                 // Refresh state from server
-                fetch(`${woocom_ajax.ajax_url}?action=woocom_get_cart_data`)
+                fetch(`${woocom_ajax.ajax_url}?action=woocom_get_cart_data&nonce=${woocom_ajax.cart_nonce}`)
                     .then(res => res.json())
                     .then(data => cartUpdateStateAndCrossSells(data));
 
@@ -537,7 +548,11 @@ document.addEventListener('DOMContentLoaded', function() {
             $btn.addClass('loading opacity-50 cursor-not-allowed').prop('disabled', true);
             
             const productId = $btn.attr('data-product_id') || $btn.data('product_id');
-            const quantity = parseInt($btn.attr('data-quantity')) || 1;
+            
+            // Fetch quantity directly from sibling input if available
+            const $card = $btn.closest('.latest-product-card');
+            const $qtyInput = $card.length ? $card.find('.qty-input') : [];
+            const quantity = $qtyInput.length ? (parseInt($qtyInput.val()) || 1) : (parseInt($btn.attr('data-quantity')) || 1);
             
             const formData = new FormData();
             formData.append('product_id', productId);
@@ -566,11 +581,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
-                // Open the drawer
-                openCartDrawer();
-                
                 // Refresh cart state from server
-                fetch(`${woocom_ajax.ajax_url}?action=woocom_get_cart_data`)
+                fetch(`${woocom_ajax.ajax_url}?action=woocom_get_cart_data&nonce=${woocom_ajax.cart_nonce}`)
                     .then(res => res.json())
                     .then(data => cartUpdateStateAndCrossSells(data));
                     
@@ -585,9 +597,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Add to Cart Error:', err);
                 $btn.removeClass('loading opacity-50 cursor-not-allowed').prop('disabled', false);
                 
-                // Fallback: still open drawer and refresh
-                openCartDrawer();
-                fetch(`${woocom_ajax.ajax_url}?action=woocom_get_cart_data`)
+                fetch(`${woocom_ajax.ajax_url}?action=woocom_get_cart_data&nonce=${woocom_ajax.cart_nonce}`)
                     .then(res => res.json())
                     .then(data => cartUpdateStateAndCrossSells(data));
             });
@@ -599,11 +609,9 @@ document.addEventListener('DOMContentLoaded', function() {
         jQuery(document.body).on('added_to_cart', function(event, fragments, cart_hash, $button) {
             // Only handle if it's NOT from our single product manual AJAX (to avoid double calls)
             if ($button && $button.attr('id') === 'single-add-to-cart-btn') return;
-
-            openCartDrawer();
             
             // Refresh state from server to be safe
-            fetch(`${woocom_ajax.ajax_url}?action=woocom_get_cart_data`)
+            fetch(`${woocom_ajax.ajax_url}?action=woocom_get_cart_data&nonce=${woocom_ajax.cart_nonce}`)
                 .then(res => res.json())
                 .then(data => cartUpdateStateAndCrossSells(data));
         });
@@ -614,8 +622,15 @@ document.addEventListener('DOMContentLoaded', function() {
         // Hero Slider
         new Swiper('.hero-swiper', {
             loop: true,
+            speed: 600,
             autoplay: { delay: 4000, disableOnInteraction: false },
-            pagination: { el: '.hero-pagination', clickable: true }
+            pagination: { el: '.hero-pagination', clickable: true },
+            navigation: {
+                nextEl: '.hero-next',
+                prevEl: '.hero-prev',
+            },
+            slidesPerView: 1,
+            spaceBetween: 0
         });
 
         // Featured Products Slider
@@ -751,7 +766,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const $ = jQuery;
         
         // Checkout Quantity Update (Delegated)
-        $(document.body).on('click', '.checkout-qty-plus, .checkout-qty-minus', function() {
+        $(document.body).on('click', '.checkout-qty-plus, .checkout-qty-minus', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
             const $btn = $(this);
             const $input = $btn.siblings('input');
             const cart_item_key = $input.data('cart_item_key');
@@ -765,27 +782,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
             $input.val(qty);
 
-            $( '.woocommerce-checkout' ).addClass( 'processing' ).block({
-                message: null,
-                overlayCSS: {
-                    background: '#fff',
-                    opacity: 0.6
-                }
-            });
+            $( '.woocommerce-checkout' ).addClass( 'processing' );
 
             $.ajax({
                 type: 'POST',
                 url: woocom_ajax.ajax_url,
                 data: {
-                    action: 'checkout_update_qty',
+                    action: 'woocom_update_cart_qty',
                     cart_item_key: cart_item_key,
-                    quantity: qty
+                    qty: qty,
+                    nonce: woocom_ajax.cart_nonce
                 },
                 success: function() {
                     $(document.body).trigger('update_checkout');
                 },
                 complete: function() {
-                    $( '.woocommerce-checkout' ).removeClass( 'processing' ).unblock();
+                    $( '.woocommerce-checkout' ).removeClass( 'processing' );
                 }
             });
         });
@@ -793,29 +805,59 @@ document.addEventListener('DOMContentLoaded', function() {
         // Checkout Remove Item (Delegated)
         $(document.body).on('click', '.remove-item', function(e) {
             e.preventDefault();
+            e.stopPropagation();
             const $btn = $(this);
             const cart_item_key = $btn.data('cart_item_key');
 
-            $( '.woocommerce-checkout' ).addClass( 'processing' ).block({
-                message: null,
-                overlayCSS: {
-                    background: '#fff',
-                    opacity: 0.6
-                }
-            });
+            $( '.woocommerce-checkout' ).addClass( 'processing' );
 
             $.ajax({
                 type: 'POST',
                 url: woocom_ajax.ajax_url,
                 data: {
-                    action: 'checkout_remove_item',
-                    cart_item_key: cart_item_key
+                    action: 'woocom_remove_cart_item',
+                    cart_item_key: cart_item_key,
+                    nonce: woocom_ajax.cart_nonce
                 },
                 success: function() {
                     $(document.body).trigger('update_checkout');
                 },
                 complete: function() {
-                    $( '.woocommerce-checkout' ).removeClass( 'processing' ).unblock();
+                    $( '.woocommerce-checkout' ).removeClass( 'processing' );
+                }
+            });
+        });
+
+        // Checkout Page AJAX Add to Cart for recommended products (Delegated)
+        $(document.body).on('click', '.woocommerce-checkout .ajax_add_to_cart', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const $btn = $(this);
+            const productId = $btn.data('product_id');
+
+            if (!productId) return;
+
+            // Show processing
+            $( '.woocommerce-checkout' ).addClass( 'processing' );
+
+            const addToCartUrl = woocom_ajax.wc_ajax_url
+                ? woocom_ajax.wc_ajax_url.replace('%%endpoint%%', 'add_to_cart')
+                : `${window.location.origin}/?wc-ajax=add_to_cart`;
+
+            $.ajax({
+                type: 'POST',
+                url: addToCartUrl,
+                data: {
+                    product_id: productId,
+                    quantity: 1
+                },
+                success: function(response) {
+                    // Trigger update checkout to refresh order review list and totals
+                    $(document.body).trigger('update_checkout');
+                },
+                complete: function() {
+                    $( '.woocommerce-checkout' ).removeClass( 'processing' );
                 }
             });
         });
@@ -846,6 +888,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 const formData = new FormData();
                 formData.append('action', 'woocom_ajax_search');
+                formData.append('nonce', woocom_ajax.search_nonce);
                 formData.append('query', query);
 
                 const ajaxUrl = (window.woocom_ajax && window.woocom_ajax.ajax_url) || '/wp-admin/admin-ajax.php';
@@ -955,7 +998,7 @@ document.addEventListener('DOMContentLoaded', function() {
             if (input && input.classList.contains('qty-input')) {
                 let val = parseInt(input.value) || 1;
                 input.value = val + 1;
-                const container = e.target.closest('.latest-product-desktop-actions');
+                const container = e.target.closest('.latest-product-desktop-actions') || e.target.closest('.latest-product-card');
                 if (container) {
                     const btn = container.querySelector('.woocom-custom-add-to-cart');
                     if (btn) {
@@ -969,7 +1012,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 let val = parseInt(input.value) || 1;
                 if (val > 1) {
                     input.value = val - 1;
-                    const container = e.target.closest('.latest-product-desktop-actions');
+                    const container = e.target.closest('.latest-product-desktop-actions') || e.target.closest('.latest-product-card');
                     if (container) {
                         const btn = container.querySelector('.woocom-custom-add-to-cart');
                         if (btn) {
@@ -1112,7 +1155,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     openCartDrawer();
                     
                     // Refresh cart fragments
-                    fetch(`${ajaxUrl}?action=woocom_get_cart_data`)
+                    fetch(`${ajaxUrl}?action=woocom_get_cart_data&nonce=${woocom_ajax.cart_nonce}`)
                         .then(res => res.json())
                         .then(cartData => cartUpdateStateAndCrossSells(cartData));
                         
@@ -1181,4 +1224,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 300);
         }
     });
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initWoocomTheme);
+} else {
+    initWoocomTheme();
+}

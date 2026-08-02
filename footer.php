@@ -10,114 +10,396 @@
 		<footer id="colophon" class="site-footer mt-0">
 			<?php
 			$footer_logo_url = get_option('footer_logo') ? get_option('footer_logo') : get_option('theme_logo');
-			$footer_link_groups = array(
-				'information',
-				'shop',
-				'support',
-				'policy',
-			);
+			
+			// Dynamic links with fallbacks
+			$quick_links = function_exists('woocom_get_footer_links') ? woocom_get_footer_links('information') : array();
+			$quick_title = function_exists('woocom_get_footer_title') ? woocom_get_footer_title('information') : 'Quick link';
+			if (empty($quick_title) || $quick_title === 'Information') {
+				$quick_title = 'Quick link';
+			}
+			if (empty($quick_links)) {
+				$quick_links = array(
+					array('url' => '/about-us/', 'label' => 'About us'),
+					array('url' => '/blog/', 'label' => 'Blog'),
+					array('url' => '/careers/', 'label' => 'Careers'),
+				);
+			}
+
+			$support_links = function_exists('woocom_get_footer_links') ? woocom_get_footer_links('support') : array();
+			$support_title = function_exists('woocom_get_footer_title') ? woocom_get_footer_title('support') : 'Support';
+			if (empty($support_title)) {
+				$support_title = 'Support';
+			}
+			if (empty($support_links)) {
+				$support_links = array(
+					array('url' => '/contact-support/', 'label' => 'Contact Support'),
+					array('url' => '/shipping-returns/', 'label' => 'Shipping & Returns'),
+				);
+			}
+
+			// Filter out specific unwanted links programmatically (with HTML entity decoding and partial matching)
+			$filtered_quick = array();
+			foreach ($quick_links as $link) {
+				$label = isset($link['label']) ? trim(strtolower($link['label'])) : '';
+				$label = html_entity_decode($label, ENT_QUOTES, 'UTF-8');
+				
+				$should_remove = false;
+				if (strpos($label, 'terms') !== false) $should_remove = true;
+				if (strpos($label, 'privacy') !== false) $should_remove = true;
+				if (strpos($label, 'careers') !== false) $should_remove = true;
+				if (strpos($label, 'shipping') !== false) $should_remove = true;
+				if (strpos($label, 'faq') !== false) $should_remove = true;
+				
+				if (!$should_remove) {
+					$filtered_quick[] = $link;
+				}
+			}
+			$quick_links = $filtered_quick;
+
+			$filtered_support = array();
+			foreach ($support_links as $link) {
+				$label = isset($link['label']) ? trim(strtolower($link['label'])) : '';
+				$label = html_entity_decode($label, ENT_QUOTES, 'UTF-8');
+				
+				$should_remove = false;
+				if (strpos($label, 'terms') !== false) $should_remove = true;
+				if (strpos($label, 'privacy') !== false) $should_remove = true;
+				if (strpos($label, 'careers') !== false) $should_remove = true;
+				if (strpos($label, 'shipping') !== false) $should_remove = true;
+				if (strpos($label, 'faq') !== false) $should_remove = true;
+				
+				if (!$should_remove) {
+					$filtered_support[] = $link;
+				}
+			}
+			$support_links = $filtered_support;
+
+			// Contact Details dynamically loaded from Theme Settings
+			$address = get_option('contact_address');
+			$phone   = get_option('contact_phone');
+			$email   = get_option('contact_email') ? get_option('contact_email') : get_option('admin_email');
+
+			// Social URLs with fallbacks so they always render
+			$fb = get_option('social_facebook') ? get_option('social_facebook') : '#';
+			$ig = get_option('social_instagram') ? get_option('social_instagram') : '#';
+			$li = get_option('social_linkedin') ? get_option('social_linkedin') : '#';
+			$yt = get_option('social_youtube') ? get_option('social_youtube') : '#';
 			?>
+			
+		<!-- Premium Footer Styles -->
+		<style>
+		.premium-footer {
+			background-color: #ffffff;
+			border-top: 1px solid #eaeaea;
+			color: #4a5568;
+			font-family: 'Outfit', 'Inter', sans-serif;
+			padding-top: 70px;
+			padding-bottom: 50px;
+		}
+		.premium-footer-logo {
+			height: 48px !important;
+			width: auto !important;
+			display: block;
+			margin-bottom: 20px;
+			transition: transform 0.3s ease;
+		}
+		.premium-footer-logo:hover {
+			transform: scale(1.02);
+		}
+		@media (min-width: 1024px) {
+			.premium-footer-logo {
+				height: 56px !important;
+			}
+		}
+		.premium-footer-title {
+			font-family: 'Playfair Display', Georgia, serif;
+			font-size: 18px;
+			font-weight: 700;
+			color: #253D4E;
+			margin-bottom: 24px;
+			text-transform: capitalize;
+			letter-spacing: -0.01em;
+		}
+		.premium-footer-links {
+			list-style: none !important;
+			padding: 0 !important;
+			margin: 0 !important;
+		}
+		.premium-footer-links li {
+			margin-bottom: 12px;
+			display: flex;
+			align-items: center;
+			list-style-type: none !important;
+		}
+		.premium-footer-links li::before {
+			display: none !important;
+		}
+		.premium-footer-links a {
+			color: #55584E;
+			text-decoration: none;
+			font-size: 14px;
+			font-weight: 500;
+			transition: all 0.25s ease;
+			display: inline-block;
+		}
+		.premium-footer-links a:hover {
+			color: var(--color-primary, #2563EB);
+			transform: translateX(3px);
+		}
+		.premium-footer-bullet {
+			color: var(--color-primary, #2563EB);
+			font-weight: 700;
+			font-size: 18px;
+			margin-right: 8px;
+			line-height: 1;
+			display: inline-block;
+			user-select: none;
+		}
+		.premium-footer-tagline {
+			font-size: 14px;
+			color: #687385;
+			line-height: 1.6;
+			margin-bottom: 24px;
+			max-width: 280px;
+		}
+		.premium-footer-socials {
+			display: flex;
+			gap: 12px;
+		}
+		.premium-footer-social-icon {
+			width: 36px;
+			height: 36px;
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+			box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+			text-decoration: none !important;
+		}
+		.premium-footer-social-icon.facebook { background-color: #F0F4FC; color: #1877F2; }
+		.premium-footer-social-icon.facebook:hover { background-color: #1877F2; color: #ffffff !important; transform: translateY(-3px) scale(1.05); }
+
+		.premium-footer-social-icon.instagram { background-color: #FFF3F3; color: #E1306C; }
+		.premium-footer-social-icon.instagram:hover { background: linear-gradient(45deg, #f9ce3f, #e1306c, #833ab4); color: #ffffff !important; transform: translateY(-3px) scale(1.05); }
+
+		.premium-footer-social-icon.linkedin { background-color: #F0F7FC; color: #0A66C2; }
+		.premium-footer-social-icon.linkedin:hover { background-color: #0A66C2; color: #ffffff !important; transform: translateY(-3px) scale(1.05); }
+
+		.premium-footer-social-icon.youtube { background-color: #FFF0F0; color: #FF0000; }
+		.premium-footer-social-icon.youtube:hover { background-color: #FF0000; color: #ffffff !important; transform: translateY(-3px) scale(1.05); }
+
+		.premium-footer-contact-item {
+			display: flex;
+			align-items: start;
+			gap: 12px;
+			margin-bottom: 16px;
+		}
+		.premium-footer-contact-icon {
+			width: 34px;
+			height: 34px;
+			border-radius: 50%;
+			background-color: rgba(37, 99, 235, 0.05);
+			border: 1px solid rgba(37, 99, 235, 0.1);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: var(--color-primary, #2563EB);
+			flex-shrink: 0;
+			margin-top: 2px;
+		}
+		.premium-footer-contact-text {
+			font-size: 14px;
+			color: #55584E;
+			line-height: 1.5;
+			font-weight: 500;
+			padding-top: 6px;
+		}
+		.premium-footer-contact-text a {
+			color: #55584E;
+			text-decoration: none;
+			transition: color 0.2s;
+		}
+		.premium-footer-contact-text a:hover {
+			color: var(--color-primary, #2563EB);
+		}
+		.premium-footer-bottom {
+			background-color: #F4F6F8;
+			border-top: 1px solid #eaeaea;
+			padding: 24px 0;
+			text-align: center;
+		}
+		.premium-footer-copyright {
+			font-size: 13px;
+			color: #718096;
+			margin: 0;
+			font-weight: 500;
+			line-height: 1.6;
+		}
+		@media (min-width: 1024px) {
+			.premium-footer-grid {
+				display: grid !important;
+				grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+				gap: 2rem !important;
+			}
+		}
+		</style>
+			
+			<?php if ( get_option( 'woocom_setup_complete' ) === '1' ) : ?>
 			<!-- Main Footer -->
-			<div class="bg-white border-t border-gray-100 text-gray-700">
-				<div class="container mx-auto px-4 py-12">
-					<div class="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12">
+			<div class="premium-footer">
+				<div class="container mx-auto px-4">
+					<div class="premium-footer-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12">
 
 						<!-- Brand Column -->
-						<div class="lg:col-span-1">
+						<div class="min-w-0">
 							<?php if ($footer_logo_url) : ?>
-							<img src="<?php echo esc_url($footer_logo_url); ?>" alt="<?php bloginfo('name'); ?>" class="h-12 mb-6">
+								<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="inline-block">
+									<img src="<?php echo esc_url($footer_logo_url); ?>" alt="<?php bloginfo('name'); ?>" class="premium-footer-logo">
+								</a>
+							<?php else : ?>
+								<a href="<?php echo esc_url( home_url( '/' ) ); ?>" class="inline-block mb-5">
+									<!-- Tech Hexagonal Styled SVG Logo fallback -->
+									<div class="flex items-center gap-2 font-black text-xl tracking-tight text-slate-800">
+										<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--color-primary, #2563EB)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cpu h-7 w-7"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M9 1v3"/><path d="M15 1v3"/><path d="M9 20v3"/><path d="M15 20v3"/><path d="M20 9h3"/><path d="M20 15h3"/><path d="M1 9h3"/><path d="M1 15h3"/></svg>
+										<span>Woocom<span class="text-primary font-extrabold" style="color: var(--color-primary, #2563EB) !important;">Gadget</span></span>
+									</div>
+								</a>
 							<?php endif; ?>
-							<p class="text-gray-500 text-[14px] leading-relaxed mb-8">
-								<?php bloginfo('name'); ?> is an e-commerce platform dedicated to providing safe and reliable food to every home.
-							</p>
-						
-						<div class="space-y-4 text-[14px]">
-							<?php if($address = get_option('contact_address')): ?>
-							<div class="flex items-start gap-3 text-gray-600">
-								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 mt-0.5 flex-shrink-0"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-								<span><?php echo esc_html($address); ?></span>
+							<div class="premium-footer-tagline">
+								<?php echo esc_html(get_option('footer_description', 'Your premier destination for high-quality gadgets, consumer electronics, and smart tech accessories.')); ?>
 							</div>
-							<?php endif; ?>
-
-							<?php if($phone = get_option('contact_phone')): ?>
-							<div class="flex items-center gap-3 text-gray-600">
-								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 flex-shrink-0"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-								<span><?php echo esc_html($phone); ?></span>
+							<!-- Social Icons -->
+							<div class="premium-footer-socials">
+								<a href="<?php echo esc_url($fb); ?>" class="premium-footer-social-icon facebook">
+									<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+								</a>
+								<a href="<?php echo esc_url($ig); ?>" class="premium-footer-social-icon instagram">
+									<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y2="6.5" y1="6.5"/></svg>
+								</a>
+								<a href="<?php echo esc_url($li); ?>" class="premium-footer-social-icon linkedin">
+									<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+								</a>
+								<a href="<?php echo esc_url($yt); ?>" class="premium-footer-social-icon youtube">
+									<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-youtube"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17Z"/><path d="m10 15 5-3-5-3z"/></svg>
+								</a>
 							</div>
-							<?php endif; ?>
-
-							<?php if($email = get_option('contact_email')): ?>
-							<div class="flex items-center gap-3 text-gray-600">
-								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-400 flex-shrink-0"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-								<span><?php echo esc_html($email); ?></span>
-							</div>
-							<?php endif; ?>
 						</div>
 
-						<div class="flex items-center gap-3 mt-8">
-							<?php if($fb = get_option('social_facebook')): ?>
-							<a href="<?php echo esc_url($fb); ?>" class="w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center text-secondary hover:bg-secondary/5 transition-all">
-								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-							</a>
-							<?php endif; ?>
-							<?php if($tw = get_option('social_twitter')): ?>
-							<a href="<?php echo esc_url($tw); ?>" class="w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center text-secondary hover:bg-secondary/5 transition-all">
-								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>
-							</a>
-							<?php endif; ?>
-							<?php if($ig = get_option('social_instagram')): ?>
-							<a href="<?php echo esc_url($ig); ?>" class="w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center text-secondary hover:bg-secondary/5 transition-all">
-								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y2="6.5" y1="6.5"/></svg>
-							</a>
-							<?php endif; ?>
-							<?php if($yt = get_option('social_youtube')): ?>
-							<a href="<?php echo esc_url($yt); ?>" class="w-10 h-10 rounded-full border border-gray-100 flex items-center justify-center text-secondary hover:bg-secondary/5 transition-all">
-								<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-youtube"><path d="M2.5 17a24.12 24.12 0 0 1 0-10 2 2 0 0 1 1.4-1.4 49.56 49.56 0 0 1 16.2 0A2 2 0 0 1 21.5 7a24.12 24.12 0 0 1 0 10 2 2 0 0 1-1.4 1.4 49.55 49.55 0 0 1-16.2 0A2 2 0 0 1 2.5 17Z"/><path d="m10 15 5-3-5-3z"/></svg>
-							</a>
-							<?php endif; ?>
+						<!-- Quick Links Column -->
+						<div class="min-w-0">
+							<h3 class="premium-footer-title">
+								<?php echo esc_html($quick_title); ?>
+							</h3>
+							<ul class="premium-footer-links">
+								<?php foreach ($quick_links as $link) : ?>
+									<?php
+									$link_url = !empty($link['url']) ? $link['url'] : '#';
+									$link_label = !empty($link['label']) ? $link['label'] : '';
+									?>
+									<li>
+										<a href="<?php echo esc_url($link_url); ?>"><?php echo esc_html($link_label); ?></a>
+									</li>
+								<?php endforeach; ?>
+							</ul>
 						</div>
 
-					</div>
+						<!-- Support Column -->
+						<div class="min-w-0">
+							<h3 class="premium-footer-title">
+								<?php echo esc_html($support_title); ?>
+							</h3>
+							<ul class="premium-footer-links">
+								<?php foreach ($support_links as $link) : ?>
+									<?php
+									$link_url = !empty($link['url']) ? $link['url'] : '#';
+									$link_label = !empty($link['label']) ? $link['label'] : '';
+									?>
+									<li>
+										<a href="<?php echo esc_url($link_url); ?>"><?php echo esc_html($link_label); ?></a>
+									</li>
+								<?php endforeach; ?>
+							</ul>
+						</div>
 
-						<div class="grid grid-cols-2 gap-x-6 gap-y-10 lg:contents">
-						<?php foreach ($footer_link_groups as $group_key) : ?>
-							<?php
-							$footer_links = function_exists('woocom_get_footer_links') ? woocom_get_footer_links($group_key) : array();
-							$group_title = function_exists('woocom_get_footer_title') ? woocom_get_footer_title($group_key) : '';
-							if (empty($footer_links)) {
-								continue;
-							}
-							?>
-							<div class="min-w-0">
-								<h3 class="text-[15px] sm:text-[16px] font-bold text-gray-800 mb-5 lg:mb-8"><?php echo esc_html($group_title); ?></h3>
-								<ul class="space-y-3 lg:space-y-4 text-[13px] sm:text-[14px]">
-									<?php foreach ($footer_links as $footer_link) : ?>
-										<?php
-										$link_url = !empty($footer_link['url']) ? $footer_link['url'] : '#';
-										$link_label = !empty($footer_link['label']) ? $footer_link['label'] : '';
-										?>
-										<li><a href="<?php echo esc_url($link_url); ?>" class="text-gray-500 hover:text-secondary transition-all"><?php echo esc_html($link_label); ?></a></li>
-									<?php endforeach; ?>
-								</ul>
+						<!-- Vendor Zone Column -->
+						<div class="min-w-0">
+							<h3 class="premium-footer-title">
+								Vendor Zone
+							</h3>
+							<ul class="premium-footer-links">
+								<li>
+									<a href="<?php echo esc_url( home_url( '/my-account/' ) ); ?>">Become a Seller</a>
+								</li>
+								<li>
+									<a href="<?php echo esc_url( home_url( '/my-account/' ) ); ?>">Vendor Login</a>
+								</li>
+								<li>
+									<a href="<?php echo esc_url( home_url( '/dashboard/' ) ); ?>">Vendor Dashboard</a>
+								</li>
+								<li>
+									<a href="<?php echo esc_url( home_url( '/store-listing/' ) ); ?>">Store List</a>
+								</li>
+							</ul>
+						</div>
+
+						<!-- Contact Column -->
+						<div class="min-w-0">
+							<h3 class="premium-footer-title">
+								Contact
+							</h3>
+							<div class="premium-footer-contact">
+								<?php if ($address) : ?>
+								<div class="premium-footer-contact-item">
+									<div class="premium-footer-contact-icon">
+										<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+									</div>
+									<div class="premium-footer-contact-text"><?php echo esc_html($address); ?></div>
+								</div>
+								<?php endif; ?>
+
+								<?php if ($email) : ?>
+								<div class="premium-footer-contact-item">
+									<div class="premium-footer-contact-icon">
+										<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+									</div>
+									<div class="premium-footer-contact-text">
+										<a href="mailto:<?php echo esc_attr($email); ?>"><?php echo esc_html($email); ?></a>
+									</div>
+								</div>
+								<?php endif; ?>
+
+								<?php if ($phone) : ?>
+								<div class="premium-footer-contact-item">
+									<div class="premium-footer-contact-icon">
+										<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+									</div>
+									<div class="premium-footer-contact-text">
+										<a href="tel:<?php echo esc_attr($phone); ?>"><?php echo esc_html($phone); ?></a>
+									</div>
+								</div>
+								<?php endif; ?>
 							</div>
-						<?php endforeach; ?>
 						</div>
+
 					</div>
 				</div>
+			</div>
+			<?php endif; ?>
+
 
 			<!-- Bottom Footer -->
-			<div class="border-t border-gray-100 py-8">
-				<div class="container mx-auto px-4 text-center">
-					<p class="text-[14px] text-gray-400">
-						Copyright &copy; <?php echo date('Y'); ?> <?php bloginfo('name'); ?>. All rights reserved.
+			<div class="premium-footer-bottom">
+				<div class="container mx-auto px-4">
+					<p class="premium-footer-copyright">
+						Copyright &copy; <?php bloginfo('name'); ?> <?php echo date('Y'); ?> &ndash; All Rights Reserved
 					</p>
 				</div>
 			</div>
-		</div>
-	</footer><!-- #colophon -->
-</div><!-- #page -->
+		</footer><!-- #colophon -->
+	</div><!-- #page -->
 
-<?php if ( function_exists( 'WC' ) && WC()->cart && get_option('enable_cart_drawer', 1) ) : ?>
+<?php if ( get_option( 'woocom_setup_complete' ) === '1' && function_exists( 'WC' ) && WC()->cart ) : ?>
 <?php
 $woocom_price_decimals           = function_exists( 'wc_get_price_decimals' ) ? wc_get_price_decimals() : 2;
 $woocom_price_decimal_separator  = function_exists( 'wc_get_price_decimal_separator' ) ? wc_get_price_decimal_separator() : '.';
@@ -366,7 +648,7 @@ $show_cart_floating_widget       = ! ( function_exists( 'is_checkout' ) && is_ch
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
                         </button>
                         <div class="w-16 h-16 bg-gray-50 rounded-lg border border-gray-100 flex-shrink-0 flex items-center justify-center p-1 overflow-hidden">
-                            <img src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( $title ); ?>" class="max-w-full max-h-full object-contain mix-blend-multiply">
+                            <img src="<?php echo esc_url( $image ); ?>" alt="<?php echo esc_attr( $title ); ?>" class="w-full h-full object-contain mix-blend-multiply">
                         </div>
                         <div class="flex-grow pt-0.5 pr-5">
                             <a href="<?php echo get_permalink($product_id); ?>" class="hover:text-secondary">
@@ -478,7 +760,7 @@ $show_cart_floating_widget       = ! ( function_exists( 'is_checkout' ) && is_ch
                         <div class="bg-white border border-gray-200 rounded-lg p-2.5 flex gap-2.5 shadow-sm flex-shrink-0 w-[calc(50%-6px)] hover:shadow-md transition-shadow">
                             <div class="w-14 h-14 flex-shrink-0 flex items-center justify-center bg-gray-50 rounded overflow-hidden">
                                 <a href="<?php echo esc_url($product->get_permalink()); ?>">
-                                    <img src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr($product->get_name()); ?>" class="max-w-full max-h-full object-contain mix-blend-multiply">
+                                    <img src="<?php echo esc_url($image_url); ?>" alt="<?php echo esc_attr($product->get_name()); ?>" class="w-full h-full object-contain mix-blend-multiply">
                                 </a>
                             </div>
                             <div class="flex flex-col justify-between flex-grow overflow-hidden">
@@ -547,9 +829,220 @@ $show_cart_floating_widget       = ! ( function_exists( 'is_checkout' ) && is_ch
         cart_promo_min_amount: <?php echo (int) get_option('cart_promo_min_amount', 3000); ?>,
         cross_sell_autoslide: <?php echo get_option('cross_sell_autoslide', 1) ? 'true' : 'false'; ?>
     };
+
+    window.woocom_suppress_drawer = false;
+    window.woocom_last_added_title = '';
+    
+    // Global click interceptor in capture phase to suppress drawer on archive/homepage buys and capture product title
+    document.addEventListener('click', function(e) {
+        var btn = e.target.closest('.woocom-custom-add-to-cart, .ajax_add_to_cart, .add_to_cart_button');
+        if (btn && (document.body.classList.contains('home') || document.body.classList.contains('archive') || document.body.classList.contains('tax-product_cat') || document.body.classList.contains('post-type-archive-product'))) {
+            window.woocom_suppress_drawer = true;
+            
+            // Capture product title at click time
+            var card = btn.closest('.product, .swiper-slide, .latest-product-card, .bg-white');
+            var titleEl = card ? card.querySelector('h3 a, .woocommerce-loop-product__title') : null;
+            window.woocom_last_added_title = titleEl ? titleEl.textContent.trim() : 'Product';
+        }
+    }, true);
+
+    // Global listener for added_to_cart in footer context to handle toast triggers (Single Unified Toast)
+    if (window.jQuery) {
+        jQuery(document.body).on('added_to_cart', function(event, fragments, cart_hash, $button) {
+            // Check if we are on front-page/archive where drawer is suppressed
+            if (document.body.classList.contains('home') || document.body.classList.contains('archive') || document.body.classList.contains('tax-product_cat') || document.body.classList.contains('post-type-archive-product')) {
+                var title = window.woocom_last_added_title || 'Product';
+                window.woocom_last_added_title = ''; // clear it immediately to avoid duplicates
+                
+                // If title was somehow missed, fallback search
+                if (title === 'Product' && $button && $button.length) {
+                    var $card = $button.closest('.product, .swiper-slide, .latest-product-card, .bg-white');
+                    var $titleEl = $card.find('h3 a, .woocommerce-loop-product__title');
+                    if ($titleEl.length) {
+                        title = $titleEl.text().trim();
+                    }
+                }
+                
+                window.showToastNotification('"' + title + '" has been added to your cart.');
+            }
+        });
+    }
+
+    window.showToastNotification = function(message) {
+        var container = document.getElementById('woocom-toast-container');
+        if (!container) {
+            container = document.createElement('div');
+            container.id = 'woocom-toast-container';
+            container.style.position = 'fixed';
+            container.style.bottom = '24px';
+            container.style.left = '24px';
+            container.style.zIndex = '999999';
+            container.style.display = 'flex';
+            container.style.flexDirection = 'column';
+            container.style.gap = '12px';
+            container.style.pointerEvents = 'none';
+            document.body.appendChild(container);
+        }
+        
+        var toast = document.createElement('div');
+        toast.style.backgroundColor = 'rgba(15, 23, 42, 0.95)';
+        toast.style.backdropFilter = 'blur(4px)';
+        toast.style.color = '#ffffff';
+        toast.style.padding = '14px 20px';
+        toast.style.borderRadius = '12px';
+        toast.style.boxShadow = '0 10px 30px -5px rgba(0, 0, 0, 0.3)';
+        toast.style.display = 'flex';
+        toast.style.alignItems = 'center';
+        toast.style.gap = '12px';
+        toast.style.transition = 'all 0.4s cubic-bezier(0.16, 1, 0.3, 1)';
+        toast.style.transform = 'translateY(20px)';
+        toast.style.opacity = '0';
+        toast.style.border = '1px solid rgba(255, 255, 255, 0.1)';
+        toast.style.maxWidth = '360px';
+        toast.style.fontFamily = "'Outfit', sans-serif";
+        toast.style.pointerEvents = 'auto';
+        
+        toast.innerHTML = '<div style="background-color: #10b981; color: #ffffff; border-radius: 9999px; padding: 4px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; width: 24px; height: 24px;"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg></div><div style="flex-grow: 1;"><p style="font-size: 14px; font-weight: 600; margin: 0; line-height: 1.3; color: rgba(255, 255, 255, 0.95);">' + message + '</p></div><button style="color: rgba(255, 255, 255, 0.4); background: none; border: none; cursor: pointer; padding: 2px; margin-left: 4px; display: flex; align-items: center; justify-content: center;" onclick="this.parentElement.remove()"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>';
+        
+        container.appendChild(toast);
+        
+        setTimeout(function() {
+            toast.style.transform = 'translateY(0)';
+            toast.style.opacity = '1';
+        }, 50);
+        
+        setTimeout(function() {
+            toast.style.transform = 'translateY(20px)';
+            toast.style.opacity = '0';
+            setTimeout(function() {
+                toast.remove();
+            }, 400);
+        }, 3500);
+    };
+
+    // Inline Bulletproof Drawer Trigger & AJAX Add to Cart Handler (Fallback)
+    (function() {
+        function openCart() {
+            if (window.woocom_suppress_drawer) {
+                window.woocom_suppress_drawer = false;
+                return;
+            }
+            var drawer = document.getElementById('cart-drawer');
+            var overlay = document.getElementById('cart-drawer-overlay');
+            if (drawer && overlay) {
+                overlay.style.display = 'block';
+                drawer.classList.remove('translate-x-full');
+                setTimeout(function() {
+                    overlay.style.opacity = '1';
+                    drawer.style.transform = 'translateX(0)';
+                }, 10);
+            }
+        }
+        function closeCart() {
+            var drawer = document.getElementById('cart-drawer');
+            var overlay = document.getElementById('cart-drawer-overlay');
+            if (drawer && overlay) {
+                overlay.style.opacity = '0';
+                drawer.style.transform = 'translateX(100%)';
+                setTimeout(function() {
+                    overlay.style.display = 'none';
+                    drawer.classList.add('translate-x-full');
+                }, 300);
+            }
+        }
+        var bind = function() {
+            ['cart-drawer-open-desktop', 'cart-drawer-open-mobile', 'cart-drawer-open-bottom', 'cart-drawer-open-sticky'].forEach(function(id) {
+                var btn = document.getElementById(id);
+                if (btn) {
+                    btn.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        openCart();
+                    });
+                }
+            });
+            var closeBtn = document.getElementById('cart-drawer-close');
+            if (closeBtn) closeBtn.addEventListener('click', closeCart);
+            var overlay = document.getElementById('cart-drawer-overlay');
+            if (overlay) overlay.addEventListener('click', closeCart);
+        };
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', bind);
+        } else {
+            bind();
+        }
+
+        // Inline AJAX Add to Cart Click Listener
+        document.addEventListener('click', function(e) {
+            var btn = e.target.closest('.woocom-custom-add-to-cart');
+            if (!btn) return;
+            e.preventDefault();
+            
+            // Set suppression flag to prevent drawer opening
+            window.woocom_suppress_drawer = true;
+            
+            if (btn.classList.contains('loading')) return;
+            btn.classList.add('loading');
+            var originalText = btn.innerHTML;
+            btn.innerHTML = 'Adding...';
+            
+            var productId = btn.getAttribute('data-product_id');
+            
+            // Read quantity directly from input box if present
+            var card = btn.closest('.latest-product-card') || btn.closest('.bg-white') || btn.closest('.swiper-slide');
+            var qtyInput = card ? card.querySelector('.qty-input') : null;
+            var qty = qtyInput ? (parseInt(qtyInput.value) || 1) : (parseInt(btn.getAttribute('data-quantity')) || 1);
+            
+            var formData = new FormData();
+            formData.append('product_id', productId);
+            formData.append('quantity', qty);
+            
+            var ajaxUrl = (window.woocom_ajax && window.woocom_ajax.ajax_url) || '/wp-admin/admin-ajax.php';
+            var wcAjaxUrl = (window.woocom_ajax && window.woocom_ajax.wc_ajax_url) 
+                ? window.woocom_ajax.wc_ajax_url.replace('%%endpoint%%', 'add_to_cart') 
+                : (window.location.origin + '/?wc-ajax=add_to_cart');
+                
+            fetch(wcAjaxUrl, {
+                method: 'POST',
+                body: formData
+            })
+            .then(function(res) {
+                return res.json().catch(function() { return {}; });
+            })
+            .then(function(data) {
+                btn.classList.remove('loading');
+                btn.innerHTML = originalText;
+                
+                // Trigger jQuery added_to_cart event which will fire the unified toast and update fragments
+                if (window.jQuery) {
+                    jQuery(document.body).trigger('added_to_cart', [data.fragments, data.cart_hash, jQuery(btn)]);
+                }
+                
+                if (data.error && data.product_url) {
+                    window.location.href = data.product_url;
+                    return;
+                }
+                
+                var cartNonce = (window.woocom_ajax && window.woocom_ajax.cart_nonce) || '';
+                fetch(ajaxUrl + '?action=woocom_get_cart_data&nonce=' + cartNonce)
+                .then(function(r) { return r.json(); })
+                .then(function(cartData) {
+                    if (typeof cartUpdateStateAndCrossSells === 'function') {
+                        cartUpdateStateAndCrossSells(cartData);
+                    } else if (typeof window.location.reload === 'function') {
+                        window.location.reload();
+                    }
+                });
+            })
+            .catch(function() {
+                btn.classList.remove('loading');
+                btn.innerHTML = originalText;
+            });
+        });
+    })();
 </script>
 
-<?php if ( ! ( function_exists( 'is_checkout' ) && is_checkout() ) ) : ?>
+<?php if ( get_option( 'woocom_setup_complete' ) === '1' && ! ( function_exists( 'is_checkout' ) && is_checkout() ) ) : ?>
 <!-- Mobile Bottom Navigation -->
 <div class="mobile-bottom-navigation lg:hidden fixed bottom-0 left-0 bg-secondary text-white z-[100] px-4 py-3 flex items-center justify-between shadow-[0_-4px_12px_rgba(0,0,0,0.15)] pb-safe" style="width:100dvw;max-width:100dvw;overflow:hidden;box-sizing:border-box;">
     <!-- Home -->
@@ -607,11 +1100,12 @@ $show_cart_floating_widget       = ! ( function_exists( 'is_checkout' ) && is_ch
 </div>
 
 <!-- Back to Top Button -->
-<button id="back-to-top" class="fixed bottom-24 right-6 lg:bottom-10 lg:right-10 z-[50] bg-secondary text-white p-3 rounded-full shadow-2xl opacity-0 translate-y-10 invisible transition-all duration-300 hover:bg-secondary/90 hover:-translate-y-1 group">
+<button id="back-to-top" class="fixed bottom-24 right-6 lg:bottom-10 lg:right-10 z-[50] bg-primary text-white p-3 rounded-full shadow-2xl opacity-0 translate-y-10 invisible transition-all duration-300 hover:bg-primary/90 hover:-translate-y-1 group">
     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-chevron-up"><path d="m18 15-6-6-6 6"/></svg>
     <span class="absolute right-full mr-3 bg-gray-900 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none uppercase tracking-widest font-bold">Back to top</span>
 </button>
 
+<?php if ( get_option( 'woocom_setup_complete' ) === '1' ) : ?>
 <!-- Floating Multi-Chat Widget (Bottom Left) -->
 <div class="fixed left-6 bottom-20 z-[999] flex flex-col items-center gap-3 transition-all duration-300 transform scale-0 translate-y-10 origin-bottom opacity-0" id="woocom-floating-chat-actions">
     <!-- WhatsApp -->
@@ -656,8 +1150,10 @@ function toggleFloatingChat() {
     }
 }
 </script>
+<?php endif; ?>
 
 <?php wp_footer(); ?>
 
 </body>
 </html>
+

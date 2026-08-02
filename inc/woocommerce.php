@@ -36,15 +36,6 @@ if ( class_exists( 'WooCommerce' ) ) {
 	}
 	add_action( 'after_setup_theme', 'woocom_add_woocommerce_support' );
 
-	/**
-	 * Custom checkout fields for Bangladesh (Districts/Thanas)
-	 */
-	add_filter( 'woocommerce_checkout_fields', 'woocom_custom_checkout_fields' );
-
-	function woocom_custom_checkout_fields( $fields ) {
-		// We will implement the cascading logic in a future step.
-		return $fields;
-	}
 
 	/**
 	 * Change number of products per row
@@ -75,6 +66,7 @@ if ( class_exists( 'WooCommerce' ) ) {
 	add_action( 'wp_ajax_nopriv_woocom_get_cart_data', 'woocom_get_cart_data' );
 
 	function woocom_get_cart_data() {
+		check_ajax_referer( 'woocom_cart_nonce', 'nonce' );
 		if ( ! class_exists( 'WooCommerce' ) || ! WC()->cart ) {
 			wp_send_json_error();
 		}
@@ -108,8 +100,10 @@ if ( class_exists( 'WooCommerce' ) ) {
 	add_action( 'wp_ajax_nopriv_woocom_remove_cart_item', 'woocom_remove_cart_item' );
 
 	function woocom_remove_cart_item() {
-		$cart_item_key = isset( $_GET['cart_item_key'] ) ? sanitize_text_field( $_GET['cart_item_key'] ) : '';
-		if ( ! empty( $cart_item_key ) && class_exists( 'WooCommerce' ) ) {
+		check_ajax_referer( 'woocom_cart_nonce', 'nonce' );
+
+		$cart_item_key = isset( $_REQUEST['cart_item_key'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['cart_item_key'] ) ) : '';
+		if ( ! empty( $cart_item_key ) && class_exists( 'WooCommerce' ) && WC()->cart ) {
 			if ( WC()->cart->remove_cart_item( $cart_item_key ) ) {
 				wp_send_json_success();
 			}
@@ -124,13 +118,15 @@ if ( class_exists( 'WooCommerce' ) ) {
 	add_action( 'wp_ajax_nopriv_woocom_update_cart_qty', 'woocom_update_cart_qty' );
 
 	function woocom_update_cart_qty() {
-		$cart_item_key = isset( $_GET['cart_item_key'] ) ? sanitize_text_field( $_GET['cart_item_key'] ) : '';
-		$new_qty = isset( $_GET['qty'] ) ? (int) $_GET['qty'] : 0;
+		check_ajax_referer( 'woocom_cart_nonce', 'nonce' );
 
-		if ( ! empty( $cart_item_key ) && class_exists( 'WooCommerce' ) ) {
-			if ( WC()->cart->set_quantity( $cart_item_key, $new_qty ) ) {
-				wp_send_json_success();
-			}
+		$cart_item_key = isset( $_REQUEST['cart_item_key'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['cart_item_key'] ) ) : '';
+		$new_qty = isset( $_REQUEST['qty'] ) ? intval( $_REQUEST['qty'] ) : ( isset( $_REQUEST['quantity'] ) ? intval( $_REQUEST['quantity'] ) : 0 );
+
+		if ( ! empty( $cart_item_key ) && class_exists( 'WooCommerce' ) && WC()->cart && isset( WC()->cart->get_cart()[ $cart_item_key ] ) ) {
+			WC()->cart->set_quantity( $cart_item_key, $new_qty );
+			WC()->cart->calculate_totals();
+			wp_send_json_success();
 		}
 		wp_send_json_error();
 	}
@@ -209,7 +205,7 @@ if ( class_exists( 'WooCommerce' ) ) {
 				$html .= '<div class="bg-white border border-gray-200 rounded-lg p-2.5 flex gap-2.5 shadow-sm flex-shrink-0 w-[calc(50%-6px)] hover:shadow-md transition-shadow">
 					<div class="w-14 h-14 flex-shrink-0 flex items-center justify-center bg-gray-50 rounded overflow-hidden">
 						<a href="' . esc_url( $product->get_permalink() ) . '">
-							<img src="' . esc_url( $image_url ) . '" alt="' . esc_attr( $product->get_name() ) . '" class="max-w-full max-h-full object-contain mix-blend-multiply">
+							<img src="' . esc_url( $image_url ) . '" alt="' . esc_attr( $product->get_name() ) . '" class="w-full h-full object-contain mix-blend-multiply">
 						</a>
 					</div>
 					<div class="flex flex-col justify-between flex-grow overflow-hidden">
@@ -293,7 +289,7 @@ if ( class_exists( 'WooCommerce' ) ) {
 			<div class="w-full md:w-1/2 flex flex-col gap-3">
 				<div class="relative w-full pt-[100%] border border-gray-100 rounded-lg overflow-hidden bg-gray-50/30">
 					<div class="absolute inset-0 flex items-center justify-center p-4">
-						<img id="qv-main-img" src="<?php echo esc_url( $image_url ); ?>" class="max-w-full max-h-full object-contain mx-auto" alt="<?php echo esc_attr( $title ); ?>">
+						<img id="qv-main-img" src="<?php echo esc_url( $image_url ); ?>" class="w-full h-full object-contain mx-auto" alt="<?php echo esc_attr( $title ); ?>">
 					</div>
 				</div>
 				<?php if ( ! empty( $gallery_ids ) ) : ?>
@@ -381,3 +377,22 @@ remove_action( 'woocommerce_before_customer_login_form', 'woocommerce_output_all
  * since they are now natively styled and rendered in the form-login.php template.
  */
 remove_action( 'woocommerce_register_form', 'woocom_add_registration_fields' );
+
+/**
+ * Unhook WooCommerce default thank you page details to prevent duplicate outputs
+ */
+add_action( 'wp', 'woocom_unhook_thankyou_duplicates' );
+function woocom_unhook_thankyou_duplicates() {
+    // Unhook default order details table and address sections
+    remove_action( 'woocommerce_thankyou', 'woocommerce_order_details_table', 10 );
+    
+    // Unhook COD instructions if COD gateway exists
+    if ( class_exists( 'WC_Payment_Gateways' ) ) {
+        $gateways = WC_Payment_Gateways::instance()->payment_gateways();
+        if ( isset( $gateways['cod'] ) ) {
+            remove_action( 'woocommerce_thankyou_cod', array( $gateways['cod'], 'thankyou_page' ) );
+        }
+    }
+}
+
+

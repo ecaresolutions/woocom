@@ -70,12 +70,36 @@ if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_requir
                         </div>
                     </div>
 
+                    <!-- Cross-sell Section -->
+                    <?php 
+                    if ( function_exists( 'woocom_get_cart_cross_sell_html' ) ) {
+                        $cross_sell_content = woocom_get_cart_cross_sell_html();
+                        if ( $cross_sell_content && strpos( $cross_sell_content, 'No products found' ) === false ) :
+                        ?>
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                            <div class="p-4 border-b border-gray-50">
+                                <h3 class="text-[16px] font-bold text-[#253D4E] flex items-center gap-2">
+                                    <span class="checkout-title-marker"></span>
+                                    Recommended for you
+                                </h3>
+                            </div>
+                            <div class="p-4">
+                                <div class="flex flex-wrap gap-3">
+                                    <?php echo $cross_sell_content; ?>
+                                </div>
+                            </div>
+                        </div>
+                        <?php 
+                        endif;
+                    } 
+                    ?>
+
                     <!-- Shipping Address -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                         <div class="p-4 border-b border-gray-50">
                             <h3 class="text-[16px] font-bold text-[#253D4E] flex items-center gap-2">
                                 <span class="checkout-title-marker"></span>
-                                Shipping Address
+                                Billing Details
                             </h3>
                         </div>
                         <div class="p-4">
@@ -94,7 +118,7 @@ if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_requir
                         <div class="p-4 flex items-center justify-between cursor-pointer" id="billing-address-toggle">
                             <h3 class="text-[16px] font-bold text-[#253D4E] flex items-center gap-2">
                                 <span class="checkout-title-marker"></span>
-                                Billing Address
+                                Shipping Address (If different)
                             </h3>
                             <div class="toggle-circle checkout-billing-toggle">
                                 <div></div>
@@ -122,6 +146,19 @@ if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_requir
                                 }
                                 ?>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Special Notes -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="p-5 border-b border-gray-50">
+                            <h3 class="text-[14px] font-bold text-[#253D4E] flex items-center gap-2">
+                                <span class="checkout-title-marker"></span>
+                                Special notes <span class="text-gray-400 font-medium ml-1">(Optional)</span>
+                            </h3>
+                        </div>
+                        <div class="p-5">
+                            <textarea name="order_comments" class="w-full h-24 border border-gray-200 rounded-lg p-3 text-sm focus:border-secondary focus:ring-0 resize-none" placeholder="Notes about your order, e.g. special notes for delivery."></textarea>
                         </div>
                     </div>
 
@@ -253,18 +290,6 @@ if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_requir
                         </div>
                     </div>
 
-                    <!-- Special Notes -->
-                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div class="p-5 border-b border-gray-50">
-                            <h3 class="text-[14px] font-bold text-[#253D4E] flex items-center gap-2">
-                                <span class="checkout-title-marker"></span>
-                                Special notes <span class="text-gray-400 font-medium ml-1">(Optional)</span>
-                            </h3>
-                        </div>
-                        <div class="p-5">
-                            <textarea name="order_comments" class="w-full h-24 border border-gray-200 rounded-lg p-3 text-sm focus:border-secondary focus:ring-0 resize-none" placeholder="Notes about your order, e.g. special notes for delivery."></textarea>
-                        </div>
-                    </div>
 
                     <!-- Place Order -->
                     <div class="checkout-place-order pt-4 border-t lg:border-none">
@@ -289,3 +314,26 @@ if ( ! $checkout->is_registration_enabled() && $checkout->is_registration_requir
 </div>
 
 <?php do_action( 'woocommerce_after_checkout_form', $checkout ); ?>
+
+<style>
+/* Disable checkout AJAX loaders, overlays, and spinners completely for seamless updates */
+.blockUI.blockOverlay,
+.blockUI.blockMsg,
+.woocommerce .blockUI.blockOverlay,
+.woocommerce .blockUI.blockMsg,
+.woocommerce-page .blockUI.blockOverlay,
+.woocommerce-page .blockUI.blockMsg,
+.woocommerce .button.loading::after,
+.woocommerce-page .button.loading::after,
+.loading::after,
+a.ajax_add_to_cart.loading::after,
+.woocommerce a.ajax_add_to_cart.loading::after,
+.woocommerce-page a.ajax_add_to_cart.loading::after {
+    display: none !important;
+    background: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    content: none !important;
+}
+</style>
+

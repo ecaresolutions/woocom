@@ -1612,3 +1612,23 @@ a.woocom-pre-order-btn:hover * {
         width: 50% !important; /* Occupy exactly 50% of the product details card */
     }
 }
+
+/* Disable checkout AJAX loaders, overlays, and spinners completely for seamless updates */
+.blockUI.blockOverlay,
+.blockUI.blockMsg,
+.woocommerce .blockUI.blockOverlay,
+.woocommerce .blockUI.blockMsg,
+.woocommerce-page .blockUI.blockOverlay,
+.woocommerce-page .blockUI.blockMsg,
+.woocommerce .button.loading::after,
+.woocommerce-page .button.loading::after,
+.loading::after,
+a.ajax_add_to_cart.loading::after,
+.woocommerce a.ajax_add_to_cart.loading::after,
+.woocommerce-page a.ajax_add_to_cart.loading::after {
+    display: none !important;
+    background: none !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+    content: none !important;
+}

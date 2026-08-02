@@ -131,6 +131,15 @@ if ( post_password_required() ) {
                 </div>
             </div>
 
+            <?php 
+            $short_description = apply_filters( 'woocommerce_short_description', $product->get_short_description() );
+            if ( $short_description ) : 
+            ?>
+                <div class="product-short-description text-[16px] sm:text-[18px] mb-4 leading-relaxed font-normal" style="color: var(--color-primary, #1E5D02);">
+                    <?php echo $short_description; ?>
+                </div>
+            <?php endif; ?>
+
             <?php if ( $request_type ) : ?>
                 <div class="mb-4">
                     <?php echo woocom_render_stock_request_badge( $request_type ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
@@ -570,6 +579,7 @@ if ( post_password_required() ) {
                 type: 'POST',
                 data: {
                     action: 'add_multiple_products_to_cart',
+                    nonce: woocom_ajax.cart_nonce,
                     items: itemsData
                 },
                 success: function(response) {
@@ -597,53 +607,32 @@ if ( post_password_required() ) {
     </script>
     <?php endif; ?>
 
-    <!-- Product Tabs (Modern Boxed Design) -->
+    <!-- Product Details & Reviews Stacked Sections -->
     <?php
     $video_url   = get_post_meta($product->get_id(), '_product_video_url', true);
     $has_video   = ! empty($video_url);
-    $has_reviews = $product->get_review_count() > 0;
     $has_content = ! empty( trim( get_the_content() ) );
-    $has_tabs    = $has_video || $has_reviews;
-
-    if ( $has_content || $has_video || $has_reviews ) :
     ?>
     <div class="mt-16">
-        <?php
-        if ( $has_tabs ) :
-            // Decide default active tab
-            $active_tab = 'description';
-            if ( ! $has_content ) {
-                $active_tab = $has_video ? 'video' : 'reviews';
-            }
-        ?>
-            <!-- Tab Buttons Container (Card Style) -->
-            <div class="flex w-full lg:inline-flex lg:w-auto gap-1 sm:gap-2 mb-6 bg-white border border-gray-100 p-1 rounded-lg shadow-sm">
-                <?php if ( $has_content ) : ?>
-                <button class="tab-trigger flex-1 lg:flex-none <?php echo ($active_tab === 'description') ? 'active bg-secondary text-white shadow-sm' : 'bg-transparent text-[#7E7E7E]'; ?> px-1 sm:px-6 py-2 sm:py-2.5 rounded-md text-[11px] sm:text-[14px] font-bold transition-all cursor-pointer border-none hover:text-white whitespace-nowrap text-center" data-target="tab-description">
-                    Description
-                </button>
-                <?php endif; ?>
-                
-                <?php if ( $has_video ) : ?>
-                <button class="tab-trigger flex-1 lg:flex-none <?php echo ($active_tab === 'video') ? 'active bg-secondary text-white shadow-sm' : 'bg-transparent text-[#7E7E7E]'; ?> px-1 sm:px-6 py-2 sm:py-2.5 rounded-md text-[11px] sm:text-[14px] font-bold hover:bg-gray-50 hover:text-[#7E7E7E] transition-all cursor-pointer border-none whitespace-nowrap text-center" data-target="tab-video">
-                    <span class="sm:hidden">Video</span>
-                    <span class="hidden sm:inline">Product Video</span>
-                </button>
-                <?php endif; ?>
-                
-                <?php if ( $has_reviews ) : ?>
-                <button class="tab-trigger flex-1 lg:flex-none <?php echo ($active_tab === 'reviews') ? 'active bg-secondary text-white shadow-sm' : 'bg-transparent text-[#7E7E7E]'; ?> px-1 sm:px-6 py-2 sm:py-2.5 rounded-md text-[11px] sm:text-[14px] font-bold hover:bg-gray-50 hover:text-[#7E7E7E] transition-all cursor-pointer border-none whitespace-nowrap text-center" data-target="tab-reviews">
-                    <span class="sm:hidden">Reviews (<?php echo $product->get_review_count(); ?>)</span>
-                    <span class="hidden sm:inline">Customer Reviews (<?php echo $product->get_review_count(); ?>)</span>
-                </button>
-                <?php endif; ?>
-            </div>
+        <!-- Anchor Link Tabs -->
+        <div class="flex items-center gap-2 mb-6 bg-white border border-gray-100 p-1 rounded-lg shadow-sm w-full lg:inline-flex lg:w-auto">
+            <?php if ( $has_content ) : ?>
+                <a href="#product-details-sec" class="anchor-tab-btn active bg-secondary text-white shadow-sm px-5 py-2 rounded-md text-[13px] sm:text-[14px] font-bold transition-all whitespace-nowrap text-center">Description</a>
+            <?php endif; ?>
+            
+            <?php if ( $has_video ) : ?>
+                <a href="#product-video-sec" class="anchor-tab-btn bg-transparent text-[#7E7E7E] px-5 py-2 rounded-md text-[13px] sm:text-[14px] font-bold hover:bg-gray-50 hover:text-[#7E7E7E] transition-all whitespace-nowrap text-center">Product Video</a>
+            <?php endif; ?>
+            
+            <?php if ( comments_open() ) : ?>
+                <a href="#product-reviews-sec" class="anchor-tab-btn bg-transparent text-[#7E7E7E] px-5 py-2 rounded-md text-[13px] sm:text-[14px] font-bold hover:bg-gray-50 hover:text-[#7E7E7E] transition-all whitespace-nowrap text-center">Reviews (<?php echo $product->get_review_count(); ?>)</a>
+            <?php endif; ?>
+        </div>
 
-            <!-- Tab Content Box -->
-            <div class="bg-white border border-gray-100 rounded-xl p-6 md:p-10 shadow-sm min-h-[300px]">
-                <?php if ( $has_content ) : ?>
-                <!-- Description Panel -->
-                <div id="tab-description" class="tab-panel <?php echo ($active_tab === 'description') ? 'active' : 'hidden'; ?> animate-fadeIn">
+        <div class="space-y-8 mt-2">
+            <?php if ( $has_content ) : ?>
+                <!-- Description Card -->
+                <div id="product-details-sec" class="bg-white border border-gray-100 rounded-xl p-6 md:p-10 shadow-sm scroll-mt-28">
                     <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
                         Product Details
                     </h3>
@@ -651,16 +640,15 @@ if ( post_password_required() ) {
                         <?php the_content(); ?>
                     </div>
                 </div>
-                <?php endif; ?>
+            <?php endif; ?>
 
-                <?php if ( $has_video ) : ?>
-                <!-- Video Panel -->
-                <div id="tab-video" class="tab-panel <?php echo ($active_tab === 'video') ? 'active' : 'hidden'; ?> animate-fadeIn">
+            <?php if ( $has_video ) : ?>
+                <!-- Video Card -->
+                <div id="product-video-sec" class="bg-white border border-gray-100 rounded-xl p-6 md:p-10 shadow-sm scroll-mt-28">
                     <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
                         Product Video
                     </h3>
                     <?php 
-                    // Simple YouTube/Vimeo Embed Logic
                     $embed_url = '';
                     if (strpos($video_url, 'youtube.com') !== false || strpos($video_url, 'youtu.be') !== false) {
                         if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $video_url, $match)) {
@@ -685,37 +673,21 @@ if ( post_password_required() ) {
                         </div>
                     <?php endif; ?>
                 </div>
-                <?php endif; ?>
+            <?php endif; ?>
 
-                <?php if ( $has_reviews ) : ?>
-                <!-- Reviews Panel -->
-                <div id="tab-reviews" class="tab-panel <?php echo ($active_tab === 'reviews') ? 'active' : 'hidden'; ?> animate-fadeIn">
+            <?php if ( comments_open() ) : ?>
+                <!-- Reviews Card -->
+                <div id="product-reviews-sec" class="bg-white border border-gray-100 rounded-xl p-6 md:p-10 shadow-sm scroll-mt-28">
                     <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
                         Customer Reviews
                     </h3>
                     <div class="max-w-3xl">
-                        <?php 
-                        if ( comments_open() ) {
-                            comments_template();
-                        }
-                        ?>
+                        <?php comments_template(); ?>
                     </div>
                 </div>
-                <?php endif; ?>
-            </div>
-        <?php else : ?>
-            <!-- Just show Description directly (No Tabs needed) -->
-            <div class="bg-white border border-gray-100 rounded-xl p-6 md:p-10 shadow-sm">
-                <h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center">
-                    Product Details
-                </h3>
-                <div class="prose max-w-none text-gray-600 leading-[1.8] text-[15px]">
-                    <?php the_content(); ?>
-                </div>
-            </div>
-        <?php endif; ?>
+            <?php endif; ?>
+        </div>
     </div>
-    <?php endif; ?>
 
     <style>
         @keyframes fadeIn {
@@ -723,10 +695,359 @@ if ( post_password_required() ) {
             to { opacity: 1; transform: translateY(0); }
         }
         .animate-fadeIn { animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        .tab-panel.hidden { display: none; }
+
+        /* Premium Styling for WooCommerce Review Form */
+        #review_form_wrapper {
+            margin-top: 15px;
+        }
+        #review_form_wrapper .comment-reply-title {
+            font-size: 18px !important;
+            font-weight: 700 !important;
+            color: #253D4E !important;
+            margin-bottom: 20px !important;
+            display: block !important;
+            border-bottom: 2px solid var(--color-primary) !important;
+            padding-bottom: 6px !important;
+            width: max-content !important;
+        }
+        #review_form_wrapper .comment-form-rating {
+            margin-bottom: 20px !important;
+        }
+        #review_form_wrapper .comment-form-rating label {
+            font-weight: 700 !important;
+            color: #253D4E !important;
+            font-size: 14px !important;
+            margin-bottom: 8px !important;
+            display: block !important;
+        }
+        
+        /* Rating selection stars styling override */
+        .comment-form-rating .stars {
+            display: inline-block !important;
+            position: relative !important;
+            font-size: 0 !important;
+            margin-top: 4px !important;
+        }
+        .comment-form-rating .stars a {
+            display: inline-block !important;
+            position: relative !important;
+            width: 24px !important;
+            height: 24px !important;
+            font-size: 0 !important;
+            text-decoration: none !important;
+            margin-right: 4px !important;
+        }
+        .comment-form-rating .stars a::before {
+            content: "★" !important;
+            font-family: Arial, sans-serif !important;
+            font-size: 24px !important;
+            color: #E2E8F0 !important; /* empty star */
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            transition: color 0.2s ease, transform 0.2s ease !important;
+        }
+        .comment-form-rating .stars a:hover::before {
+            transform: scale(1.15) !important;
+        }
+        
+        /* Highlight stars on hover and active selection */
+        .comment-form-rating .stars a:hover::before,
+        .comment-form-rating .stars a:hover ~ a::before {
+            color: #FBBF24 !important; /* gold stars */
+        }
+        
+        /* WooCommerce active class matching */
+        .comment-form-rating .stars.selected a.active::before,
+        .comment-form-rating .stars.selected a.active ~ a::before {
+            color: #FBBF24 !important;
+        }
+        .comment-form-rating .stars.selected a:not(.active)::before {
+            color: #FBBF24 !important; /* all stars up to clicked one */
+        }
+        .comment-form-rating .stars.selected a.active ~ a::before {
+            color: #E2E8F0 !important; /* stars after clicked one are empty */
+        }
+
+        #review_form_wrapper .comment-form-comment label,
+        #review_form_wrapper .comment-form-author label,
+        #review_form_wrapper .comment-form-email label {
+            font-weight: 700 !important;
+            color: #253D4E !important;
+            font-size: 14px !important;
+            margin-bottom: 8px !important;
+            display: block !important;
+        }
+        #review_form_wrapper textarea,
+        #review_form_wrapper input[type="text"],
+        #review_form_wrapper input[type="email"] {
+            width: 100% !important;
+            border: 1px solid #E2E8F0 !important;
+            border-radius: 10px !important;
+            padding: 12px 14px !important;
+            font-size: 14px !important;
+            outline: none !important;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+            background: #FAFAFA !important;
+            color: #4B5563 !important;
+        }
+        #review_form_wrapper textarea:focus,
+        #review_form_wrapper input[type="text"]:focus,
+        #review_form_wrapper input[type="email"]:focus {
+            border-color: var(--color-primary) !important;
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 15%, transparent) !important;
+            background: #FFFFFF !important;
+        }
+        #review_form_wrapper .form-submit {
+            margin-top: 20px !important;
+        }
+        #review_form_wrapper input[type="submit"] {
+            background-color: var(--color-secondary, #EAB308) !important;
+            color: #FFFFFF !important;
+            font-weight: 700 !important;
+            font-size: 14px !important;
+            padding: 12px 32px !important;
+            border-radius: 9999px !important;
+            border: none !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+        }
+        #review_form_wrapper input[type="submit"]:hover {
+            background-color: var(--color-primary) !important;
+            transform: translateY(-1.5px) !important;
+            box-shadow: 0 6px 12px -1px rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        /* List of existing reviews styling */
+        /* List of existing reviews styling with high specificity to override WooCommerce defaults */
+        .woocommerce #reviews #comments ol.commentlist,
+        .woocommerce-page #reviews #comments ol.commentlist {
+            list-style: none !important;
+            padding: 0 !important;
+            margin: 0 0 35px 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 20px !important;
+        }
+        .woocommerce #reviews #comments ol.commentlist li,
+        .woocommerce-page #reviews #comments ol.commentlist li {
+            border-bottom: 1px solid #F1F5F9 !important;
+            padding: 0 0 20px 0 !important;
+            margin: 0 0 20px 0 !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+        }
+        .woocommerce #reviews #comments ol.commentlist li:last-child,
+        .woocommerce-page #reviews #comments ol.commentlist li:last-child {
+            border-bottom: none !important;
+            padding-bottom: 0 !important;
+            margin-bottom: 0 !important;
+        }
+        .woocommerce #reviews #comments ol.commentlist li .comment_container,
+        .woocommerce-page #reviews #comments ol.commentlist li .comment_container {
+            display: flex !important;
+            gap: 16px !important;
+            align-items: flex-start !important;
+            background: transparent !important;
+            padding: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+            float: none !important;
+            width: 100% !important;
+        }
+        .woocommerce #reviews #comments ol.commentlist li .comment_container img.avatar,
+        .woocommerce-page #reviews #comments ol.commentlist li .comment_container img.avatar {
+            position: static !important; /* Force override WooCommerce absolute positioning */
+            width: 44px !important;
+            height: 44px !important;
+            border-radius: 9999px !important;
+            object-fit: cover !important;
+            border: 1px solid #E2E8F0 !important;
+            margin: 0 !important;
+            float: none !important;
+            flex-shrink: 0 !important;
+            display: block !important;
+            padding: 0 !important;
+            background: none !important;
+            box-shadow: none !important;
+        }
+        .woocommerce #reviews #comments ol.commentlist li .comment-text,
+        .woocommerce-page #reviews #comments ol.commentlist li .comment-text {
+            flex: 1 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 4px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            background: transparent !important;
+            float: none !important;
+            width: auto !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+        }
+        .woocommerce #reviews #comments ol.commentlist li .comment-text .meta,
+        .woocommerce-page #reviews #comments ol.commentlist li .comment-text .meta {
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            flex-wrap: wrap !important;
+            margin: 0 0 2px 0 !important;
+            font-size: 13px !important;
+            color: #64748B !important;
+            order: 1 !important;
+            float: none !important;
+            width: auto !important;
+            background: transparent !important;
+            padding: 0 !important;
+        }
+        .woocommerce #reviews #comments ol.commentlist li .comment-text .meta strong,
+        .woocommerce-page #reviews #comments ol.commentlist li .comment-text .meta strong {
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            color: #1E293B !important;
+        }
+        .woocommerce #reviews #comments ol.commentlist li .comment-text .meta time,
+        .woocommerce-page #reviews #comments ol.commentlist li .comment-text .meta time {
+            color: #94A3B8 !important;
+            font-size: 12px !important;
+        }
+        .woocommerce #reviews #comments ol.commentlist li .comment_container .star-rating,
+        .woocommerce-page #reviews #comments ol.commentlist li .comment_container .star-rating {
+            margin: 2px 0 6px 0 !important;
+            float: none !important;
+            display: inline-block !important;
+            order: 2 !important;
+        }
+        .woocommerce #reviews #comments ol.commentlist li .comment-text .description,
+        .woocommerce-page #reviews #comments ol.commentlist li .comment-text .description {
+            font-size: 14px !important;
+            color: #475569 !important;
+            line-height: 1.6 !important;
+            margin: 0 !important;
+            order: 3 !important;
+            float: none !important;
+        }
+
+        /* Complete Bulletproof Unicode Star Rating Overrides */
+        .star-rating,
+        .woocommerce .star-rating,
+        .woocommerce-page .star-rating {
+            font-size: 0 !important;
+            width: 80px !important;
+            height: 16px !important;
+            line-height: 1 !important;
+            display: inline-block !important;
+            position: relative !important;
+            overflow: hidden !important;
+            vertical-align: middle !important;
+        }
+        .star-rating::before,
+        .woocommerce .star-rating::before,
+        .woocommerce-page .star-rating::before {
+            content: "★★★★★" !important;
+            font-size: 14px !important;
+            color: #E2E8F0 !important; /* light gray empty stars */
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            letter-spacing: 2px !important;
+            font-family: Arial, sans-serif !important;
+            text-indent: 0 !important;
+        }
+        .star-rating span,
+        .woocommerce .star-rating span,
+        .woocommerce-page .star-rating span {
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            height: 100% !important;
+            overflow: hidden !important;
+            text-indent: 0 !important;
+        }
+        .star-rating span::before,
+        .woocommerce .star-rating span::before,
+        .woocommerce-page .star-rating span::before {
+            content: "★★★★★" !important;
+            font-size: 14px !important;
+            color: #F59E0B !important; /* gold stars */
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            letter-spacing: 2px !important;
+            font-family: Arial, sans-serif !important;
+            text-indent: 0 !important;
+        }
     </style>
 
     <script>
+        // Anchor Link Tab Click Handling and Active State Highlight
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabs = document.querySelectorAll('.anchor-tab-btn');
+            const sections = [];
+            tabs.forEach(tab => {
+                const targetId = tab.getAttribute('href');
+                const section = document.querySelector(targetId);
+                if (section) {
+                    sections.push({ tab: tab, section: section });
+                }
+            });
+
+            tabs.forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetEl = document.querySelector(targetId);
+                    
+                    if (targetEl) {
+                        const offset = 100; // Offset for sticky headers
+                        const bodyRect = document.body.getBoundingClientRect().top;
+                        const elementRect = targetEl.getBoundingClientRect().top;
+                        const elementPosition = elementRect - bodyRect;
+                        const offsetPosition = elementPosition - offset;
+
+                        window.scrollTo({
+                            top: offsetPosition,
+                            behavior: 'smooth'
+                        });
+                    }
+
+                    // Active styles toggle
+                    tabs.forEach(b => {
+                        b.classList.remove('active', 'bg-secondary', 'text-white', 'shadow-sm');
+                        b.classList.add('bg-transparent', 'text-[#7E7E7E]');
+                    });
+                    this.classList.add('active', 'bg-secondary', 'text-white', 'shadow-sm');
+                    this.classList.remove('bg-transparent', 'text-[#7E7E7E]');
+                });
+            });
+
+            // Scroll spy to update tabs active state on scroll
+            window.addEventListener('scroll', function() {
+                const scrollPos = window.scrollY + 120; // adding threshold
+                let currentActive = null;
+
+                for (let i = 0; i < sections.length; i++) {
+                    const sec = sections[i];
+                    if (scrollPos >= sec.section.offsetTop) {
+                        currentActive = sec;
+                    }
+                }
+
+                if (currentActive) {
+                    tabs.forEach(b => {
+                        b.classList.remove('active', 'bg-secondary', 'text-white', 'shadow-sm');
+                        b.classList.add('bg-transparent', 'text-[#7E7E7E]');
+                    });
+                    currentActive.tab.classList.add('active', 'bg-secondary', 'text-white', 'shadow-sm');
+                    currentActive.tab.classList.remove('bg-transparent', 'text-[#7E7E7E]');
+                }
+            });
+        });
         // Gallery Image Changer (Horizontal CSS Translate Slider)
         function changeMainImage(thumbnailEl, index) {
             const slider = document.getElementById('main-image-slider');
@@ -854,24 +1175,7 @@ if ( post_password_required() ) {
             }
         });
 
-        document.querySelectorAll('.tab-trigger').forEach(trigger => {
-            trigger.addEventListener('click', function() {
-                // Reset all triggers
-                document.querySelectorAll('.tab-trigger').forEach(t => {
-                    t.classList.remove('active', 'bg-secondary', 'text-white', 'shadow-md', 'hover:text-white');
-                    t.classList.add('bg-transparent', 'text-[#7E7E7E]', 'hover:text-[#7E7E7E]', 'hover:bg-gray-50');
-                });
 
-                // Set active trigger
-                this.classList.add('active', 'bg-secondary', 'text-white', 'shadow-md', 'hover:text-white');
-                this.classList.remove('bg-transparent', 'text-[#7E7E7E]', 'hover:text-[#7E7E7E]', 'hover:bg-gray-50');
-
-                // Toggle panels
-                document.querySelectorAll('.tab-panel').forEach(p => p.classList.add('hidden'));
-                const targetId = this.getAttribute('data-target');
-                document.getElementById(targetId).classList.remove('hidden');
-            });
-        });
     </script>
 
     <?php
@@ -908,7 +1212,7 @@ if ( post_password_required() ) {
                     if ( ! $image_url ) $image_url = wc_placeholder_img_src();
                     $request_type = function_exists( 'woocom_get_product_request_type' ) ? woocom_get_product_request_type( $product ) : '';
                 ?>
-                    <div class="bg-white rounded-[4px] border border-gray-200 p-3 h-full flex flex-col group/card hover:shadow-md transition-shadow duration-300 relative overflow-hidden">
+                    <div class="bg-white rounded-[6px] border border-gray-200 p-3 h-full flex flex-col group/card hover:shadow-md transition-shadow duration-300 relative overflow-hidden">
                         <?php if ( $request_type && function_exists( 'woocom_render_stock_request_badge' ) ) : ?>
                             <div class="absolute top-0 left-0 z-10">
                                 <?php echo woocom_render_stock_request_badge( $request_type ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
@@ -919,7 +1223,7 @@ if ( post_password_required() ) {
                         <div class="relative w-full pt-[100%] mb-2 bg-gray-50/30 rounded overflow-hidden group-img-wrapper">
                             <div class="absolute inset-0 flex items-center justify-center p-0">
                                 <a href="<?php the_permalink(); ?>" class="block w-full h-full">
-                                    <img src="<?php echo esc_url( $image_url ); ?>" alt="<?php the_title_attribute(); ?>" class="max-w-full max-h-full object-contain scale-110 mx-auto">
+                                    <img src="<?php echo esc_url( $image_url ); ?>" alt="<?php the_title_attribute(); ?>" class="w-full h-full object-contain scale-110 mx-auto">
                                 </a>
                             </div>
                             <button type="button" class="woocom-quick-view-btn absolute bottom-2 left-1/2 -translate-x-1/2 bg-white/95 hover:bg-primary hover:text-white text-gray-800 text-[10px] sm:text-[11px] font-extrabold px-3 py-1.5 rounded-full shadow-md transition-all duration-300 opacity-0 translate-y-2 group-hover/img:opacity-100 group-hover/img:translate-y-0 flex items-center gap-1.5 whitespace-nowrap cursor-pointer z-10" data-product_id="<?php echo esc_attr($product->get_id()); ?>">
@@ -933,8 +1237,8 @@ if ( post_password_required() ) {
                             <h3 class="text-[14px] font-medium text-[#253D4E] leading-tight line-clamp-2 mb-1">
                                 <a href="<?php the_permalink(); ?>" class="hover:text-secondary transition-colors"><?php the_title(); ?></a>
                             </h3>
-                            <div class="flex items-center gap-1.5 mb-3">
-                                <span class="text-secondary font-bold text-[15px]">
+                            <div class="flex items-center gap-1.5 mb-3 w-full">
+                                <span class="text-secondary font-bold text-[15px] flex justify-between w-full items-baseline [&>ins]:order-first [&>del]:order-last [&>ins]:text-secondary [&>ins]:no-underline [&>del]:text-xs sm:[&>del]:text-sm [&>del]:text-slate-400 [&>del]:font-medium">
                                     <?php echo $product->get_price_html(); ?>
                                 </span>
                             </div>
@@ -944,7 +1248,7 @@ if ( post_password_required() ) {
                         <?php if ( $request_type && function_exists( 'woocom_render_stock_request_form' ) ) : ?>
                             <?php echo woocom_render_stock_request_form( $product->get_id(), $request_type, 'archive' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                         <?php else : ?>
-                            <a href="?add-to-cart=<?php echo esc_attr( get_the_ID() ); ?>" class="w-full border border-secondary/40 text-secondary hover:bg-secondary hover:text-white font-bold py-2 rounded-[4px] text-center transition-all duration-300 text-[14px] flex items-center justify-center gap-2 mt-auto">
+                            <a href="?add-to-cart=<?php echo esc_attr( get_the_ID() ); ?>" class="w-full border border-secondary/40 text-secondary hover:bg-secondary hover:text-white font-bold py-2 rounded-[6px] text-center transition-all duration-300 text-[14px] flex items-center justify-center gap-2 mt-auto">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 sm:w-4.5 sm:h-4.5"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
                                 Add To Cart
                             </a>
@@ -957,3 +1261,7 @@ if ( post_password_required() ) {
 </div>
 
 <?php do_action( 'woocommerce_after_single_product' ); ?>
+
+
+
+

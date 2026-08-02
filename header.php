@@ -17,11 +17,11 @@
 		.add_to_cart_button:hover,
 		button.woocom-pre-order-btn:hover,
 		a.woocom-pre-order-btn:hover {
-			background-color: var(--color-secondary, #F7A501) !important;
-			background: var(--color-secondary, #F7A501) !important;
+			background-color: var(--product-add-to-cart-bg, var(--color-primary, #1E5D02)) !important;
+			background: var(--product-add-to-cart-bg, var(--color-primary, #1E5D02)) !important;
 			color: #ffffff !important;
 			color: #fff !important;
-			border-color: var(--color-secondary, #F7A501) !important;
+			border-color: var(--product-add-to-cart-bg, var(--color-primary, #1E5D02)) !important;
 		}
 		a.woocom-custom-add-to-cart:hover *,
 		a.add_to_cart_button:hover *,
@@ -32,6 +32,121 @@
 			stroke: #ffffff !important;
 			stroke: #fff !important;
 		}
+		/* Swiper Navigation Button override for custom SVG icons */
+		.hero-prev::after,
+		.hero-next::after {
+			display: none !important;
+		}
+		/* Force container max-width to 1320px on desktop */
+		@media (min-width: 1280px) {
+			.container, .md\:container {
+				max-width: 1320px !important;
+			}
+		}
+		/* Custom Hero Section CSS Overrides */
+		@media (min-width: 1024px) {
+			.hero-section-row {
+				display: flex !important;
+				flex-direction: row !important;
+				align-items: stretch !important;
+			}
+			.hero-slider-col {
+				width: 80.5% !important;
+				flex-grow: 1 !important;
+			}
+			.hero-slide-link {
+				aspect-ratio: 1476 / 450 !important;
+				height: auto !important;
+			}
+			.hero-sidebar-col {
+				width: 19.5% !important;
+				flex-shrink: 0 !important;
+				display: flex !important;
+			}
+			.hero-sidebar-link {
+				display: block !important;
+				width: 100% !important;
+				height: 100% !important;
+			}
+			.hero-sidebar-img {
+				width: 100% !important;
+				height: 100% !important;
+				object-fit: contain !important;
+				display: block !important;
+			}
+		}
+
+		/* Store Highlights Features Section */
+		.woocom-features-container {
+			background: #ffffff;
+			border: 1px solid #f1f5f9;
+			border-radius: 0.5rem;
+			padding: 1.25rem 1.5rem;
+			box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+			margin-top: 1.5rem;
+		}
+		.woocom-features-grid {
+			display: grid;
+			grid-template-columns: 1fr;
+			gap: 1.5rem;
+		}
+		@media (min-width: 640px) {
+			.woocom-features-grid {
+				grid-template-columns: repeat(2, 1fr);
+			}
+		}
+		@media (min-width: 1024px) {
+			.woocom-features-grid {
+				grid-template-columns: repeat(4, 1fr);
+				gap: 0;
+			}
+		}
+		.woocom-feature-item {
+			display: flex;
+			align-items: center;
+			gap: 0.875rem;
+			padding: 0.5rem 0;
+		}
+		@media (min-width: 1024px) {
+			.woocom-feature-item {
+				padding: 0.25rem 1.5rem;
+				border-right: 1px solid #e2e8f0;
+			}
+			.woocom-feature-item:first-child {
+				padding-left: 0;
+			}
+			.woocom-feature-item:last-child {
+				border-right: none;
+				padding-right: 0;
+			}
+		}
+		.woocom-feature-icon-wrapper {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-shrink: 0;
+		}
+
+		.woocom-feature-icon {
+			width: 2rem;
+			height: 2rem;
+			color: #2563eb; /* Theme primary blue color */
+		}
+
+		.woocom-feature-title {
+			font-size: 0.875rem;
+			font-weight: 600;
+			color: #1e293b;
+			margin: 0;
+			line-height: 1.4;
+		}
+		.woocom-feature-desc {
+			font-size: 0.75rem;
+			font-weight: 400;
+			color: #64748b;
+			margin: 0.125rem 0 0 0;
+			line-height: 1.4;
+		}
 	</style>
 </head>
 
@@ -40,72 +155,111 @@
 <div id="page" class="site">
 	<header id="masthead" class="site-header bg-white shadow-sm relative z-[60]">
         <!-- Desktop Header -->
-		<div class="container mx-auto px-4 py-4 hidden lg:flex items-center justify-between gap-12">
+		<div class="container mx-auto px-4 py-4 hidden lg:flex items-center justify-between gap-6">
             <!-- Logo -->
             <div class="site-branding flex-shrink-0">
-                <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home">
+                <a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home" class="flex items-center">
                     <?php 
                     $logo_url = get_option('theme_logo');
+                    if ( $logo_url ) :
                     ?>
-                    <img src="<?php echo esc_url($logo_url); ?>" alt="<?php bloginfo( 'name' ); ?>" class="h-12 lg:h-14 w-auto object-contain max-w-[200px] lg:max-w-[240px]">
+                        <img src="<?php echo esc_url($logo_url); ?>" alt="<?php bloginfo( 'name' ); ?>" class="h-10 lg:h-12 w-auto object-contain max-w-[200px]">
+                    <?php else : ?>
+                        <!-- Tech Hexagonal Styled SVG Logo fallback -->
+                        <div class="flex items-center gap-2 font-black text-xl tracking-tight text-slate-800">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cpu h-7 w-7"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M9 1v3"/><path d="M15 1v3"/><path d="M9 20v3"/><path d="M15 20v3"/><path d="M20 9h3"/><path d="M20 15h3"/><path d="M1 9h3"/><path d="M1 15h3"/></svg>
+                            <span>Woocom<span class="text-primary font-extrabold">Gadget</span></span>
+                        </div>
+                    <?php endif; ?>
                 </a>
+            </div>
+
+            <?php if ( get_option( 'woocom_setup_complete' ) === '1' ) : ?>
+            <!-- Categories Dropdown next to logo -->
+            <div class="relative group/cat flex-shrink-0">
+                <button type="button" class="flex items-center gap-2 bg-[#F3F4F6] text-gray-700 font-bold px-4 py-2.5 rounded-lg border border-gray-100 hover:bg-gray-200/80 transition-colors cursor-pointer text-sm outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="h-4.5 w-4.5"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+                    <span>Categories</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4 w-4 transition-transform duration-200 group-hover/cat:rotate-180"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+                
+                <!-- Dropdown Menu -->
+                <div class="absolute left-0 top-full mt-2 w-56 bg-white border border-gray-100 rounded-xl shadow-xl py-2 opacity-0 invisible translate-y-2 group-hover/cat:opacity-100 group-hover/cat:visible group-hover/cat:translate-y-0 transition-all duration-200 z-[150]">
+                    <?php
+                    $cats = get_terms( array(
+                        'taxonomy'   => 'product_cat',
+                        'hide_empty' => true,
+                        'number'     => 12,
+                    ) );
+                    if ( ! empty( $cats ) && ! is_wp_error( $cats ) ) :
+                        foreach ( $cats as $cat ) :
+                    ?>
+                        <a href="<?php echo esc_url( get_term_link( $cat ) ); ?>" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary hover:text-white transition-colors font-medium">
+                            <?php echo esc_html( $cat->name ); ?>
+                        </a>
+                    <?php
+                        endforeach;
+                    else :
+                    ?>
+                        <span class="block px-4 py-2 text-sm text-gray-400 font-medium">No categories found</span>
+                    <?php endif; ?>
+                </div>
             </div>
 
             <!-- Search -->
-            <div class="flex-grow max-w-3xl relative">
-                <form role="search" method="get" class="relative" action="<?php echo esc_url( home_url( '/' ) ); ?>" id="ajax-search-form">
-                    <input type="search" id="desktop-search-input" class="w-full bg-gray-50 border-2 border-secondary/30 rounded-lg py-3.5 px-6 pr-14 focus:ring-4 focus:ring-secondary/10 focus:border-secondary transition-all text-base outline-none" placeholder="Search in..." value="<?php echo get_search_query(); ?>" name="s" autocomplete="off" />
-                    <button type="submit" class="absolute right-5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-secondary">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-search h-6 w-6"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-                    </button>
+            <div class="flex-grow max-w-2xl relative">
+                <form role="search" method="get" class="w-full" action="<?php echo esc_url( home_url( '/' ) ); ?>" id="ajax-search-form">
+                    <div class="flex items-center bg-slate-50 border border-slate-200 rounded-lg overflow-hidden focus-within:border-primary w-full transition-all focus-within:bg-white">
+                        <span class="pl-4 text-slate-400 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-5 w-5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                        </span>
+                        <input type="search" id="desktop-search-input" class="w-full bg-transparent py-2.5 px-3 outline-none text-sm placeholder-slate-400 text-gray-800" placeholder="Search for gadgets, phones, accessories..." value="<?php echo get_search_query(); ?>" name="s" autocomplete="off" />
+                        <button type="submit" class="bg-primary hover:bg-primary/90 text-white text-sm font-bold px-6 py-2.5 transition-colors duration-200 cursor-pointer">
+                            Search
+                        </button>
+                    </div>
                     <input type="hidden" name="post_type" value="product" />
                 </form>
                 <!-- AJAX Results -->
-                <div id="search-results" class="absolute top-full left-0 w-full bg-white shadow-xl rounded-b-lg z-[100] mt-1 hidden max-h-[400px] overflow-y-auto border border-gray-100"></div>
+                <div id="search-results" class="absolute top-full left-0 w-full bg-white shadow-2xl rounded-2xl z-[100] mt-2 hidden max-h-[400px] overflow-y-auto border border-slate-100"></div>
             </div>
+            <?php endif; ?>
 
+            <?php if ( get_option( 'woocom_setup_complete' ) === '1' ) : ?>
             <!-- Header Icons -->
-            <div class="flex items-center gap-8 text-gray-700">
+            <div class="flex items-center gap-6 text-gray-700">
                 <?php
-                // Detect order tracking page dynamically
-                $track_order_url = '#';
-                if ( class_exists( 'WooCommerce' ) ) {
-                    $tracking_pages = get_posts( array(
-                        'post_type'      => 'page',
-                        'post_status'    => 'publish',
-                        'posts_per_page' => 1,
-                        's'              => '[woocommerce_order_tracking]',
-                    ) );
-                    if ( ! empty( $tracking_pages ) ) {
-                        $track_order_url = get_permalink( $tracking_pages[0]->ID );
-                    } else {
-                        $tracking_page_by_slug = get_page_by_path( 'order-tracking' );
-                        if ( $tracking_page_by_slug ) {
-                            $track_order_url = get_permalink( $tracking_page_by_slug->ID );
-                        } else {
-                            $tracking_page_by_slug_alt = get_page_by_path( 'track-order' );
-                            if ( $tracking_page_by_slug_alt ) {
-                                $track_order_url = get_permalink( $tracking_page_by_slug_alt->ID );
-                            } else {
-                                $track_order_url = home_url( '/order-tracking/' );
-                            }
-                        }
+                // Detect wishlist URL dynamically
+                $wishlist_url = '#';
+                if ( function_exists( 'YITH_WCWL' ) ) {
+                    $wishlist_url = YITH_WCWL()->get_wishlist_url();
+                } elseif ( function_exists( 'tinv_url_wishlist_default' ) ) {
+                    $wishlist_url = tinv_url_wishlist_default();
+                } else {
+                    $wishlist_page = get_page_by_path( 'wishlist' );
+                    if ( $wishlist_page ) {
+                        $wishlist_url = get_permalink( $wishlist_page->ID );
                     }
                 }
                 ?>
-                <a href="<?php echo esc_url( $track_order_url ); ?>" class="flex flex-col items-center group">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin h-7 w-7 group-hover:text-primary transition-colors"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></svg>
-                    <span class="text-[11px] mt-1.5 font-semibold uppercase tracking-tight group-hover:text-primary transition-colors">Track Order</span>
+                <!-- Wishlist -->
+                <a href="<?php echo esc_url( $wishlist_url ); ?>" class="flex flex-col items-center group relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-6.5 w-6.5 group-hover:text-primary transition-colors"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                    <span class="text-[10px] sm:text-[11px] mt-1.5 font-bold uppercase tracking-tight group-hover:text-primary transition-colors">Wishlist</span>
                 </a>
+
+                <!-- Cart -->
                 <?php if ( class_exists( 'WooCommerce' ) && function_exists( 'WC' ) && WC()->cart ) : ?>
-                <button id="cart-drawer-open-desktop" class="flex flex-col items-center group relative">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shopping-cart h-7 w-7 group-hover:text-primary transition-colors"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-                    <span class="text-[11px] mt-1.5 font-semibold uppercase tracking-tight group-hover:text-primary transition-colors">Cart</span>
-                    <span class="absolute -top-1.5 -right-2.5 bg-secondary text-white text-[10px] font-bold px-2 py-0.5 rounded-full ring-2 ring-white cart-count-global">
+                <button id="cart-drawer-open-desktop" class="flex flex-col items-center group relative cursor-pointer outline-none border-none bg-transparent">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-6.5 w-6.5 group-hover:text-primary transition-colors"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    <span class="text-[10px] sm:text-[11px] mt-1.5 font-bold uppercase tracking-tight group-hover:text-primary transition-colors">Cart</span>
+                    <span class="absolute -top-1.5 -right-2 bg-primary text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full ring-2 ring-white cart-count-global min-w-4 text-center">
                         <?php echo WC()->cart->get_cart_contents_count(); ?>
                     </span>
                 </button>
                 <?php endif; ?>
+
+                <!-- Account -->
                 <?php if ( is_user_logged_in() ) : 
                     $current_user = wp_get_current_user();
                     $display_name = $current_user->first_name ? $current_user->first_name : $current_user->display_name;
@@ -113,14 +267,14 @@
                 ?>
                     <div class="woocom-user-dropdown-wrapper relative flex flex-col items-center group py-2">
                         <a href="<?php echo esc_url( $my_account_url ); ?>" class="flex flex-col items-center">
-                            <div class="h-7 w-7 rounded-full overflow-hidden border border-gray-200 group-hover:border-primary transition-all flex items-center justify-center">
-                                <?php echo get_avatar( $current_user->ID, 28, '', '', array('class' => 'rounded-full object-cover w-full h-full') ); ?>
+                            <div class="h-6.5 w-6.5 rounded-full overflow-hidden border border-gray-200 group-hover:border-primary transition-all flex items-center justify-center">
+                                <?php echo get_avatar( $current_user->ID, 26, '', '', array('class' => 'rounded-full object-cover w-full h-full') ); ?>
                             </div>
-                            <span class="text-[11px] mt-1.5 font-semibold uppercase tracking-tight group-hover:text-primary transition-colors"><?php echo esc_html( $display_name ); ?></span>
+                            <span class="text-[10px] sm:text-[11px] mt-1.5 font-bold uppercase tracking-tight group-hover:text-primary transition-colors"><?php echo esc_html( $display_name ); ?></span>
                         </a>
                         
                         <!-- Dropdown Menu -->
-                        <div class="woocom-user-dropdown absolute right-0 top-full mt-1 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 opacity-0 invisible translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200 z-[150] overflow-hidden" style="width: 220px !important;">
+                        <div class="woocom-user-dropdown absolute right-0 top-full mt-1 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 opacity-0 invisible translate-y-2 group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 transition-all duration-200 z-[150] overflow-hidden" style="width: 200px !important;">
                             <a href="<?php echo esc_url( $my_account_url ); ?>" class="woocom-dropdown-item flex items-center gap-3 px-4 py-2 text-[13px] text-gray-700 font-semibold transition-colors" style="white-space: nowrap !important;">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-gray-400"><rect width="7" height="7" x="3" y="3"/><rect width="7" height="7" x="14" y="3"/><rect width="7" height="7" x="14" y="14"/><rect width="7" height="7" x="3" y="14"/></svg>
                                 <?php esc_html_e( 'Dashboard', 'woocom' ); ?>
@@ -142,11 +296,12 @@
                     </div>
                 <?php else : ?>
                     <a href="<?php echo get_permalink( get_option('woocommerce_myaccount_page_id') ); ?>" class="flex flex-col items-center group">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user h-7 w-7 group-hover:text-primary transition-colors"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                        <span class="text-[11px] mt-1.5 font-semibold uppercase tracking-tight group-hover:text-primary transition-colors">Sign In</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="h-6.5 w-6.5 group-hover:text-primary transition-colors"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span class="text-[10px] sm:text-[11px] mt-1.5 font-bold uppercase tracking-tight group-hover:text-primary transition-colors">Sign In</span>
                     </a>
                 <?php endif; ?>
             </div>
+            <?php endif; ?>
 		</div>
         
         <!-- Desktop Navigation Bar -->
@@ -189,27 +344,29 @@
                 </div>
 
                 <!-- Mobile Cart -->
-                <?php if ( class_exists( 'WooCommerce' ) && function_exists( 'WC' ) && WC()->cart ) : ?>
+                <?php if ( get_option( 'woocom_setup_complete' ) === '1' && class_exists( 'WooCommerce' ) && function_exists( 'WC' ) && WC()->cart ) : ?>
                 <button id="cart-drawer-open-mobile" class="relative text-gray-700">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-8 w-8"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-                    <span class="absolute -top-1 -right-2 bg-secondary text-white text-[10px] font-bold h-5 w-5 flex items-center justify-center rounded-full ring-2 ring-white cart-count-global">
+                    <span class="absolute -top-1 -right-2 bg-primary text-white text-[10px] font-bold h-5 w-5 flex items-center justify-center rounded-full ring-2 ring-white cart-count-global">
                         <?php echo WC()->cart->get_cart_contents_count(); ?>
                     </span>
                 </button>
                 <?php endif; ?>
             </div>
+            <?php if ( get_option( 'woocom_setup_complete' ) === '1' ) : ?>
             <!-- Mobile Search -->
             <div class="px-4 pb-3 relative">
                 <form role="search" method="get" class="relative" action="<?php echo esc_url( home_url( '/' ) ); ?>" id="mobile-header-search-form">
-                    <input type="search" id="mobile-header-search-input" class="w-full bg-gray-50 border-2 border-secondary/30 rounded-lg py-2 px-4 pr-10 focus:ring-4 focus:ring-secondary/10 focus:border-secondary transition-all text-sm outline-none" placeholder="Search in..." value="<?php echo get_search_query(); ?>" name="s" autocomplete="off" />
-                    <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    <input type="search" id="mobile-header-search-input" class="w-full bg-slate-50 border border-slate-200 focus:bg-white focus:border-secondary rounded-full py-2 px-5 pr-10 transition-all text-sm outline-none hover:border-slate-300" placeholder="Search in..." value="<?php echo get_search_query(); ?>" name="s" autocomplete="off" />
+                    <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-secondary transition-colors duration-200">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                     </button>
                     <input type="hidden" name="post_type" value="product" />
                 </form>
                 <!-- AJAX Results -->
-                <div id="mobile-header-search-results" class="absolute top-full left-0 w-full bg-white shadow-xl rounded-b-lg z-[100] mt-1 hidden max-h-[300px] overflow-y-auto border border-gray-100"></div>
+                <div id="mobile-header-search-results" class="absolute top-full left-0 w-full bg-white shadow-2xl rounded-2xl z-[100] mt-2 hidden max-h-[300px] overflow-y-auto border border-slate-100"></div>
             </div>
+            <?php endif; ?>
         </div>
 
         <!-- Mobile Drawer -->
@@ -290,6 +447,7 @@
                         color: #6b7280;
                     }
                 </style>
+                <?php if ( get_option( 'woocom_setup_complete' ) === '1' ) : ?>
                 <!-- Categories -->
                 <div class="px-4 mb-8" id="mobile-menu">
                     <h3 class="text-xl font-bold text-gray-700 mb-4 border-l-4 border-secondary pl-3">Categories</h3>
@@ -317,6 +475,7 @@
                         ?>
                     </div>
                 </div>
+                <?php endif; ?>
 
                 <!-- Quick Links -->
                 <div class="px-4 pb-28">
@@ -336,7 +495,7 @@
 
 	</header><!-- #masthead -->
 
-        <?php if ( ( is_front_page() || is_home() ) && ( get_option( 'ticker_enabled', '1' ) == 1 ) ) : ?>
+        <?php if ( get_option( 'woocom_setup_complete' ) === '1' && ( is_front_page() || is_home() ) && ( get_option( 'ticker_enabled', '1' ) == 1 ) ) : ?>
             <?php
             // Fetch raw text and split by lines, with a default fallback
             $raw_text = get_option( 'ticker_text', '' );

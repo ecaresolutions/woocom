@@ -9,15 +9,15 @@ get_header();
 ?>
 
 	<main id="primary" class="site-main">
-        <?php if ( class_exists( 'WooCommerce' ) ) : ?>
+        <?php if ( class_exists( 'WooCommerce' ) && is_front_page() && ! is_home() ) : ?>
         <?php if ( get_option('show_hero_section', '1') === '1' ) : ?>
         <!-- Hero Section -->
         <div class="bg-gray-50 pt-4 sm:pt-6 pb-6 sm:pb-12">
-            <div class="container mx-auto px-4">
-                <div class="flex flex-col lg:flex-row gap-6">
-                    <!-- Left Slider (Full Width) -->
-                    <div class="w-full relative group overflow-hidden rounded-2xl shadow-sm bg-white">
-                        <div class="swiper hero-swiper h-full">
+            <div class="container-fluid mx-auto w-full md:container px-4">
+                <div class="flex flex-col lg:flex-row gap-6 hero-section-row">
+                    <!-- Left Slider (80.5% Width on Desktop) -->
+                    <div class="w-full lg:w-[80.5%] hero-slider-col relative group overflow-hidden flex-grow">
+                        <div class="swiper hero-swiper">
                             <div class="swiper-wrapper">
                                 <?php 
                                 $raw_slides = get_option('woocom_hero_slides', '');
@@ -43,9 +43,9 @@ get_header();
                                         $image_url = is_numeric($image) ? wp_get_attachment_image_url($image, 'full') : $image;
                                         if (empty($image_url)) continue;
                                 ?>
-                                    <div class="swiper-slide">
-                                        <a href="<?php echo esc_url($link); ?>" class="block w-full h-full">
-                                            <img src="<?php echo esc_url($image_url); ?>" alt="Slider Image" class="w-full h-full object-cover">
+                                    <div class="swiper-slide bg-transparent">
+                                        <a href="<?php echo esc_url($link); ?>" class="block w-full aspect-[16/7] md:aspect-[24/8] hero-slide-link overflow-hidden rounded-2xl bg-slate-100 shadow-sm border border-slate-200/50">
+                                            <img src="<?php echo esc_url($image_url); ?>" alt="Slider Image" class="w-full h-full object-cover transition-transform duration-500 hover:scale-[1.02] rounded-2xl">
                                         </a>
                                     </div>
                                 <?php 
@@ -56,737 +56,371 @@ get_header();
                             
                             <!-- Slider Pagination -->
                             <div class="swiper-pagination hero-pagination !bottom-3 lg:!bottom-6 !left-0 lg:!left-6 !text-center lg:!text-left !w-full lg:!w-auto px-4"></div>
+                            
+                            <!-- Slider Navigation -->
+                            <button class="swiper-button-prev hero-prev absolute left-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 bg-white/90 hover:bg-white text-gray-800 rounded-full flex items-center justify-center shadow-md transition-all opacity-0 group-hover:opacity-100 cursor-pointer border-none outline-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m15 18-6-6 6-6"/></svg>
+                            </button>
+                            <button class="swiper-button-next hero-next absolute right-4 top-1/2 -translate-y-1/2 z-20 w-9 h-9 bg-white/90 hover:bg-white text-gray-800 rounded-full flex items-center justify-center shadow-md transition-all opacity-0 group-hover:opacity-100 cursor-pointer border-none outline-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m9 18 6-6-6-6"/></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Right Sidebar Banner (Desktop only, 19.5% Width) -->
+                    <?php 
+                    $sidebar_banner = get_option('hero_side_banner', '');
+                    $sidebar_link = get_option('hero_side_banner_link', '#');
+                    if ($sidebar_banner) :
+                    ?>
+                    <div class="hidden lg:block lg:w-[19.5%] hero-sidebar-col flex-shrink-0">
+                        <a href="<?php echo esc_url($sidebar_link); ?>" class="block w-full hero-sidebar-link overflow-hidden rounded-2xl bg-white shadow-sm border border-slate-200/50">
+                            <img src="<?php echo esc_url($sidebar_banner); ?>" alt="Sidebar Banner" class="w-full h-auto block rounded-2xl hero-sidebar-img">
+                        </a>
+                    </div>
+                    <?php endif; ?>
+                </div>
+
+                <!-- Store Highlights/Features Section -->
+                <div class="woocom-features-container">
+                    <div class="woocom-features-grid">
+                        <!-- Item 1 -->
+                        <div class="woocom-feature-item">
+                            <div class="woocom-feature-icon-wrapper">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="woocom-feature-icon">
+                                    <rect x="2" y="10" width="16" height="11" rx="2" fill="currentColor" opacity="0.3"/>
+                                    <rect x="4" y="6" width="16" height="11" rx="2" fill="currentColor" opacity="0.6"/>
+                                    <rect x="6" y="2" width="16" height="11" rx="2" fill="currentColor"/>
+                                    <text x="14" y="10" fill="white" font-size="8" font-family="sans-serif" font-weight="bold" text-anchor="middle">$</text>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="woocom-feature-title">Competitive Price</h4>
+                                <p class="woocom-feature-desc">Get The Best Prices Everyday</p>
+                            </div>
+                        </div>
+                        <!-- Item 2 -->
+                        <div class="woocom-feature-item">
+                            <div class="woocom-feature-icon-wrapper">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="woocom-feature-icon">
+                                    <path d="M12 1L14.4 3.7L17.9 3.1L18.8 6.5L22.2 7.7L21.3 11.2L23 14.4L20.8 17.2L21 20.8L17.5 21L15.6 24L12 22.8L8.4 24L6.5 21L3 20.8L3.2 17.2L1 14.4L2.7 11.2L1.8 7.7L5.2 6.5L6.1 3.1L9.6 3.7L12 1Z" fill="currentColor"/>
+                                    <path d="m9 12.5l2 2 5-5" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="woocom-feature-title">Authentic Products</h4>
+                                <p class="woocom-feature-desc">Secured with Brand Warranty</p>
+                            </div>
+                        </div>
+                        <!-- Item 3 -->
+                        <div class="woocom-feature-item">
+                            <div class="woocom-feature-icon-wrapper">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="woocom-feature-icon">
+                                    <rect x="2" y="5" width="20" height="14" rx="2" fill="currentColor"/>
+                                    <rect x="2" y="8" width="20" height="3" fill="white"/>
+                                    <rect x="5" y="13" width="3" height="2" rx="0.5" fill="white" opacity="0.8"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="woocom-feature-title">Easy & Secured Payment</h4>
+                                <p class="woocom-feature-desc">Pre-payment, Cash on Delivery</p>
+                            </div>
+                        </div>
+                        <!-- Item 4 -->
+                        <div class="woocom-feature-item">
+                            <div class="woocom-feature-icon-wrapper">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="woocom-feature-icon">
+                                    <path d="M2 5C2 3.89 2.89 3 4 3H16C17.11 3 18 3.89 18 5V14H2V5Z" fill="currentColor"/>
+                                    <path d="M18 7H21C22.11 7 23 7.89 23 9V14H18V7Z" fill="currentColor"/>
+                                    <circle cx="6" cy="18" r="3" fill="currentColor"/>
+                                    <circle cx="6" cy="18" r="1.2" fill="white"/>
+                                    <circle cx="17" cy="18" r="3" fill="currentColor"/>
+                                    <circle cx="17" cy="18" r="1.2" fill="white"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h4 class="woocom-feature-title">Fast Delivery</h4>
+                                <p class="woocom-feature-desc">Rapid delivery At Your Doorstep</p>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+                <?php 
+                $bottom_banner = get_option('hero_bottom_banner', '');
+                $bottom_banner_link = get_option('hero_bottom_banner_link', '#');
+                if ($bottom_banner) :
+                ?>
+                <!-- Bottom Banner Section -->
+                <div class="mt-8">
+                    <a href="<?php echo esc_url($bottom_banner_link); ?>" class="block w-full overflow-hidden rounded-2xl bg-white shadow-sm border border-slate-200/50">
+                        <img src="<?php echo esc_url($bottom_banner); ?>" alt="Promotion Banner" class="w-full h-auto block rounded-2xl">
+                    </a>
+                </div>
+                <?php endif; ?>
+
+                <!-- Flash Sale Section -->
+                <?php
+                $flash_product_ids = array();
+                for ($i = 1; $i <= 5; $i++) {
+                    $pid = intval(get_option('woocom_flash_sale_p' . $i));
+                    if ($pid > 0) {
+                        $flash_product_ids[] = $pid;
+                    }
+                }
+                
+                if (empty($flash_product_ids)) {
+                    $flash_product_ids = wc_get_product_ids_on_sale();
+                }
+                if (!empty($flash_product_ids)) :
+                    $args = array(
+                        'post_type'      => 'product',
+                        'posts_per_page' => 5,
+                        'post__in'       => $flash_product_ids,
+                        'orderby'        => 'post__in',
+                    );
+                    $loop = new WP_Query($args);
+                    if ($loop->have_posts()) :
+                ?>
+                <style>
+                    .flash-sale-badge {
+                        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+                    }
+                    .flash-time-box {
+                        background: #0f172a;
+                        color: #ffffff;
+                        border-radius: 6px;
+                        padding: 6px 12px;
+                        font-family: monospace;
+                        font-weight: 800;
+                        font-size: 15px;
+                        box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+                        display: inline-block;
+                        min-width: 38px;
+                        text-align: center;
+                    }
+                    .flash-sale-grid {
+                        display: grid !important;
+                        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                        gap: 16px !important;
+                    }
+                    @media (min-width: 640px) {
+                        .flash-sale-grid {
+                            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                        }
+                    }
+                    @media (min-width: 768px) {
+                        .flash-sale-grid {
+                            grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+                        }
+                    }
+                    @media (min-width: 1024px) {
+                        .flash-sale-grid {
+                            grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+                        }
+                    }
+                </style>
+                <div class="mt-12">
+                    <!-- Header -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200/60">
+                        <div class="flex flex-wrap items-center gap-4 sm:gap-6">
+                            <!-- Title -->
+                            <div class="flex items-center gap-2">
+                                <span class="text-yellow-500 animate-pulse">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6"><path d="M13 2L3 14h9l-1 9 10-12h-9l1-9z"/></svg>
+                                </span>
+                                <h3 class="text-xl sm:text-2xl font-extrabold text-slate-800 tracking-tight uppercase">Flash Sale</h3>
+                            </div>
+                            
+                            <!-- Timer -->
+                            <div class="flex items-center gap-2">
+                                <span class="flash-time-box" id="flash-hours">00</span>
+                                <span class="text-slate-800 font-extrabold text-lg">:</span>
+                                <span class="flash-time-box" id="flash-minutes">00</span>
+                                <span class="text-slate-800 font-extrabold text-lg">:</span>
+                                <span class="flash-time-box" id="flash-seconds">00</span>
+                            </div>
+                        </div>
+
+                        <!-- Shop More Button -->
+                        <div class="flex-shrink-0">
+                            <a href="<?php echo esc_url(get_permalink(wc_get_page_id('shop'))); ?>?on_sale=1" class="inline-flex items-center gap-2 text-primary border border-primary/20 bg-white hover:bg-primary hover:text-white rounded-full px-5 py-2 text-xs font-bold transition-all shadow-sm whitespace-nowrap" style="white-space: nowrap !important; display: inline-flex !important;">
+                                <span>Shop More</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="flex-shrink-0"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Products Grid -->
+                    <div class="flash-sale-grid">
+                        <?php
+                        while ($loop->have_posts()) : $loop->the_post();
+                            global $product;
+                            $product_id = get_the_ID();
+                            $image_url = wp_get_attachment_image_url($product->get_image_id(), 'medium') ?: wc_placeholder_img_src();
+                            
+                            // Prices
+                            $reg_price = $product->get_regular_price();
+                            $sale_price = $product->get_sale_price();
+                            
+                            // Calculate discount percentage
+                            $discount = 0;
+                            if ($reg_price > 0 && $sale_price > 0) {
+                                $discount = round((($reg_price - $sale_price) / $reg_price) * 100);
+                            }
+                            
+                            // Fake items sold
+                            $total_stock = 50;
+                            $sold_count = ($product_id % 20) + 15; // Stable fake sold count between 15 and 35
+                            $sold_percent = round(($sold_count / $total_stock) * 100);
+                        ?>
+                        <div class="bg-white border border-slate-100 rounded-[6px] p-0 flex flex-col justify-between hover:shadow-md transition-all duration-300 relative group overflow-hidden">
+                            <!-- Image Container with floating discount badge -->
+                            <div class="w-full aspect-square bg-slate-50 flex items-center justify-center p-0 overflow-hidden rounded-t-[6px] relative">
+                                <a href="<?php the_permalink(); ?>" class="block w-full h-full flex items-center justify-center">
+                                    <img src="<?php echo esc_url($image_url); ?>" alt="<?php the_title_attribute(); ?>" class="w-full h-full object-contain scale-110 transition-transform duration-300 group-hover:scale-[1.20]">
+                                </a>
+                                
+                                <?php if ($discount > 0) : ?>
+                                    <div class="absolute flash-sale-badge text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm" style="top: 10px; right: 10px; z-index: 10;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24" fill="currentColor" class="text-yellow-300"><path d="M13 2L3 14h9l-1 9 10-12h-9l1-9z"/></svg>
+                                        <span><?php echo $discount; ?>% OFF</span>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+
+                            <!-- Product Details -->
+                            <div class="flex-grow p-4 pt-3 flex flex-col justify-between w-full">
+                                <div>
+                                    <!-- Title -->
+                                    <h4 class="text-xs sm:text-sm font-bold text-slate-800 line-clamp-2 leading-snug hover:text-primary transition-colors">
+                                        <a href="<?php the_permalink(); ?>"><?php the_title(); ?></a>
+                                    </h4>
+                                    
+                                    <!-- Pricing -->
+                                    <div class="mt-1.5 flex justify-between w-full items-baseline mb-3">
+                                        <span class="text-xs sm:text-sm font-extrabold text-primary"><?php echo wc_price($sale_price ?: $reg_price); ?></span>
+                                        <?php if ($sale_price) : ?>
+                                            <span class="text-xs sm:text-sm font-medium text-slate-400 line-through"><?php echo wc_price($reg_price); ?></span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+
+                                <!-- Button -->
+                                <?php
+                                $text_add_to_cart = get_option('woocom_text_add_to_cart', 'Add To Cart') ?: 'Add To Cart';
+                                $text_see_details = get_option('woocom_text_see_details', 'See Details') ?: 'See Details';
+                                
+                                if ($product->is_type('variable')) :
+                                ?>
+                                    <a href="<?php the_permalink(); ?>" class="w-full border border-primary/40 text-primary hover:bg-primary hover:text-white font-bold py-1.5 sm:py-2.5 rounded-[6px] text-center transition-all duration-300 text-[13px] sm:text-[15px] flex items-center justify-center gap-1 sm:gap-2 mt-auto">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 sm:w-4.5 sm:h-4.5 flex-shrink-0"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                        <span class="truncate"><?php echo esc_html($text_see_details); ?></span>
+                                    </a>
+                                <?php else : ?>
+                                    <a href="<?php echo esc_url($product->add_to_cart_url()); ?>" data-product_id="<?php echo esc_attr($product->get_id()); ?>" class="add_to_cart_button ajax_add_to_cart w-full border border-primary/40 text-primary hover:bg-primary hover:text-white font-bold py-1.5 sm:py-2.5 rounded-[6px] text-center transition-all duration-300 text-[13px] sm:text-[15px] flex items-center justify-center gap-1 sm:gap-2 mt-auto" rel="nofollow">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 sm:w-4.5 sm:h-4.5 flex-shrink-0"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                                        <span class="truncate"><?php echo esc_html($text_add_to_cart); ?></span>
+                                    </a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <?php endwhile; ?>
+                </div>
+
+                <script>
+                    function updateFlashCountdown() {
+                        const now = new Date();
+                        const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+                        let diff = endOfDay - now;
+                        if (diff < 0) diff = 0;
+                        
+                        const hours = Math.floor(diff / (1000 * 60 * 60));
+                        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                        
+                        const hrsEl = document.getElementById('flash-hours');
+                        const minsEl = document.getElementById('flash-minutes');
+                        const secsEl = document.getElementById('flash-seconds');
+                        
+                        if(hrsEl) hrsEl.innerText = String(hours).padStart(2, '0');
+                        if(minsEl) minsEl.innerText = String(minutes).padStart(2, '0');
+                        if(secsEl) secsEl.innerText = String(seconds).padStart(2, '0');
+                    }
+                    setInterval(updateFlashCountdown, 1000);
+                    updateFlashCountdown();
+                </script>
+                <?php
+                    endif;
+                    wp_reset_postdata();
+                endif;
+                ?>
             </div>
         </div>
         <?php endif; ?>
 
+
+        <style>
+            .featured-category-grid {
+                display: grid !important;
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                gap: 16px !important;
+            }
+            @media (min-width: 640px) {
+                .featured-category-grid {
+                    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+                }
+            }
+            @media (min-width: 768px) {
+                .featured-category-grid {
+                    grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+                    gap: 24px !important;
+                }
+            }
+        </style>
 
         <?php if ( get_option('show_featured_categories', '1') === '1' ) : ?>
         <!-- Featured Categories -->
-        <div class="py-6 sm:py-12 bg-gray-50">
+        <div class="py-8 sm:py-12 bg-transparent">
             <div class="container mx-auto px-4">
-                <div class="text-center mb-8 sm:mb-12">
-                    <h2 class="text-[20px] sm:text-[28px] font-bold text-[#253D4E]">Featured Categories</h2>
-                </div>
-
-                <div class="relative group">
-                    <div class="swiper category-swiper pb-12 pt-4">
-                        <div class="swiper-wrapper">
-                            <?php
-                            $featured_categories = woocom_get_featured_categories();
-                            
-                            // Fallback to top categories if none selected
-                            if (empty($featured_categories) || is_wp_error($featured_categories)) {
-                                $featured_categories = get_terms(array(
-                                    'taxonomy'   => 'product_cat',
-                                    'number'     => 10,
-                                    'orderby'    => 'count',
-                                    'order'      => 'DESC',
-                                    'hide_empty' => true,
-                                ));
-                            }
-                            
-                            if (!empty($featured_categories) && !is_wp_error($featured_categories)) :
-                                foreach ($featured_categories as $category) :
-                                    $thumbnail_id = get_term_meta($category->term_id, 'thumbnail_id', true);
-                                    $image = wp_get_attachment_url($thumbnail_id);
-                                    if (!$image) {
-                                        $image = wc_placeholder_img_src();
-                                    }
-                            ?>
-                                <div class="swiper-slide !w-36 md:!w-48">
-                                    <a href="<?php echo esc_url(get_term_link($category)); ?>" class="flex flex-col items-center group/cat">
-                                        <div class="w-full aspect-square bg-white rounded-[7px] border border-gray-100 flex items-center justify-center p-2 group-hover/cat:-translate-y-1 transition-all duration-300">
-                                            <img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr($category->name); ?>" class="max-w-full max-h-full object-contain">
-                                        </div>
-                                        <span class="mt-4 font-bold text-gray-700 group-hover/cat:text-primary transition-colors text-sm md:text-base"><?php echo esc_html($category->name); ?></span>
-                                    </a>
-                                </div>
-                            <?php
-                                endforeach;
-                            endif; ?>
-                        </div>
-                    <!-- Category Pagination -->
-                    <div class="swiper-pagination category-pagination !static !mt-4"></div>
-                </div>
-            </div>
-        </div>
-        <?php endif; ?>
-
-        <?php if ( get_option('show_top_selling', '1') === '1' ) : ?>
-        <!-- Featured Products (Top Selling) -->
-        <div class="top-selling-products py-10 sm:py-16 bg-transparent">
-            <div class="container mx-auto px-4">
-                <div class="text-center mb-8 sm:mb-12 max-w-2xl mx-auto">
-                    <?php 
-                    $ts_title = trim(get_option('woocom_top_selling_title')); 
-                    if (empty($ts_title)) {
-                        $ts_title = 'Featured Products';
-                    }
-                    ?>
-                    <h2 class="text-[20px] sm:text-[28px] font-bold text-[#253D4E] font-family-baloo"><?php echo esc_html($ts_title); ?></h2>
-                    
-
-
-                    <p class="text-gray-500 text-sm sm:text-base leading-relaxed">We offer a wide range of organic foods, carefully sourced for quality, freshness, and authenticity.</p>
-                </div>
-
-                <div class="relative group">
-                    <div class="swiper featured-swiper pb-16">
-                        <div class="swiper-wrapper">
-                            <?php
-                                $top_selling_products = woocom_get_top_selling_products();
-                                if ($top_selling_products->have_posts()) :
-                                    while ($top_selling_products->have_posts()) : $top_selling_products->the_post();
-                                        global $product;
-                                        if (!$product) continue;
-
-                                        $image_url = wp_get_attachment_image_url($product->get_image_id(), 'woocommerce_thumbnail');
-                                        if (!$image_url) $image_url = wc_placeholder_img_src();
-                                        
-                                        $title = get_the_title();
-                                        $price = $product->get_price();
-                                        $regular_price = $product->get_regular_price();
-                                        $save_amount = 0;
-                                        if ($product->is_type('variable')) {
-                                            $variation_prices = $product->get_variation_prices(true);
-                                            $max_save = 0;
-                                            foreach ($variation_prices['regular_price'] as $var_id => $var_regular) {
-                                                $var_sale = isset($variation_prices['sale_price'][$var_id]) ? (float) $variation_prices['sale_price'][$var_id] : 0;
-                                                $var_regular = (float) $var_regular;
-                                                if ($var_regular > $var_sale && $var_sale > 0) {
-                                                    $save = $var_regular - $var_sale;
-                                                    if ($save > $max_save) $max_save = $save;
-                                                }
-                                            }
-                                            $save_amount = $max_save;
-                                        } else {
-                                            if ($regular_price && $price && (float) $regular_price > (float) $price) {
-                                                $save_amount = (float) $regular_price - (float) $price;
-                                            }
-                                        }
-                                        $request_type = function_exists('woocom_get_product_request_type') ? woocom_get_product_request_type($product) : '';
-                                        
-                                        // Dynamic Texts
-                                        $text_add_to_cart = get_option('woocom_text_add_to_cart', 'Add To Cart') ?: 'Add To Cart';
-                                        $text_buy_now     = get_option('woocom_text_buy_now', 'Buy Now') ?: 'Buy Now';
-                                        $text_see_details = get_option('woocom_text_see_details', 'See Details') ?: 'See Details';
-                                        $text_stock_out   = get_option('woocom_text_stock_out', 'Stock Out') ?: 'Stock Out';
-                                        $text_pre_order   = get_option('woocom_text_pre_order', 'Pre Order') ?: 'Pre Order';
-
-                                        // Stock Status Flags
-                                        $is_in_stock = $product->is_in_stock();
-                                        $is_on_backorder = $product->is_on_backorder() || ( $product->managing_stock() && $product->get_stock_quantity() <= 0 && $product->backorders_allowed() );
-                                        $is_variable = $product->is_type('variable');
-                                ?>
-                                 <div class="swiper-slide !h-auto">
-                                     <div class="bg-white rounded-[4px] border border-gray-200 p-2 sm:p-3 h-full flex flex-col group/card transition-shadow duration-300 relative overflow-hidden">
-                                         <?php if ($request_type && function_exists('woocom_render_stock_request_badge')) : ?>
-                                             <div class="absolute top-0 left-0 z-10">
-                                                 <?php echo woocom_render_stock_request_badge($request_type); ?>
-                                             </div>
-                                         <?php endif; ?>
-                                         
-                                         <!-- Image -->
-                                         <div class="relative w-full pt-[100%] mb-2 bg-gray-50/30 rounded overflow-hidden group-img-wrapper">
-                                             <div class="absolute inset-0 flex items-center justify-center p-0">
-                                                 <a href="<?php the_permalink(); ?>" class="block w-full h-full">
-                                                     <img src="<?php echo esc_url($image_url); ?>" alt="<?php the_title_attribute(); ?>" class="max-w-full max-h-full object-contain scale-110 mx-auto">
-                                                 </a>
-                                             </div>
-                                             <button type="button" class="woocom-quick-view-btn absolute bottom-2 left-1/2 -translate-x-1/2 bg-white/95 hover:bg-primary hover:text-white text-gray-800 text-[10px] sm:text-[11px] font-extrabold px-3 py-1.5 rounded-full shadow-md transition-all duration-300 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 flex items-center gap-1.5 whitespace-nowrap cursor-pointer z-10" data-product_id="<?php echo esc_attr($product->get_id()); ?>">
-                                                 <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                                                 Quick View
-                                             </button>
-                                         </div>
-
-                                         <!-- Info -->
-                                         <div class="flex-grow">
-                                             <h3 class="text-[14px] sm:text-[18px] font-medium text-[#253D4E] leading-tight line-clamp-2 mb-0.5">
-                                                 <a href="<?php the_permalink(); ?>" class="hover:text-secondary transition-colors"><?php the_title(); ?></a>
-                                             </h3>
-                                             <div class="flex items-center gap-1 sm:gap-1.5 mb-2 mt-0 flex-wrap">
-                                                 <span class="text-secondary font-bold text-[13px] sm:text-[16px]">
-                                                     <?php echo $product->get_price_html(); ?>
-                                                 </span>
-                                             </div>
-                                         </div>
-                                         <!-- Action Button -->
-                                         <?php if ($request_type && function_exists('woocom_render_stock_request_form')) : ?>
-                                             <div class="w-full mt-auto">
-                                                 <?php echo woocom_render_stock_request_form($product->get_id(), $request_type, 'archive'); ?>
-                                             </div>
-                                         <?php else : ?>
-                                             <div class="w-full mt-auto flex justify-center">
-                                                 <?php if (!$is_in_stock && !$is_on_backorder) : ?>
-                                                     <button disabled class="w-full border border-gray-300 bg-gray-100 text-gray-400 font-bold py-1.5 sm:py-2.5 rounded-[4px] text-center text-[13px] sm:text-[15px] cursor-not-allowed">
-                                                         <?php echo esc_html($text_stock_out); ?>
-                                                     </button>
-                                                 <?php elseif ($is_on_backorder) : ?>
-                                                     <button type="button" class="woocom-pre-order-btn w-full border border-secondary/40 text-secondary hover:bg-secondary hover:text-white font-bold py-1.5 sm:py-2.5 rounded-[4px] text-center transition-all duration-300 text-[13px] sm:text-[15px] flex items-center justify-center gap-1 sm:gap-2" data-product-id="<?php echo esc_attr(get_the_ID()); ?>" data-product-title="<?php echo esc_attr($title); ?>">
-                                                         <?php echo esc_html($text_pre_order); ?>
-                                                     </button>
-                                                 <?php elseif ($is_variable) : ?>
-                                                     <a href="<?php echo esc_url($product->get_permalink()); ?>" class="w-full border border-secondary/40 text-secondary hover:bg-secondary hover:text-white font-bold py-1.5 sm:py-2.5 rounded-[4px] text-center transition-all duration-300 text-[13px] sm:text-[15px] flex items-center justify-center gap-1 sm:gap-2">
-                                                         <?php echo esc_html($text_see_details); ?>
-                                                     </a>
-                                                 <?php else : ?>
-                                                     <a href="<?php echo esc_url($product->add_to_cart_url()); ?>" data-product_id="<?php echo esc_attr($product->get_id()); ?>" data-quantity="1" class="woocom-custom-add-to-cart w-full border border-secondary/40 text-secondary hover:bg-secondary hover:text-white font-bold py-1.5 sm:py-2.5 rounded-[4px] text-center transition-all duration-300 text-[13px] sm:text-[15px] flex items-center justify-center gap-1 sm:gap-2" rel="nofollow">
-                                                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 sm:w-4.5 sm:h-4.5"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-                                                         <span class="truncate">Add To Cart</span>
-                                                     </a>
-                                                 <?php endif; ?>
-                                             </div>
-                                         <?php endif; ?>
-                                     </div>
-                                 </div>
-                                <?php
-                                    endwhile;
-                                    wp_reset_postdata();
-                                endif;
-                                ?>
-                        </div>
-                        <!-- Swiper Pagination -->
-                        <div class="swiper-pagination featured-pagination !static !mt-8"></div>
+                <div class="flex items-center justify-between mb-6 sm:mb-10">
+                    <div>
+                        <h2 class="text-[20px] sm:text-[26px] font-extrabold text-slate-800 leading-tight">Featured Categories</h2>
+                        <p class="text-slate-500 text-xs sm:text-sm mt-1">Get your favorite gadgets from top categories</p>
                     </div>
                 </div>
-            </div>
-        </div>
-        <style>
-            .featured-swiper {
-                padding: 12px 8px !important;
-                margin: -12px -8px !important;
-            }
-            .featured-swiper:not(.swiper-initialized) .swiper-wrapper { display: flex; overflow: hidden; }
-            .featured-swiper:not(.swiper-initialized) .swiper-slide { width: 20%; flex-shrink: 0; padding: 0 10px; }
-            @media (max-width: 1024px) { .featured-swiper:not(.swiper-initialized) .swiper-slide { width: 28.5%; } }
-            @media (max-width: 768px) { .featured-swiper:not(.swiper-initialized) .swiper-slide { width: 40%; } }
-            @media (max-width: 640px) { .featured-swiper:not(.swiper-initialized) .swiper-slide { width: 50%; } }
-            
-            .featured-pagination .swiper-pagination-bullet {
-                width: 8px; height: 8px; background: #e0e0e0; opacity: 1; margin: 0 5px !important; transition: all 0.3s;
-            }
-            .featured-pagination .swiper-pagination-bullet-active { background: #70A342 !important; width: 24px; border-radius: 4px; }
-            
-            /* Inline Hover Visibility Fix */
-            a.woocom-custom-add-to-cart:hover,
-            a.add_to_cart_button:hover,
-            button.woocom-pre-order-btn:hover,
-            a.woocom-pre-order-btn:hover {
-                background-color: var(--color-secondary, #F7A501) !important;
-                background: var(--color-secondary, #F7A501) !important;
-                color: #ffffff !important;
-                border-color: var(--color-secondary, #F7A501) !important;
-            }
-            a.woocom-custom-add-to-cart:hover *,
-            a.add_to_cart_button:hover * {
-                color: #ffffff !important;
-                stroke: #ffffff !important;
-            }
-        </style>
-        <?php endif; ?>
 
-        <!-- Latest Products Section -->
-        <?php
-        $latest_orderby = get_option('woocom_latest_orderby', 'date');
-        $latest_order   = get_option('woocom_latest_order', 'DESC');
-
-        $latest_args = array(
-            'post_type'      => 'product',
-            'posts_per_page' => 4,
-            'post_status'    => 'publish',
-            'orderby'        => $latest_orderby,
-            'order'          => $latest_order
-        );
-
-        if ( 'price' === $latest_orderby ) {
-            $latest_args['orderby']  = 'meta_value_num';
-            $latest_args['meta_key'] = '_price';
-        } elseif ( 'sales' === $latest_orderby ) {
-            $latest_args['orderby']  = 'meta_value_num';
-            $latest_args['meta_key'] = 'total_sales';
-            $latest_args['order']    = 'DESC';
-        }
-
-        $latest_query = new WP_Query($latest_args);
-        if ($latest_query->have_posts()) :
-        ?>
-        <div class="latest-products pt-20 pb-10 sm:py-16 bg-[#FBF9F5]">
-            <div class="h-8 sm:hidden"></div>
-            <div class="container mx-auto px-4">
-                <div class="text-center mb-8 sm:mb-12 max-w-2xl mx-auto">
-                    <h2 class="text-[20px] sm:text-[28px] font-bold text-[#253D4E] font-family-baloo">Latest Products</h2>
-                    
-
-
-                    <p class="text-gray-500 text-sm sm:text-base leading-relaxed">Discover our latest products, freshly added with quality and care just for you.</p>
-                </div>
-
-                <div class="grid grid-cols-2 lg:grid-cols-2 gap-3 sm:gap-6">
+                <div class="featured-category-grid justify-center items-stretch">
                     <?php
-                    while ($latest_query->have_posts()) : $latest_query->the_post();
-                        global $product;
-                        if (!$product) continue;
-                        
-                        $image_url = wp_get_attachment_image_url($product->get_image_id(), 'woocommerce_thumbnail');
-                        if (!$image_url) $image_url = wc_placeholder_img_src();
-                        
-                        $title = get_the_title();
-                        $price = $product->get_price();
-                        $regular_price = $product->get_regular_price();
-                        $request_type = function_exists('woocom_get_product_request_type') ? woocom_get_product_request_type($product) : '';
-                        $is_in_stock = $product->is_in_stock();
-                        $is_on_backorder = $product->is_on_backorder() || ( $product->managing_stock() && $product->get_stock_quantity() <= 0 && $product->backorders_allowed() );
-                        $is_variable = $product->is_type('variable');
-                        
-                        // Text Translations
-                        $text_add_to_cart = get_option('woocom_text_add_to_cart', 'Add To Cart') ?: 'Add To Cart';
-                        $text_see_details = get_option('woocom_text_see_details', 'See Details') ?: 'See Details';
-                        $text_stock_out   = get_option('woocom_text_stock_out', 'Stock Out') ?: 'Stock Out';
-                        $text_pre_order   = get_option('woocom_text_pre_order', 'Pre Order') ?: 'Pre Order';
+                    $custom_cats = array(
+                        array('name' => 'Computer & Gaming', 'slug' => 'computers__laptops', 'image' => 'https://sl-dev-s3.s3.amazonaws.com/admin/resources/alt-computing-gaming-1739453309025.png'),
+                        array('name' => 'Phones & Accessories', 'slug' => 'mobiles__tablets', 'image' => 'https://sl-dev-s3.s3.amazonaws.com/admin/resources/phones-accessories-1739453706928.png'),
+                        array('name' => 'Electronic Accessories', 'slug' => 'mobile_accessories', 'image' => 'https://sl-dev-s3.s3.amazonaws.com/admin/resources/electronic-accessories-1739453603406.png'),
+                        array('name' => 'Watches & Bags', 'slug' => 'watches', 'image' => 'https://sl-dev-s3.s3.amazonaws.com/admin/resources/watches-bags-1739453629792.png'),
+                        array('name' => 'TV & Home Appliances', 'slug' => 'home_appliances', 'image' => 'https://sl-dev-s3.s3.amazonaws.com/admin/resources/tv-home-appliance-1739453546671.png'),
+                        array('name' => 'Sports & Outdoors', 'slug' => 'sports__outdoors', 'image' => 'https://sl-dev-s3.s3.amazonaws.com/admin/resources/sports-outdoors-1739453653455.png'),
+                        array('name' => "Men's Fashion", 'slug' => 'men_530', 'image' => 'https://sl-dev-s3.s3.amazonaws.com/admin/resources/alt-men-s-fashion-1739454090154.png'),
+                        array('name' => "Women's Fashion", 'slug' => 'women_911', 'image' => 'https://sl-dev-s3.s3.amazonaws.com/admin/resources/women-s-fashion-1739453519658.png'),
+                        array('name' => 'Home & Living', 'slug' => 'furniture', 'image' => 'https://sl-dev-s3.s3.amazonaws.com/admin/resources/home-living-1753698068269.png'),
+                        array('name' => 'Health & Beauty', 'slug' => 'health__beauty', 'image' => 'https://sl-dev-s3.s3.amazonaws.com/admin/resources/health-beauty-1739453480173.png'),
+                        array('name' => 'Groceries & Pet Supplies', 'slug' => 'Groceries_20251127074323', 'image' => 'https://sl-dev-s3.s3.amazonaws.com/admin/resources/groceries-pet-supply-1740042013960.png'),
+                        array('name' => 'Mother & Baby', 'slug' => 'mother__baby', 'image' => 'https://sl-dev-s3.s3.amazonaws.com/admin/resources/mothers-baby-care-1739453666417.png'),
+                    );
+
+                    foreach ($custom_cats as $cat) :
+                        $term = get_term_by('slug', $cat['slug'], 'product_cat');
+                        $link = $term && !is_wp_error($term) ? get_term_link($term) : home_url('/product-category/' . $cat['slug']);
+                        $name = $term && !is_wp_error($term) ? $term->name : $cat['name'];
                     ?>
-                        <div class="latest-product-card bg-white rounded-[20px] sm:rounded-[30px] border border-gray-100/80 p-3 sm:p-5 flex gap-3 sm:gap-6 items-stretch group/card shadow-sm hover:shadow-md transition-shadow duration-300 relative overflow-hidden">
-                            <!-- Image (Left/Top) -->
-                            <div class="latest-product-image-container aspect-square flex-shrink-0 bg-white rounded-none border border-gray-100/60 overflow-hidden relative p-2 sm:p-3 flex items-center justify-center">
-                                 <?php if ($product->is_on_sale()) : ?>
-                                     <span class="absolute top-2 left-2 sm:top-3 sm:left-3 bg-[#70A342] text-white text-[9px] sm:text-[10px] font-bold px-2 py-0.5 sm:px-3 sm:py-1 rounded-full z-10" style="background-color: var(--color-primary, #70A342) !important;">SALE</span>
-                                 <?php endif; ?>
-                                 <a href="<?php the_permalink(); ?>" class="block w-full h-full">
-                                     <img src="<?php echo esc_url($image_url); ?>" alt="<?php the_title_attribute(); ?>" class="w-full h-full object-contain rounded-none">
-                                 </a>
-                            </div>
-                            <!-- Info (Right/Bottom) -->
-                            <div class="latest-product-info-container flex-grow flex flex-col justify-between sm:justify-center gap-1 sm:gap-1.5 min-w-0 pt-1 sm:py-1 sm:pl-2">
-                                 <div>
-                                     <!-- Title -->
-                                     <h3 class="text-[13px] sm:text-[20px] font-bold text-[#253D4E] leading-tight mb-0.5 line-clamp-2">
-                                         <a href="<?php the_permalink(); ?>" class="hover:text-primary transition-colors"><?php echo esc_html($title); ?></a>
-                                     </h3>
-                                     <!-- Category -->
-                                     <span class="text-[11px] sm:text-[13px] text-gray-400 mb-0.5 block font-medium">
-                                         <?php 
-                                         $cat_terms = get_the_terms(get_the_ID(), 'product_cat');
-                                         echo (!empty($cat_terms) && !is_wp_error($cat_terms)) ? esc_html($cat_terms[0]->name) : '&nbsp;'; 
-                                         ?>
-                                     </span>
-                                     <!-- Price -->
-                                     <div class="flex items-center gap-1.5 mb-1 sm:mb-0.5 flex-wrap">
-                                         <?php if ($regular_price && $regular_price > $price) : ?>
-                                             <span class="text-[11px] sm:text-[14px] text-gray-400 line-through">৳<?php echo number_format((float)$regular_price, 2); ?></span>
-                                         <?php endif; ?>
-                                         <span class="text-[13px] sm:text-[20px] font-bold" style="color: var(--color-secondary, #F7A501);"><?php echo number_format((float)$price, 2); ?>৳</span>
-                                     </div>
-                                     <!-- Weight/Attributes -->
-                                     <div class="hidden sm:block text-[12px] sm:text-[14px] text-gray-500 mb-0.5 font-semibold">
-                                         <?php
-                                         if ($product->has_weight()) {
-                                             echo esc_html($product->get_weight()) . ' ' . esc_html(get_option('woocommerce_weight_unit'));
-                                         } else {
-                                             $weight_attr = $product->get_attribute('weight');
-                                             if ($weight_attr) {
-                                                 echo esc_html($weight_attr);
-                                             } else {
-                                                 echo '&nbsp;';
-                                             }
-                                         }
-                                         ?>
-                                     </div>
-                                 </div>
-                                 
-                                 <!-- Action / Qty Selector (Desktop) -->
-                                 <div class="latest-product-desktop-actions items-center gap-1.5 flex-nowrap mt-1">
-                                     <?php if (!$is_variable && $is_in_stock && !$request_type) : ?>
-                                         <!-- Qty controls -->
-                                         <div class="flex items-center border border-gray-300 rounded-full overflow-hidden bg-white text-[10px] h-8 px-0.5 flex-shrink-0">
-                                             <button type="button" class="w-6 h-6 flex items-center justify-center text-gray-500 hover:bg-gray-100 font-bold qty-minus rounded-full">-</button>
-                                             <input type="text" class="w-5 text-center border-none p-0 qty-input font-bold text-xs" value="1" readonly>
-                                             <button type="button" class="w-6 h-6 flex items-center justify-center text-gray-500 hover:bg-gray-100 font-bold qty-plus rounded-full">+</button>
-                                         </div>
-                                         <a href="<?php echo esc_url($product->add_to_cart_url()); ?>" data-product_id="<?php echo esc_attr($product->get_id()); ?>" data-quantity="1" class="woocom-custom-add-to-cart bg-[#70A342] hover:bg-[#5f8c37] text-white font-bold h-8 px-2.5 sm:px-4 rounded-full text-[10px] sm:text-[12px] tracking-wide uppercase transition-all duration-300 flex items-center justify-center gap-1 flex-shrink-0" style="background-color: var(--color-primary, #70A342) !important; color: #fff !important;" rel="nofollow">
-                                             <span class="whitespace-nowrap">ADD TO CART</span>
-                                         </a>
-                                     <?php else : ?>
-                                         <?php if (!$is_in_stock && !$is_on_backorder) : ?>
-                                             <button disabled class="h-8 px-3 rounded-full bg-gray-300 text-white font-bold text-[10px] sm:text-[12px] tracking-wider uppercase cursor-not-allowed flex-shrink-0">
-                                                 <span class="whitespace-nowrap"><?php echo esc_html($text_stock_out); ?></span>
-                                             </button>
-                                         <?php elseif ($is_on_backorder) : ?>
-                                             <button type="button" class="woocom-pre-order-btn h-8 px-3 rounded-full text-white font-bold text-[10px] sm:text-[12px] tracking-wider uppercase transition-colors flex-shrink-0" data-product-id="<?php echo esc_attr(get_the_ID()); ?>" data-product-title="<?php echo esc_attr($title); ?>" style="background-color: var(--color-primary, #70A342) !important; color: #fff !important;">
-                                                 <span class="whitespace-nowrap"><?php echo esc_html($text_pre_order); ?></span>
-                                             </button>
-                                         <?php else : ?>
-                                             <a href="<?php echo esc_url($product->get_permalink()); ?>" class="h-8 px-3 rounded-full text-white font-bold text-[10px] sm:text-[12px] tracking-wider uppercase text-center flex items-center justify-center flex-shrink-0" style="background-color: var(--color-primary, #70A342) !important; color: #fff !important;">
-                                                 <span class="whitespace-nowrap"><?php echo esc_html($text_see_details); ?></span>
-                                             </a>
-                                         <?php endif; ?>
-                                     <?php endif; ?>
-                                 </div>
-                                 
-                                 <!-- Action Buttons (Mobile) -->
-                                 <div class="latest-product-mobile-actions mt-2">
-                                     <?php if (!$is_in_stock && !$is_on_backorder) : ?>
-                                         <button disabled class="w-full h-8 rounded-[4px] border border-gray-200 bg-gray-100 text-gray-400 font-bold text-[11px] uppercase cursor-not-allowed">
-                                             <?php echo esc_html($text_stock_out); ?>
-                                         </button>
-                                     <?php elseif ($is_on_backorder) : ?>
-                                         <button type="button" class="woocom-pre-order-btn w-full h-8 rounded-[4px] border border-secondary/40 text-secondary hover:bg-secondary hover:text-white font-bold text-[11px] uppercase transition-colors duration-300" data-product-id="<?php echo esc_attr(get_the_ID()); ?>" data-product-title="<?php echo esc_attr($title); ?>">
-                                             <?php echo esc_html($text_pre_order); ?>
-                                         </button>
-                                     <?php elseif ($is_variable) : ?>
-                                         <a href="<?php echo esc_url($product->get_permalink()); ?>" class="w-full h-8 rounded-[4px] border border-secondary/40 text-secondary hover:bg-secondary hover:text-white font-bold text-[11px] uppercase flex items-center justify-center transition-all duration-300">
-                                             <?php echo esc_html($text_see_details); ?>
-                                         </a>
-                                     <?php else : ?>
-                                         <a href="<?php echo esc_url($product->add_to_cart_url()); ?>" data-product_id="<?php echo esc_attr($product->get_id()); ?>" data-quantity="1" class="woocom-custom-add-to-cart w-full h-8 rounded-[4px] border border-secondary/40 text-secondary hover:bg-secondary hover:text-white font-bold text-[11px] uppercase flex items-center justify-center gap-1.5 transition-all duration-300" rel="nofollow">
-                                             <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-3.5 h-3.5"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-                                             <span>Add To Cart</span>
-                                         </a>
-                                     <?php endif; ?>
-                                 </div>
-                             </div>
-                        </div>
-                    <?php
-                    endwhile;
-                    wp_reset_postdata();
-                    ?>
-                </div>
-            </div>
-        </div>
-        <style>
-            .latest-product-card {
-                display: flex;
-                flex-direction: column;
-            }
-            .latest-product-image-container {
-                width: 100%;
-            }
-            .latest-product-info-container {
-                width: 100%;
-                display: flex;
-                flex-direction: column;
-            }
-            @media (min-width: 640px) {
-                .latest-product-card {
-                    flex-direction: row !important;
-                }
-                .latest-product-image-container {
-                    width: 38% !important;
-                }
-                .latest-product-info-container {
-                    width: 62% !important;
-                    padding-left: 8px !important;
-                    justify-content: center !important;
-                    gap: 6px !important;
-                }
-                .latest-product-desktop-actions {
-                    display: flex !important;
-                }
-                .latest-product-mobile-actions {
-                    display: none !important;
-                }
-            }
-            @media (max-width: 639px) {
-                .latest-product-card {
-                    flex-direction: column !important;
-                }
-                .latest-product-image-container {
-                    width: 100% !important;
-                }
-                .latest-product-info-container {
-                    width: 100% !important;
-                    padding-left: 0 !important;
-                }
-                .latest-product-desktop-actions {
-                    display: none !important;
-                }
-                .latest-product-mobile-actions {
-                    display: flex !important;
-                }
-            }
-        </style>
-        <?php endif; ?>
-
-        <?php if ( get_option('show_category_sections', '1') === '1' ) : ?>
-        <?php
-        $category_sections = woocom_get_category_sections();
-        $rendered_count = 0;
-        
-        if (!empty($category_sections) && !is_wp_error($category_sections)) :
-            $is_even = false; // Alternate background colors
-
-            foreach ($category_sections as $index => $category) :
-                $bg_class = $is_even ? 'bg-white' : 'bg-[#F9F9F9]';
-                
-                // Query products for this category
-                $args = array(
-                    'post_type' => 'product',
-                    'posts_per_page' => 10,
-                    'tax_query' => array(
-                        array(
-                            'taxonomy' => 'product_cat',
-                            'field'    => 'term_id',
-                            'terms'    => $category->term_id,
-                        ),
-                    ),
-                );
-                $products_query = new WP_Query($args);
-                
-                if ($products_query->have_posts()) :
-                    $rendered_count++;
-                    $is_even = !$is_even;
-        ?>
-        <!-- Dynamic Category Section: <?php echo esc_html($category->name); ?> -->
-        <div class="py-8 sm:py-12 <?php echo $bg_class; ?> category-product-section">
-            <div class="container mx-auto px-4">
-                <div class="flex items-center justify-between mb-8 sm:mb-12 border-b border-gray-200 pb-4 relative">
-                    <div class="relative">
-                        <h2 class="text-[20px] sm:text-[28px] font-bold text-[#253D4E]"><?php echo esc_html($category->name); ?></h2>
-                        <div class="absolute -bottom-4 left-0 w-12 h-[2px] bg-secondary"></div>
-                    </div>
-                    <a href="<?php echo esc_url(get_term_link($category)); ?>" class="text-secondary font-bold text-[13px] flex items-center gap-1 hover:translate-x-1 transition-transform uppercase tracking-wider underline underline-offset-4">
-                        View All Items
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                    </a>
-                </div>
-
-                <div class="relative group">
-                    <div class="swiper dynamic-category-swiper pb-16" data-category-id="<?php echo esc_attr($category->term_id); ?>">
-                        <div class="swiper-wrapper">
-                            <?php
-                            while ($products_query->have_posts()) : $products_query->the_post();
-                                global $product;
-                                
-                                $price_html = $product->get_price_html();
-                                $image_url = wp_get_attachment_image_url($product->get_image_id(), 'woocommerce_thumbnail');
-                                if (!$image_url) $image_url = wc_placeholder_img_src();
-                                $request_type = function_exists('woocom_get_product_request_type') ? woocom_get_product_request_type($product) : '';
-                            ?>
-                                <div class="swiper-slide !h-auto">
-                                    <div class="bg-white rounded-[4px] border border-gray-200 p-2 sm:p-3 h-full flex flex-col group/card hover:shadow-md transition-shadow duration-300 relative overflow-hidden">
-                                        <?php if ($request_type && function_exists('woocom_render_stock_request_badge')) : ?>
-                                            <div class="absolute top-0 left-0 z-10">
-                                                <?php echo woocom_render_stock_request_badge($request_type); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                                            </div>
-                                        <?php endif; ?>
-                                        
-                                        <!-- Image -->
-                                         <div class="relative w-full pt-[100%] mb-2 bg-gray-50/30 rounded overflow-hidden group-img-wrapper">
-                                            <div class="absolute inset-0 flex items-center justify-center p-0">
-                                                <a href="<?php the_permalink(); ?>" class="block w-full h-full">
-                                                    <img src="<?php echo esc_url($image_url); ?>" alt="<?php the_title_attribute(); ?>" class="max-w-full max-h-full object-contain scale-110 mx-auto">
-                                                </a>
-                                            </div>
-                                            <button type="button" class="woocom-quick-view-btn absolute bottom-2 left-1/2 -translate-x-1/2 bg-white/95 hover:bg-primary hover:text-white text-gray-800 text-[10px] sm:text-[11px] font-extrabold px-3 py-1.5 rounded-full shadow-md transition-all duration-300 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 flex items-center gap-1.5 whitespace-nowrap cursor-pointer z-10" data-product_id="<?php echo esc_attr($product->get_id()); ?>">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
-                                                Quick View
-                                            </button>
-                                        </div>
-
-                                        <!-- Info -->
-                                        <div class="flex-grow">
-                                            <h3 class="text-[14px] sm:text-[18px] font-medium text-[#253D4E] leading-tight line-clamp-2 mb-0.5">
-                                                <a href="<?php the_permalink(); ?>" class="hover:text-secondary transition-colors"><?php the_title(); ?></a>
-                                            </h3>
-                                            <div class="flex items-center gap-1 sm:gap-1.5 mb-2 mt-0 flex-wrap">
-                                                <span class="text-secondary font-bold text-[13px] sm:text-[16px]">
-                                                    <?php echo $product->get_price_html(); ?>
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <!-- Button -->
-                                        <?php if ($request_type && function_exists('woocom_render_stock_request_form')) : ?>
-                                            <?php echo woocom_render_stock_request_form($product->get_id(), $request_type, 'archive'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                                        <?php else : ?>
-                                            <a href="<?php echo esc_url($product->add_to_cart_url()); ?>" data-product_id="<?php echo esc_attr($product->get_id()); ?>" class="add_to_cart_button ajax_add_to_cart w-full border border-secondary/40 text-secondary hover:bg-secondary hover:text-white font-bold py-1.5 sm:py-2.5 rounded-[4px] text-center transition-all duration-300 text-[13px] sm:text-[15px] flex items-center justify-center gap-1 sm:gap-2 mt-auto">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 sm:w-4.5 sm:h-4.5"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
-                                                <span class="truncate">Add To Cart</span>
-                                            </a>
-                                        <?php endif; ?>
-                                    </div>
+                        <div class="flex items-center justify-center">
+                            <a href="<?php echo esc_url($link); ?>" class="flex flex-col items-center group/cat w-full text-center">
+                                <div class="w-[85px] h-[85px] xs:w-[100px] xs:h-[100px] sm:w-[120px] sm:h-[120px] bg-slate-50 hover:bg-slate-100/50 border border-slate-100/60 hover:border-primary/20 rounded-2xl flex items-center justify-center p-3 sm:p-4 shadow-sm hover:shadow-md transition-all duration-300">
+                                    <img src="<?php echo esc_url($cat['image']); ?>" alt="<?php echo esc_attr($name); ?>" class="w-full h-full object-contain transition-transform duration-500 group-hover/cat:scale-110">
                                 </div>
-                            <?php endwhile; wp_reset_postdata(); ?>
+                                <p class="mt-3 line-clamp-2 text-xs sm:text-sm font-semibold text-slate-600 group-hover/cat:text-primary transition-colors leading-tight max-w-[85px] xs:max-w-[100px] sm:max-w-[120px]"><?php echo esc_html($name); ?></p>
+                            </a>
                         </div>
-                        <!-- Pagination -->
-                        <div class="swiper-pagination dynamic-pagination-<?php echo esc_attr($category->term_id); ?> !static !mt-10"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <style>
-                .dynamic-category-swiper:not(.swiper-initialized) .swiper-wrapper {
-                    display: flex;
-                    overflow: hidden;
-                }
-                .dynamic-category-swiper:not(.swiper-initialized) .swiper-slide {
-                    width: 20%;
-                    flex-shrink: 0;
-                    padding: 0 12px;
-                }
-                @media (max-width: 1280px) {
-                    .dynamic-category-swiper:not(.swiper-initialized) .swiper-slide { width: 25%; }
-                }
-                @media (max-width: 1024px) {
-                    .dynamic-category-swiper:not(.swiper-initialized) .swiper-slide { width: 33.33%; }
-                }
-                @media (max-width: 768px) {
-                    .dynamic-category-swiper:not(.swiper-initialized) .swiper-slide { width: 40%; }
-                }
-                @media (max-width: 640px) {
-                    .dynamic-category-swiper:not(.swiper-initialized) .swiper-slide { width: 50%; }
-                }
-
-                .dynamic-pagination-<?php echo esc_attr($category->term_id); ?> .swiper-pagination-bullet {
-                    width: 10px;
-                    height: 10px;
-                    background: transparent;
-                    border: 2px solid var(--color-secondary, #F7A501);
-                    opacity: 1;
-                    margin: 0 5px !important;
-                }
-                .dynamic-pagination-<?php echo esc_attr($category->term_id); ?> .swiper-pagination-bullet-active {
-                    background: var(--color-secondary, #F7A501) !important;
-                }
-            </style>
-        </div>
-        <?php 
-                endif; // end if have_posts
-            endforeach; 
-        endif; // end if category_sections
-        endif; // end if show_category_sections
-        ?>
-
-        <?php if ( get_option('show_combo_offers', '1') === '1' ) : ?>
-        <!-- Exclusive Combo Deals Section -->
-        <div class="py-12">
-            <div class="container mx-auto px-4">
-                <div class="bg-[#FFF5F0] rounded-2xl p-5 sm:p-8">
-                    <div class="flex items-center justify-between mb-8 pb-4 relative border-b border-orange-200/60 gap-2">
-                        <div class="flex items-center gap-2 sm:gap-3">
-                            <div class="bg-secondary p-1 sm:p-1.5 rounded text-white flex items-center justify-center w-7 h-7 sm:w-8 sm:h-8 flex-shrink-0">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="sm:w-[18px] sm:h-[18px]"><polyline points="20 12 20 22 4 22 4 12"></polyline><rect width="20" height="5" x="2" y="7"></rect><line x1="12" x2="12" y1="22" y2="7"></line><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"></path><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"></path></svg>
-                            </div>
-                            <h2 class="text-[17px] sm:text-[24px] font-bold text-[#253D4E] leading-tight"><?php echo esc_html(get_option('woocom_combo_title', 'Exclusive Combo Deals')); ?></h2>
-                        </div>
-                        <a href="<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>" class="bg-secondary text-white font-bold text-[11px] sm:text-[14px] px-2.5 sm:px-5 py-2 sm:py-2.5 rounded flex items-center gap-1 hover:bg-secondary/90 transition-colors flex-shrink-0 whitespace-nowrap">
-                            View All Combos &rarr;
-                        </a>
-                    </div>
-
-                    <div class="relative group">
-                        <div class="swiper combo-swiper pb-16">
-                            <div class="swiper-wrapper">
-                                <?php
-                                $combo_bundles = woocom_get_combo_bundles();
-
-                                if ( ! empty( $combo_bundles ) ) :
-                                    foreach ( $combo_bundles as $b_index => $bundle ) :
-                                        $b_title    = ! empty( $bundle['title'] )    ? $bundle['title']    : 'Combo Bundle';
-                                        $b_price    = ! empty( $bundle['price'] )    ? $bundle['price']    : '';
-                                        $b_image    = ! empty( $bundle['image'] )    ? $bundle['image']    : '';
-                                        $b_products = ! empty( $bundle['products'] ) ? array_map( 'absint', (array) $bundle['products'] ) : array();
-
-                                        // Gather product names and fallback image
-                                        $product_names  = array();
-                                        $fallback_image = '';
-                                        foreach ( $b_products as $pid ) {
-                                            $p = wc_get_product( $pid );
-                                            if ( ! $p ) continue;
-                                            $product_names[] = $p->get_name();
-                                            if ( ! $fallback_image ) {
-                                                $fallback_image = wp_get_attachment_image_url( $p->get_image_id(), 'woocommerce_thumbnail' );
-                                            }
-                                        }
-                                        $display_image = $b_image ?: $fallback_image ?: wc_placeholder_img_src();
-                                ?>
-                                <div class="swiper-slide !h-auto">
-                                    <div class="bg-white rounded-[4px] border border-gray-200 h-full flex flex-col group/card hover:shadow-md transition-shadow duration-300 relative overflow-hidden">
-                                        <div class="absolute top-0 right-0 bg-secondary text-white text-[10px] sm:text-[11px] font-bold px-2 sm:px-3 py-1 z-10">Combo Offer</div>
-
-                                        <!-- Image -->
-                                        <div class="relative w-full pt-[100%] bg-white overflow-hidden mt-6">
-                                            <div class="absolute inset-0 flex items-center justify-center p-4">
-                                                <img src="<?php echo esc_url( $display_image ); ?>" alt="<?php echo esc_attr( $b_title ); ?>" class="max-w-full max-h-full object-contain scale-105 mx-auto">
-                                            </div>
-                                        </div>
-
-                                        <!-- Info -->
-                                        <div class="flex-grow p-4 pt-3 text-left flex flex-col">
-                                            <h3 class="text-[14px] sm:text-[18px] font-medium text-[#253D4E] leading-tight mb-2">
-                                                <?php echo esc_html( $b_title ); ?>
-                                            </h3>
-
-                                            <?php if ( ! empty( $product_names ) ) : ?>
-                                            <div class="flex flex-wrap gap-1 mb-3">
-                                                <?php foreach ( $product_names as $pname ) : ?>
-                                                <span class="text-[10px] bg-orange-50 text-orange-700 border border-orange-200 px-2 py-0.5 rounded-full leading-snug"><?php echo esc_html( $pname ); ?></span>
-                                                <?php endforeach; ?>
-                                            </div>
-                                            <?php endif; ?>
-
-                                            <?php if ( $b_price ) : ?>
-                                            <div class="flex items-center gap-2 mb-3">
-                                                <span class="text-secondary font-bold text-[15px] sm:text-[20px]">৳<?php echo esc_html( number_format( (float) $b_price ) ); ?></span>
-                                            </div>
-                                            <?php endif; ?>
-
-                                            <form method="post" action="<?php echo esc_url( home_url( '/' ) ); ?>" class="mt-auto">
-                                                <input type="hidden" name="woocom_combo_order" value="<?php echo esc_attr( $b_index ); ?>">
-                                                <?php wp_nonce_field( 'woocom_combo_order', 'woocom_combo_nonce' ); ?>
-                                                <button type="submit" class="block w-full bg-secondary text-white font-bold py-2 sm:py-2.5 rounded-[4px] text-center transition-all duration-300 text-[13px] sm:text-[14px] hover:bg-secondary/90">
-                                                    Order Now
-                                                </button>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                                <?php
-                                    endforeach;
-                                endif;
-                                ?>
-                            </div>
-                            <!-- Pagination -->
-                            <div class="swiper-pagination combo-pagination !static !mt-10"></div>
-                        </div>
-                    </div>
-                </div>
-                </div>
-                <style>
-                    .combo-swiper:not(.swiper-initialized) .swiper-wrapper { display: flex; overflow: hidden; }
-                    .combo-swiper:not(.swiper-initialized) .swiper-slide { width: 20%; flex-shrink: 0; padding: 0 12px; }
-                    @media (max-width: 1280px) { .combo-swiper:not(.swiper-initialized) .swiper-slide { width: 25%; } }
-                    @media (max-width: 1024px) { .combo-swiper:not(.swiper-initialized) .swiper-slide { width: 33.33%; } }
-                    @media (max-width: 768px) { .combo-swiper:not(.swiper-initialized) .swiper-slide { width: 50%; } }
-                    @media (max-width: 640px) { .combo-swiper:not(.swiper-initialized) .swiper-slide { width: 80%; } }
-                    
-                    .combo-pagination .swiper-pagination-bullet {
-                        width: 10px; height: 10px; background: transparent; border: 2px solid var(--color-secondary, #F7A501); opacity: 1; margin: 0 5px !important;
-                    }
-                    .combo-pagination .swiper-pagination-bullet-active { background: var(--color-secondary, #F7A501) !important; }
-                </style>
-        </div>
-        <?php endif; ?>
-
-        <?php if ( get_option('show_dual_banners', '1') === '1' ) : ?>
-        <!-- Dual Banner Section -->
-        <div class="py-8 bg-white">
-            <div class="container mx-auto px-4">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <?php 
-                    $p1 = get_option('promo_banner_1');
-                    $p1_link = get_option('promo_banner_1_link', '#');
-                    $p2 = get_option('promo_banner_2');
-                    $p2_link = get_option('promo_banner_2_link', '#');
-                    ?>
-                    <a href="<?php echo esc_url($p1_link); ?>" class="block overflow-hidden rounded-xl shadow-sm hover:shadow-md transition-shadow group">
-                        <img src="<?php echo esc_url($p1 ? $p1 : ''); ?>" alt="Promo Banner 1" class="w-full h-auto object-cover group-hover:scale-[1.02] transition-transform duration-500">
-                    </a>
-                    <a href="<?php echo esc_url($p2_link); ?>" class="block overflow-hidden rounded-xl shadow-sm hover:shadow-md transition-shadow group">
-                        <img src="<?php echo esc_url($p2 ? $p2 : ''); ?>" alt="Promo Banner 2" class="w-full h-auto object-cover group-hover:scale-[1.02] transition-transform duration-500">
-                    </a>
+                    <?php endforeach; ?>
                 </div>
             </div>
         </div>
@@ -860,7 +494,7 @@ get_header();
                                 $cat_data = implode(' ', $cat_slugs);
                         ?>
                             <div class="foryou-item h-full flex flex-col" data-categories="<?php echo esc_attr($cat_data); ?>" style="display: <?php echo $index < 10 ? 'flex' : 'none'; ?>;">
-                                <div class="bg-white rounded-[4px] border border-gray-200 p-2 sm:p-3 h-full flex flex-col group/card hover:shadow-md transition-shadow duration-300 relative w-full overflow-hidden">
+                                <div class="bg-white rounded-[6px] border border-gray-200 p-2 sm:p-3 h-full flex flex-col group/card hover:shadow-md transition-shadow duration-300 relative w-full overflow-hidden">
                                     <?php if ($request_type && function_exists('woocom_render_stock_request_badge')) : ?>
                                         <div class="absolute top-0 left-0 z-10">
                                             <?php echo woocom_render_stock_request_badge($request_type); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
@@ -871,7 +505,7 @@ get_header();
                                     <div class="relative w-full pt-[100%] mb-2 bg-gray-50/30 rounded overflow-hidden group-img-wrapper">
                                         <div class="absolute inset-0 flex items-center justify-center p-0">
                                             <a href="<?php the_permalink(); ?>" class="block w-full h-full">
-                                                <img src="<?php echo esc_url($image_url); ?>" alt="<?php the_title_attribute(); ?>" class="max-w-full max-h-full object-contain scale-110 mx-auto">
+                                                <img src="<?php echo esc_url($image_url); ?>" alt="<?php the_title_attribute(); ?>" class="w-full h-full object-contain scale-110 mx-auto">
                                             </a>
                                         </div>
                                         <button type="button" class="woocom-quick-view-btn absolute bottom-2 left-1/2 -translate-x-1/2 bg-white/95 hover:bg-primary hover:text-white text-gray-800 text-[10px] sm:text-[11px] font-extrabold px-3 py-1.5 rounded-full shadow-md transition-all duration-300 opacity-0 translate-y-2 group-hover/img:opacity-100 group-hover/img:translate-y-0 flex items-center gap-1.5 whitespace-nowrap cursor-pointer z-10" data-product_id="<?php echo esc_attr($product->get_id()); ?>">
@@ -885,8 +519,8 @@ get_header();
                                         <h3 class="text-[14px] sm:text-[16px] font-medium text-[#253D4E] leading-tight line-clamp-2 mb-0.5">
                                             <a href="<?php the_permalink(); ?>" class="hover:text-secondary transition-colors"><?php the_title(); ?></a>
                                         </h3>
-                                        <div class="flex items-center gap-1 sm:gap-1.5 mb-2 mt-0 flex-wrap">
-                                            <span class="text-secondary font-bold text-[13px] sm:text-[16px]">
+                                        <div class="flex items-center gap-1 sm:gap-1.5 mb-2 mt-0 w-full">
+                                            <span class="text-secondary font-bold text-[13px] sm:text-[16px] flex justify-between w-full items-baseline [&>ins]:order-first [&>del]:order-last [&>ins]:text-secondary [&>ins]:no-underline [&>del]:text-xs sm:[&>del]:text-sm [&>del]:text-slate-400 [&>del]:font-medium">
                                                 <?php echo $product->get_price_html(); ?>
                                             </span>
                                         </div>
@@ -896,7 +530,7 @@ get_header();
                                     <?php if ($request_type && function_exists('woocom_render_stock_request_form')) : ?>
                                         <?php echo woocom_render_stock_request_form($product->get_id(), $request_type, 'archive'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
                                     <?php else : ?>
-                                        <a href="<?php echo esc_url($product->add_to_cart_url()); ?>" data-product_id="<?php echo esc_attr($product->get_id()); ?>" class="add_to_cart_button ajax_add_to_cart w-full border border-secondary/40 text-secondary hover:bg-secondary hover:text-white font-bold py-1.5 sm:py-2.5 rounded-[4px] text-center transition-all duration-300 text-[13px] sm:text-[15px] flex items-center justify-center gap-1 sm:gap-2 mt-auto">
+                                        <a href="<?php echo esc_url($product->add_to_cart_url()); ?>" data-product_id="<?php echo esc_attr($product->get_id()); ?>" class="add_to_cart_button ajax_add_to_cart w-full border border-secondary/40 text-secondary hover:bg-secondary hover:text-white font-bold py-1.5 sm:py-2.5 rounded-[6px] text-center transition-all duration-300 text-[13px] sm:text-[15px] flex items-center justify-center gap-1 sm:gap-2 mt-auto">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 sm:w-4.5 sm:h-4.5"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
                                             <span class="truncate">Add To Cart</span>
                                         </a>
@@ -913,7 +547,7 @@ get_header();
                     
                     <!-- Load More Button -->
                     <div class="mt-10 flex justify-center">
-                        <button id="foryou-load-more" class="border-2 border-secondary text-secondary hover:bg-secondary hover:text-white font-bold py-2.5 px-8 rounded-[4px] transition-all duration-300 flex items-center gap-2 text-[14px]">
+                        <button id="foryou-load-more" class="border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold py-2.5 px-8 rounded-[6px] transition-all duration-300 flex items-center gap-2 text-[14px]">
                             Load More
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-cw"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
                         </button>
@@ -950,7 +584,7 @@ get_header();
                     width: 10px;
                     height: 10px;
                     background: transparent;
-                    border: 2px solid var(--color-secondary, #F7A501);
+                    border: 2px solid var(--color-primary, #2563EB);
                     opacity: 1;
                     margin: 0 5px !important;
                 }
@@ -982,12 +616,12 @@ get_header();
                 }
                 .foryou-tab-btn:hover {
                     background-color: #f9fafb;
-                    color: var(--color-secondary, #F7A501);
-                    border-color: var(--color-secondary, #F7A501);
+                    color: var(--color-primary, #2563EB);
+                    border-color: var(--color-primary, #2563EB);
                 }
                 .foryou-tab-btn.active {
-                    background-color: var(--color-secondary, #F7A501) !important;
-                    border-color: var(--color-secondary, #F7A501) !important;
+                    background-color: var(--color-primary, #2563EB) !important;
+                    border-color: var(--color-primary, #2563EB) !important;
                     color: #ffffff !important;
                 }
             </style>
@@ -1059,15 +693,240 @@ get_header();
             </script>
         <?php endif; ?>
 
+        <?php if ( get_option('show_category_sections', '1') === '1' ) : ?>
+        <?php
+        $category_sections = woocom_get_category_sections();
+        $rendered_count = 0;
+        
+        if (!empty($category_sections) && !is_wp_error($category_sections)) :
+            $is_even = false; // Alternate background colors
 
+            foreach ($category_sections as $index => $category) :
+                $bg_class = $is_even ? 'bg-white' : 'bg-[#F9F9F9]';
+                
+                // Query products for this category
+                $args = array(
+                    'post_type' => 'product',
+                    'posts_per_page' => 10,
+                    'tax_query' => array(
+                        array(
+                            'taxonomy' => 'product_cat',
+                            'field'    => 'term_id',
+                            'terms'    => $category->term_id,
+                        ),
+                    ),
+                );
+                $products_query = new WP_Query($args);
+                
+                if ($products_query->have_posts()) :
+                    $rendered_count++;
+                    $is_even = !$is_even;
+        ?>
+        <!-- Dynamic Category Section: <?php echo esc_html($category->name); ?> -->
+        <div class="py-8 sm:py-12 <?php echo $bg_class; ?> category-product-section">
+            <div class="container mx-auto px-4">
+                <div class="flex items-center justify-between mb-8 sm:mb-12 border-b border-gray-200 pb-4 relative">
+                    <div class="relative">
+                        <h2 class="text-[20px] sm:text-[28px] font-bold text-[#253D4E]"><?php echo esc_html($category->name); ?></h2>
+                        <div class="absolute -bottom-4 left-0 w-12 h-[2px] bg-secondary"></div>
+                    </div>
+                    <a href="<?php echo esc_url(get_term_link($category)); ?>" class="text-secondary font-bold text-[13px] flex items-center gap-1 hover:translate-x-1 transition-transform uppercase tracking-wider underline underline-offset-4">
+                        View All Items
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-right"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                    </a>
+                </div>
+
+                <div class="relative group">
+                    <div class="swiper dynamic-category-swiper pb-16" data-category-id="<?php echo esc_attr($category->term_id); ?>">
+                        <div class="swiper-wrapper">
+                            <?php
+                            while ($products_query->have_posts()) : $products_query->the_post();
+                                global $product;
+                                
+                                $price_html = $product->get_price_html();
+                                $image_url = wp_get_attachment_image_url($product->get_image_id(), 'woocommerce_thumbnail');
+                                if (!$image_url) $image_url = wc_placeholder_img_src();
+                                $request_type = function_exists('woocom_get_product_request_type') ? woocom_get_product_request_type($product) : '';
+                            ?>
+                                <div class="swiper-slide !h-auto">
+                                    <div class="bg-white rounded-[6px] border border-gray-200 p-2 sm:p-3 h-full flex flex-col group/card hover:shadow-md transition-shadow duration-300 relative overflow-hidden">
+                                        <?php if ($request_type && function_exists('woocom_render_stock_request_badge')) : ?>
+                                            <div class="absolute top-0 left-0 z-10">
+                                                <?php echo woocom_render_stock_request_badge($request_type); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                                            </div>
+                                        <?php endif; ?>
+                                        
+                                        <!-- Image -->
+                                         <div class="relative w-full pt-[100%] mb-2 bg-gray-50/30 rounded overflow-hidden group-img-wrapper">
+                                            <div class="absolute inset-0 flex items-center justify-center p-0">
+                                                <a href="<?php the_permalink(); ?>" class="block w-full h-full">
+                                                    <img src="<?php echo esc_url($image_url); ?>" alt="<?php the_title_attribute(); ?>" class="w-full h-full object-contain scale-110 mx-auto">
+                                                </a>
+                                            </div>
+                                            <button type="button" class="woocom-quick-view-btn absolute bottom-2 left-1/2 -translate-x-1/2 bg-white/95 hover:bg-primary hover:text-white text-gray-800 text-[10px] sm:text-[11px] font-extrabold px-3 py-1.5 rounded-full shadow-md transition-all duration-300 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 flex items-center gap-1.5 whitespace-nowrap cursor-pointer z-10" data-product_id="<?php echo esc_attr($product->get_id()); ?>">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                                                Quick View
+                                            </button>
+                                        </div>
+
+                                        <!-- Info -->
+                                        <div class="flex-grow">
+                                            <h3 class="text-[14px] sm:text-[18px] font-medium text-[#253D4E] leading-tight line-clamp-2 mb-0.5">
+                                                <a href="<?php the_permalink(); ?>" class="hover:text-secondary transition-colors"><?php the_title(); ?></a>
+                                            </h3>
+                                            <div class="flex items-center gap-1 sm:gap-1.5 mb-2 mt-0 w-full">
+                                                <span class="text-secondary font-bold text-[13px] sm:text-[16px] flex justify-between w-full items-baseline [&>ins]:order-first [&>del]:order-last [&>ins]:text-secondary [&>ins]:no-underline [&>del]:text-xs sm:[&>del]:text-sm [&>del]:text-slate-400 [&>del]:font-medium">
+                                                    <?php echo $product->get_price_html(); ?>
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Button -->
+                                        <?php if ($request_type && function_exists('woocom_render_stock_request_form')) : ?>
+                                            <?php echo woocom_render_stock_request_form($product->get_id(), $request_type, 'archive'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
+                                        <?php else : ?>
+                                            <a href="<?php echo esc_url($product->add_to_cart_url()); ?>" data-product_id="<?php echo esc_attr($product->get_id()); ?>" class="add_to_cart_button ajax_add_to_cart w-full border border-secondary/40 text-secondary hover:bg-secondary hover:text-white font-bold py-1.5 sm:py-2.5 rounded-[6px] text-center transition-all duration-300 text-[13px] sm:text-[15px] flex items-center justify-center gap-1 sm:gap-2 mt-auto">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 sm:w-4.5 sm:h-4.5"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
+                                                <span class="truncate">Add To Cart</span>
+                                            </a>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endwhile; wp_reset_postdata(); ?>
+                        </div>
+                        <!-- Pagination -->
+                        <div class="swiper-pagination dynamic-pagination-<?php echo esc_attr($category->term_id); ?> !static !mt-10"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <style>
+                .dynamic-category-swiper:not(.swiper-initialized) .swiper-wrapper {
+                    display: flex;
+                    overflow: hidden;
+                }
+                .dynamic-category-swiper:not(.swiper-initialized) .swiper-slide {
+                    width: 20%;
+                    flex-shrink: 0;
+                    padding: 0 12px;
+                }
+                @media (max-width: 1280px) {
+                    .dynamic-category-swiper:not(.swiper-initialized) .swiper-slide { width: 25%; }
+                }
+                @media (max-width: 1024px) {
+                    .dynamic-category-swiper:not(.swiper-initialized) .swiper-slide { width: 33.33%; }
+                }
+                @media (max-width: 768px) {
+                    .dynamic-category-swiper:not(.swiper-initialized) .swiper-slide { width: 40%; }
+                }
+                @media (max-width: 640px) {
+                    .dynamic-category-swiper:not(.swiper-initialized) .swiper-slide { width: 50%; }
+                }
+
+                .dynamic-pagination-<?php echo esc_attr($category->term_id); ?> .swiper-pagination-bullet {
+                    width: 10px;
+                    height: 10px;
+                    background: transparent;
+                    border: 2px solid var(--color-secondary, #F7A501);
+                    opacity: 1;
+                    margin: 0 5px !important;
+                }
+                .dynamic-pagination-<?php echo esc_attr($category->term_id); ?> .swiper-pagination-bullet-active {
+                    background: var(--color-secondary, #F7A501) !important;
+                }
+            </style>
+        </div>
+        <?php 
+                endif; // end if have_posts
+            endforeach; 
+        endif; // end if category_sections
+        endif; // end if show_category_sections
+        ?>
         </div>
         <?php else : ?>
-            <div class="container mx-auto px-4 py-20 text-center">
-                <h2 class="text-2xl font-bold mb-4">Please activate WooCommerce</h2>
-                <p>This theme requires WooCommerce to function properly.</p>
+            <!-- Standard Blog / Archive Layout (when not static front page or WooCommerce not active) -->
+            <div class="py-12 bg-gray-50">
+                <div class="container mx-auto px-4 max-w-4xl">
+                    <header class="page-header mb-8 pb-4 border-b border-gray-200">
+                        <h1 class="page-title text-3xl font-bold text-gray-800">
+                            <?php
+                            if ( is_home() && ! is_front_page() ) {
+                                single_post_title();
+                            } elseif ( is_search() ) {
+                                printf( esc_html__( 'Search Results for: %s', 'woocom' ), '<span>' . get_search_query() . '</span>' );
+                            } elseif ( is_archive() ) {
+                                the_archive_title( '<span class="archive-title-label">', '</span>' );
+                            } else {
+                                esc_html_e( 'Blog', 'woocom' );
+                            }
+                            ?>
+                        </h1>
+                    </header>
+
+                    <?php if ( have_posts() ) : ?>
+                        <div class="space-y-8">
+                            <?php
+                            while ( have_posts() ) : the_post();
+                            ?>
+                            <article id="post-<?php the_ID(); ?>" <?php post_class('bg-white p-6 sm:p-8 rounded-xl shadow-sm border border-gray-200'); ?>>
+                                <header class="entry-header mb-4">
+                                    <?php the_title( sprintf( '<h2 class="entry-title text-2xl font-bold text-gray-800 hover:text-primary transition-colors"><a href="%s" rel="bookmark">', esc_url( get_permalink() ) ), '</a></h2>' ); ?>
+                                    <div class="entry-meta text-xs text-gray-500 mt-2">
+                                        <span class="posted-on">Posted on <?php echo get_the_date(); ?></span>
+                                        <span class="byline"> by <?php the_author(); ?></span>
+                                    </div>
+                                </header>
+                                
+                                <?php if ( has_post_thumbnail() ) : ?>
+                                    <div class="post-thumbnail my-4 rounded-lg overflow-hidden max-h-96">
+                                        <?php the_post_thumbnail('large', array('class' => 'w-full h-full object-cover')); ?>
+                                    </div>
+                                <?php endif; ?>
+
+                                <div class="entry-content text-gray-600 leading-relaxed mb-4">
+                                    <?php
+                                    if ( is_single() ) {
+                                        the_content();
+                                    } else {
+                                        the_excerpt();
+                                    }
+                                    ?>
+                                </div>
+                                
+                                <?php if ( ! is_single() ) : ?>
+                                    <footer class="entry-footer">
+                                        <a href="<?php the_permalink(); ?>" class="text-primary font-semibold hover:underline text-sm">Read More →</a>
+                                    </footer>
+                                <?php endif; ?>
+                            </article>
+                            <?php
+                            endwhile;
+                            
+                            the_posts_navigation( array(
+                                'prev_text' => esc_html__( 'Older posts', 'woocom' ),
+                                'next_text' => esc_html__( 'Newer posts', 'woocom' ),
+                            ) );
+                            ?>
+                        </div>
+                    <?php else : ?>
+                        <section class="no-results not-found bg-white p-8 rounded-xl shadow-sm border border-gray-200">
+                            <header class="page-header">
+                                <h2 class="page-title text-2xl font-bold text-gray-800 mb-4"><?php esc_html_e( 'Nothing Found', 'woocom' ); ?></h2>
+                            </header>
+                            <div class="page-content">
+                                <p class="text-gray-600 mb-6"><?php esc_html_e( 'Apologies, but no results were found. Perhaps searching will help find a related post.', 'woocom' ); ?></p>
+                                <?php get_search_form(); ?>
+                            </div>
+                        </section>
+                    <?php endif; ?>
+                </div>
             </div>
         <?php endif; ?>
 	</main><!-- #main -->
 
 <?php
 get_footer();
+
+
+
+
