@@ -2502,6 +2502,7 @@ a.ajax_add_to_cart.loading::after,
 
 
 
+
 /* ==========================================================================
    COMPREHENSIVE NATIVE CSS UTILITIES FOR GADGET SINGLE PRODUCT LAYOUT
    ========================================================================== */
@@ -2771,6 +2772,7 @@ a.ajax_add_to_cart.loading::after,
 .gap-6 { gap: 1.5rem !important; }
 .gap-8 { gap: 2rem !important; }
 .gap-10 { gap: 2.5rem !important; }
+.text-white { color: #ffffff !important; }
 .text-xs { font-size: 0.75rem !important; line-height: 1rem !important; }
 .text-sm { font-size: 0.875rem !important; line-height: 1.25rem !important; }
 .text-base { font-size: 1rem !important; line-height: 1.5rem !important; }
@@ -2834,8 +2836,8 @@ a.ajax_add_to_cart.loading::after,
 .bg-primary { background-color: var(--color-primary, #2563EB) !important; }
 .bg-secondary { background-color: var(--color-secondary, #F7A501) !important; }
 .bg-primary-light { background-color: color-mix(in srgb, var(--color-primary, #2563EB) 8%, transparent) !important; }
-.bg-\[#10B981\] { background-color: #10b981 !important; }
-.bg-\[#4F46E5\] { background-color: #4f46e5 !important; }
+.bg-\[\#10B981\] { background-color: #10b981 !important; }
+.bg-\[\#4F46E5\] { background-color: #4f46e5 !important; }
 .bg-gray-50\/30 { background-color: rgba(249, 250, 251, 0.3) !important; }
 .bg-slate-50\/30 { background-color: rgba(248, 250, 252, 0.3) !important; }
 .bg-slate-50\/50 { background-color: rgba(248, 250, 252, 0.5) !important; }
@@ -2939,7 +2941,7 @@ a.ajax_add_to_cart.loading::after,
 .hover\:scale-105:hover { transform: scale(1.05) !important; }
 .hover\:scale-110:hover { transform: scale(1.1) !important; }
 .hover\:shadow-md:hover { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important; }
-.hover\:text-\[#7E7E7E\]:hover { color: #7e7e7e !important; }
+.hover\:text-\[\#7E7E7E\]:hover { color: #7e7e7e !important; }
 .hover\:text-red-500:hover { color: #ef4444 !important; }
 .hover\:text-secondary:hover { color: var(--color-secondary, #F7A501) !important; }
 .hover\:text-slate-808:hover { color: #0f172a !important; }
