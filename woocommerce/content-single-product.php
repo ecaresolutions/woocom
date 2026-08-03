@@ -1738,7 +1738,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
         ];
     
         let allReviews = commentsList.length > 0 ? commentsList : mockReviews;
-        let reviewsSortMode = 'newest';
+        let reviewsSortMode = 'recent';
         let reviewsVisibleCount = 5;
 
         // Safe global reference definition
@@ -1875,50 +1875,11 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
             }
         }
 
-            };
-        });
-    
-        function getCustomQuestionsKey() { return 'laracom_custom_questions_' + currentProductId; }
-    
-        function initQuestionsSection() {
-            const defaultQuestions = [
-                { question: "Is this compatible with iPhone 15 Pro Max?", askedBy: "Imran Khan", date: "04/10/2026", answer: "Yes, it fully supports fast charging and data sync on all iPhone 15 and 16 series models." },
-                { question: "Does it come with official brand warranty?", askedBy: "Rashedul Islam", date: "03/22/2026", answer: "Yes! It comes with 6 Months replacement warranty covered directly by Laracom Gadget." }
-            ];
-            let saved = [];
-            try { saved = JSON.parse(localStorage.getItem(getCustomQuestionsKey()) || '[]'); } catch (e) {}
-            const allQuestions = [...saved, ...defaultQuestions];
-            document.getElementById('qa-count-display').innerText = allQuestions.length;
-            const container = document.getElementById('questions-list-container');
-            if (!container) return;
-            container.innerHTML = '';
-            allQuestions.forEach(q => {
-                container.insertAdjacentHTML('beforeend', `
-                    <div class="bg-slate-50/50 dark:bg-slate-955/20 border border-slate-100 dark:border-slate-850 rounded-2xl p-5 md:p-6 shadow-sm">
-                        <div class="flex items-start gap-3 mb-3">
-                            <span class="text-xs font-black text-primary bg-primary-light px-2 py-1 rounded">Q</span>
-                            <div class="flex-1">
-                                <h4 class="text-sm md:text-base font-bold text-slate-808 dark:text-slate-100">${q.question}</h4>
-                                <div class="flex items-center gap-2 mt-1.5 text-[10px] text-slate-405 dark:text-slate-500 font-bold">
-                                    <span>Asked by ${q.askedBy}</span>
-                                    <span>•</span>
-                                    <span>${q.date}</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="flex items-start gap-3 border-t border-slate-100/50 dark:border-slate-850 pt-3 pl-2">
-                            <span class="text-xs font-black text-emerald-600 bg-emerald-50 dark:bg-emerald-950/20 px-2 py-1 rounded">A</span>
-                            <p class="text-xs md:text-sm text-slate-650 dark:text-slate-400 leading-relaxed font-medium mt-0.5">${q.answer}</p>
-                        </div>
-                    </div>
-                `);
-            });
-        }
-    
         window.toggleQuestionForm = function() {
-            document.getElementById('question-form-container').classList.toggle('hidden');
+            const form = document.getElementById('question-form-container');
+            if (form) form.classList.toggle('hidden');
         };
-    
+
         window.submitCustomQuestion = function(e) {
             e.preventDefault();
             const name = document.getElementById('qa_name').value;
@@ -1937,17 +1898,19 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
             document.getElementById('qa_name').value = '';
             document.getElementById('qa_email').value = '';
             document.getElementById('qa_content').value = '';
-            toggleQuestionForm();
+            window.toggleQuestionForm();
             initQuestionsSection();
             alert("Your question has been submitted successfully!");
         };
-    
+
         window.toggleReviewForm = function() {
-            document.getElementById('review-form-container').classList.toggle('hidden');
+            const form = document.getElementById('review-form-container');
+            if (form) form.classList.toggle('hidden');
         };
-    
+
         window.setReviewFormRating = function(rating) {
-            document.getElementById('review_star_rating_input').value = rating;
+            const input = document.getElementById('review_star_rating_input');
+            if (input) input.value = rating;
             document.querySelectorAll('.review-form-star-btn').forEach(star => {
                 const sVal = parseInt(star.getAttribute('data-star'));
                 if (sVal <= rating) {
@@ -1959,11 +1922,12 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                 }
             });
         };
-    
+
         window.handleReviewImageUpload = function(input) {
             const file = input.files[0];
             const errorEl = document.getElementById('review-image-error');
             const labelEl = document.getElementById('review-image-selected-label');
+            if (!errorEl || !labelEl) return;
             errorEl.classList.add('hidden');
             labelEl.innerText = "Choose image...";
             if (file) {
@@ -2005,18 +1969,119 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                 reader.readAsArrayBuffer(file);
             }
         };
-    
+
         window.reSortReviews = function() {
-            reviewsSortMode = document.getElementById('review-sort-select').value;
-            reviewsVisibleCount = 5;
-            renderReviewsList();
+            const select = document.getElementById('review-sort-select');
+            if (select) {
+                reviewsSortMode = select.value;
+                reviewsVisibleCount = 5;
+                renderReviewsList();
+            }
         };
-    
+
         window.loadMoreReviews = function() {
             reviewsVisibleCount += 5;
             renderReviewsList();
         };
-    
+
+        window.toggleCompareLaracom = function(id, title) {
+            let queue = getCompareQueue();
+            const idx = queue.indexOf(id);
+            if (idx !== -1) {
+                queue.splice(idx, 1);
+                if (title) showToastNotification(`"${title}" removed from comparison queue.`);
+            } else {
+                if (queue.length >= 3) {
+                    showToastNotification("You can compare up to 3 products at a time.");
+                    return;
+                }
+                queue.push(id);
+                if (title) showToastNotification(`"${title}" added to comparison queue.`);
+            }
+            saveCompareQueue(queue);
+        };
+
+        window.clearCompareQueue = function() {
+            saveCompareQueue([]);
+            showToastNotification("Comparison queue cleared.");
+        };
+
+        window.openComparisonModal = function() {
+            const queue = getCompareQueue();
+            if (queue.length === 0) return;
+            const modal = document.getElementById('comparison-modal');
+            if (modal) modal.classList.remove('hidden');
+            const head = document.getElementById('compare-table-head');
+            const body = document.getElementById('compare-table-body');
+            if (head) head.innerHTML = '<th class="p-4 text-center" colspan="4">Loading comparison matrix...</th>';
+            if (body) body.innerHTML = '';
+            
+            if (typeof jQuery !== 'undefined') {
+                jQuery.ajax({
+                    url: '<?php echo admin_url("admin-ajax.php"); ?>',
+                    type: 'POST',
+                    data: { action: 'woocom_get_product_compare_details', product_ids: queue },
+                    success: function(r) {
+                        if (r.success && r.data) renderCompareMatrix(r.data);
+                        else if (head) head.innerHTML = '<th class="p-4 text-center text-red-505" colspan="4">Error loading comparison data.</th>';
+                    },
+                    error: function() {
+                        if (head) head.innerHTML = '<th class="p-4 text-center text-red-505" colspan="4">Connection error.</th>';
+                    }
+                });
+            }
+        };
+
+        window.closeComparisonModal = function() {
+            const modal = document.getElementById('comparison-modal');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        function getYouTubeId(url) {
+            if (!url) return null;
+            const reg = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?\v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(reg);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        function getCustomQuestionsKey() { return 'laracom_custom_questions_' + currentProductId; }
+
+        function initQuestionsSection() {
+            const defaultQuestions = [
+                { question: "Is this compatible with iPhone 15 Pro Max?", askedBy: "Imran Khan", date: "04/10/2026", answer: "Yes, it fully supports fast charging and data sync on all iPhone 15 and 16 series models." },
+                { question: "Does it come with official brand warranty?", askedBy: "Rashedul Islam", date: "03/22/2026", answer: "Yes! It comes with 6 Months replacement warranty covered directly by Laracom Gadget." }
+            ];
+            let saved = [];
+            try { saved = JSON.parse(localStorage.getItem(getCustomQuestionsKey()) || '[]'); } catch (e) {}
+            const allQuestions = [...saved, ...defaultQuestions];
+            const qCount = document.getElementById('qa-count-display');
+            if (qCount) qCount.innerText = allQuestions.length;
+            const container = document.getElementById('questions-list-container');
+            if (!container) return;
+            container.innerHTML = '';
+            allQuestions.forEach(q => {
+                container.insertAdjacentHTML('beforeend', `
+                    <div class="bg-slate-50/50 dark:bg-slate-955/20 border border-slate-100 dark:border-slate-850 rounded-2xl p-5 md:p-6 shadow-sm">
+                        <div class="flex items-start gap-3 mb-3">
+                            <span class="text-xs font-black text-primary bg-primary-light px-2 py-1 rounded">Q</span>
+                            <div class="flex-1">
+                                <h4 class="text-sm md:text-base font-bold text-slate-808 dark:text-slate-100">${q.question}</h4>
+                                <div class="flex items-center gap-2 mt-1.5 text-[10px] text-slate-405 dark:text-slate-500 font-bold">
+                                    <span>Asked by ${q.askedBy}</span>
+                                    <span>•</span>
+                                    <span>${q.date}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-3 border-t border-slate-100/50 dark:border-slate-850 pt-3 pl-2">
+                            <span class="text-xs font-black text-emerald-600 bg-emerald-50 dark:bg-emerald-955/20 px-2 py-1 rounded">A</span>
+                            <p class="text-xs md:text-sm text-slate-650 dark:text-slate-400 leading-relaxed font-medium mt-0.5">${q.answer}</p>
+                        </div>
+                    </div>
+                `);
+            });
+        }
+
         function renderReviewsList() {
             const container = document.getElementById('reviews-grid-container');
             if (!container) return;
@@ -2041,10 +2106,10 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                             <span class="text-xs text-slate-400 dark:text-slate-500 font-semibold">${rev.date}</span>
                         </div>
                         <div class="flex items-center gap-2 mb-3">
-                            <div class="h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-350 font-black text-xs uppercase">${rev.name.charAt(0)}</div>
+                            <div class="h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-355 font-black text-xs uppercase">	ext{${rev.name.charAt(0)}}</div>
                             <div>
                                 <div class="flex items-center gap-1.5">
-                                    <span class="text-xs md:text-sm font-bold text-slate-800 dark:text-slate-200">${rev.name}</span>
+                                    <span class="text-xs md:text-sm font-bold text-slate-808 dark:text-slate-202">${rev.name}</span>
                                     ${rev.verified ? `<span class="text-[10px] font-black tracking-wider text-emerald-600 bg-emerald-50 dark:bg-emerald-955/20 px-1.5 py-0.5 rounded-md uppercase text-center">Verified</span>` : ''}
                                 </div>
                             </div>
@@ -2067,72 +2132,41 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
             });
             cols.forEach(c => container.appendChild(c));
             const loadMore = document.getElementById('reviews-load-more-btn-wrap');
-            if (sorted.length > reviewsVisibleCount) loadMore.classList.remove('hidden');
-            else loadMore.classList.add('hidden');
+            if (loadMore) {
+                if (sorted.length > reviewsVisibleCount) loadMore.classList.remove('hidden');
+                else loadMore.classList.add('hidden');
+            }
         }
-    
-        function getYouTubeId(url) {
-            if (!url) return null;
-            const reg = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
-            const match = url.match(reg);
-            return (match && match[2].length === 11) ? match[2] : null;
-        }
-    
+
         window.voteHelpful = function(idx, type, el) {
             allReviews[idx][type]++;
-            el.querySelector('span').innerText = allReviews[idx][type];
+            const countSpan = el.querySelector('span');
+            if (countSpan) countSpan.innerText = allReviews[idx][type];
         };
-    
-        function getCompareQueue() {
-            try { return JSON.parse(localStorage.getItem('laracom_compared_items') || '[]'); } catch (e) { return []; }
-        }
-    
-        function saveCompareQueue(queue) {
-            localStorage.setItem('laracom_compared_items', JSON.stringify(queue));
-            updateCompareWidgetUI();
-        }
-    
-        window.toggleCompareLaracom = function(id, title) {
-            let queue = getCompareQueue();
-            const idx = queue.indexOf(id);
-            if (idx !== -1) {
-                queue.splice(idx, 1);
-                if (title) showToastNotification(`"${title}" removed from comparison queue.`);
-            } else {
-                if (queue.length >= 3) {
-                    showToastNotification("You can compare up to 3 products at a time.");
-                    return;
-                }
-                queue.push(id);
-                if (title) showToastNotification(`"${title}" added to comparison queue.`);
-            }
-            saveCompareQueue(queue);
-        };
-    
-        window.clearCompareQueue = function() {
-            saveCompareQueue([]);
-            showToastNotification("Comparison queue cleared.");
-        };
-    
+
         function updateCompareWidgetUI() {
+            if (typeof jQuery === 'undefined') return;
+            const $ = jQuery;
             const queue = getCompareQueue();
             $('.compare-toggle-btn').each(function() {
                 const btnId = parseInt($(this).attr('id').replace('compare-btn-', ''));
                 const isAdded = queue.includes(btnId);
                 const $btn = $(this);
                 if (isAdded) {
-                    $btn.addClass('bg-primary-light text-primary border-primary shadow-sm').removeClass('bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-350 border-slate-200 dark:border-slate-800');
+                    $btn.addClass('bg-primary-light text-primary border-primary shadow-sm').removeClass('bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-355 border-slate-200 dark:border-slate-800');
                     $btn.find('.btn-plus-icon').addClass('hidden');
                     $btn.find('.btn-check-icon').removeClass('hidden');
                     $btn.find('.btn-text').text('Comparing');
                 } else {
-                    $btn.removeClass('bg-primary-light text-primary border-primary shadow-sm').addClass('bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-350 border-slate-200 dark:border-slate-800');
+                    $btn.removeClass('bg-primary-light text-primary border-primary shadow-sm').addClass('bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-355 border-slate-200 dark:border-slate-800');
                     $btn.find('.btn-plus-icon').removeClass('hidden');
                     $btn.find('.btn-check-icon').addClass('hidden');
                     $btn.find('.btn-text').text('Add to Compare');
                 }
             });
+            
             const drawer = document.getElementById('floating-compare-drawer');
+            if (!drawer) return;
             if (queue.length > 0) {
                 drawer.classList.remove('hidden');
                 document.getElementById('compare-queue-count').innerText = queue.length;
@@ -2142,14 +2176,20 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                     let imgUrl = "";
                     if (id === currentProductId) imgUrl = currentProductImage;
                     else {
-                        const $card = jQuery(`#compare-btn-${id}`).closest('.flex');
-                        if ($card.length) imgUrl = $card.find('img').attr('src');
+                        const btn = document.getElementById(`compare-btn-${id}`);
+                        if (btn) {
+                            const card = btn.closest('.flex');
+                            if (card) {
+                                const img = card.querySelector('img');
+                                if (img) imgUrl = img.getAttribute('src');
+                            }
+                        }
                     }
                     if (!imgUrl) imgUrl = "<?php echo esc_url( wc_placeholder_img_src() ); ?>";
                     thumbs.insertAdjacentHTML('beforeend', `
-                        <div class="flex-1 aspect-square bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-850 rounded-xl relative p-1 flex items-center justify-center min-h-[72px]">
+                        <div class="flex-1 aspect-square bg-slate-50 dark:bg-slate-955 border border-slate-105 dark:border-slate-855 rounded-xl relative p-1 flex items-center justify-center min-h-[72px]">
                             <img src="${imgUrl}" class="max-h-full max-w-full object-contain" />
-                            <button type="button" onclick="toggleCompareLaracom(${id}, '')" class="absolute -top-1 -right-1 h-4 w-4 bg-slate-800 dark:bg-slate-100 text-white dark:text-black rounded-full flex items-center justify-center text-[9px] font-black hover:scale-105 active:scale-95 shadow cursor-pointer">✕</button>
+                            <button type="button" onclick="toggleCompareLaracom(${id}, '')" class="absolute top-0 right-0 h-4 w-4 bg-slate-800 dark:bg-slate-100 text-white dark:text-black rounded-full flex items-center justify-center text-[9px] font-black hover:scale-105 active:scale-95 shadow cursor-pointer">✕</button>
                         </div>
                     `);
                 });
@@ -2162,31 +2202,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                 }
             } else drawer.classList.add('hidden');
         }
-    
-        window.openComparisonModal = function() {
-            const queue = getCompareQueue();
-            if (queue.length === 0) return;
-            document.getElementById('comparison-modal').classList.remove('hidden');
-            document.getElementById('compare-table-head').innerHTML = '<th class="p-4 text-center" colspan="4">Loading comparison matrix...</th>';
-            document.getElementById('compare-table-body').innerHTML = '';
-            jQuery.ajax({
-                url: '<?php echo admin_url("admin-ajax.php"); ?>',
-                type: 'POST',
-                data: { action: 'woocom_get_product_compare_details', product_ids: queue },
-                success: function(r) {
-                    if (r.success && r.data) renderCompareMatrix(r.data);
-                    else document.getElementById('compare-table-head').innerHTML = '<th class="p-4 text-center text-red-500" colspan="4">Error loading comparison data.</th>';
-                },
-                error: function() {
-                    document.getElementById('compare-table-head').innerHTML = '<th class="p-4 text-center text-red-500" colspan="4">Connection error.</th>';
-                }
-            });
-        };
-    
-        window.closeComparisonModal = function() {
-            document.getElementById('comparison-modal').classList.add('hidden');
-        };
-    
+
         function renderCompareMatrix(products) {
             let head = '<th class="p-4 font-black text-slate-500 dark:text-slate-400 w-1/4">Features</th>';
             for(let i=0; i<3; i++) {
@@ -2205,7 +2221,8 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                     `;
                 } else head += `<th class="p-4 w-1/4 font-black text-slate-300 dark:text-slate-700 italic text-center">No Product Selected</th>`;
             }
-            document.getElementById('compare-table-head').innerHTML = head;
+            const headEl = document.getElementById('compare-table-head');
+            if (headEl) headEl.innerHTML = head;
             const rows = [
                 { label: "Category", key: "category" },
                 { label: "Net Content", key: "net_content" },
@@ -2219,20 +2236,265 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                 body += `<td class="p-4 font-bold text-slate-500 dark:text-slate-400 bg-slate-50/30 dark:bg-slate-955/10">${r.label}</td>`;
                 for(let i=0; i<3; i++) {
                     const p = products[i];
-                    if (p) body += `<td class="p-4 text-center font-semibold text-slate-700 dark:text-slate-350">${p[r.key]}</td>`;
+                    if (p) body += `<td class="p-4 text-center font-semibold text-slate-700 dark:text-slate-355">${p[r.key]}</td>`;
                     else body += `<td class="p-4 text-center text-slate-300 dark:text-slate-800">-</td>`;
                 }
                 body += `</tr>`;
             });
-            document.getElementById('compare-table-body').innerHTML = body;
+            const bodyEl = document.getElementById('compare-table-body');
+            if (bodyEl) bodyEl.innerHTML = body;
         }
-    
+
+        // jQuery Polling Initializer
+        function initLaracomProductScript() {
+            if (typeof jQuery === 'undefined') {
+                setTimeout(initLaracomProductScript, 50);
+                return;
+            }
+            
+            jQuery(document).ready(function($) {
+                renderReviewsList();
+                initQuestionsSection();
+                updateCompareWidgetUI();
+                updateFbtTotalLaracom();
+        
+                const slides = document.querySelectorAll('.slider-slide');
+                slides.forEach(slide => {
+                    const img = slide.querySelector('img');
+                    if (!img) return;
+                    img.style.transition = 'transform 0.15s ease-out';
+                    img.style.cursor = 'zoom-in';
+                    slide.addEventListener('mousemove', function(e) {
+                        if (window.matchMedia('(min-width: 1024px)').matches) {
+                            const rect = slide.getBoundingClientRect();
+                            const x = ((e.clientX - rect.left) / rect.width) * 100;
+                            const y = ((e.clientY - rect.top) / rect.height) * 100;
+                            img.style.transformOrigin = `${x}% 	ext{${y}%}`;
+                            img.style.transform = 'scale(2.3)';
+                        }
+                    });
+                    slide.addEventListener('mouseleave', function() {
+                        if (window.matchMedia('(min-width: 1024px)').matches) {
+                            img.style.transform = 'scale(1)';
+                        }
+                    });
+                });
+        
+                function setupCustomVariationButtons() {
+                    $('form.variations_form select').each(function() {
+                        var $select = $(this);
+                        if ($select.hasClass('laracom-mapped')) return;
+                        $select.addClass('laracom-mapped').hide();
+                        
+                        var $container = $('<div class="flex flex-wrap gap-2 mt-2 select-button-container-wrap"></div>');
+                        $select.find('option').each(function() {
+                            var val = $(this).val();
+                            var text = $(this).text();
+                            if (!val) return;
+                            
+                            var $btn = $('<button type="button" class="px-4 py-1.5 rounded-lg text-xs md:text-sm font-semibold border transition-all border-slate-205 dark:border-slate-855 hover:border-primary text-slate-700 dark:text-slate-355 hover:text-primary cursor-pointer">' + text + '</button>');
+                            $btn.attr('data-value', val);
+                            
+                            if ($select.val() === val) {
+                                $btn.addClass('border-primary bg-primary/5 text-primary').removeClass('border-slate-205 dark:border-slate-855 text-slate-700 dark:text-slate-355');
+                            }
+                            
+                            $btn.on('click', function(e) {
+                                e.preventDefault();
+                                $select.val(val).trigger('change');
+                                $container.find('button').removeClass('border-primary bg-primary/5 text-primary').addClass('border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300');
+                                $(this).addClass('border-primary bg-primary/5 text-primary').removeClass('border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300');
+                                applyImageColorTint(val);
+                            });
+                            $container.append($btn);
+                        });
+                        $select.after($container);
+                    });
+                }
+        
+                function applyImageColorTint(colorName) {
+                    const c = colorName.toLowerCase();
+                    let filterClass = "";
+                    if (c.includes('blue')) filterClass = "hue-rotate-[180deg] saturate-[1.2]";
+                    else if (c.includes('pink') || c.includes('cherry')) filterClass = "hue-rotate-[290deg] saturate-[1.3]";
+                    else if (c.includes('black')) filterClass = "brightness-[0.75] contrast-[1.1] saturate-[0.1]";
+                    else if (c.includes('gray')) filterClass = "brightness-[0.9] contrast-[1.05] grayscale-[0.5]";
+                    else if (c.includes('silver')) filterClass = "brightness-[1.1] contrast-[0.95] grayscale-[0.8]";
+                    else if (c.includes('gold')) filterClass = "hue-rotate-[35deg] saturate-[1.4] sepia-[0.3]";
+                    $('.gallery-main-img').attr('class', 'w-full h-full object-contain select-none pointer-events-none transition-all duration-500 group-hover:scale-105 gallery-main-img ' + filterClass);
+                }
+        
+                setupCustomVariationButtons();
+        
+                $(document.body).on('woocommerce_variation_has_changed', function() {
+                    $('form.variations_form select').each(function() {
+                        var $select = $(this);
+                        var val = $select.val();
+                        var $container = $select.next('.select-button-container-wrap');
+                        if ($container.length) {
+                            $container.find('button').removeClass('border-primary bg-primary/5 text-primary').addClass('border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300');
+                            if (val) {
+                                $container.find('button[data-value="' + val + '"]').addClass('border-primary bg-primary/5 text-primary').removeClass('border-slate-200 dark:border-slate-800 text-slate-755 dark:text-slate-355');
+                                applyImageColorTint(val);
+                            }
+                        }
+                    });
+                    setTimeout(function() {
+                        var variation_price = $('.woocommerce-variation .price .amount').html();
+                        if (variation_price) $('#laracom-price-display').html(variation_price);
+                    }, 100);
+                });
+        
+                function syncQtyDisplay() {
+                    var val = $('form.cart input[name="quantity"]').val() || 1;
+                    $('.qty-display').text(val);
+                    updateOfferHighlight(parseInt(val));
+                }
+        
+                $(document.body).on('change', 'form.cart input[name="quantity"]', function() {
+                    syncQtyDisplay();
+                });
+        
+                $(document.body).on('click', '.quantity-plus', function() {
+                    var $input = $('form.cart input[name="quantity"]');
+                    if ($input.length) {
+                        var val = parseInt($input.val()) || 1;
+                        $input.val(val + 1).trigger('change');
+                    }
+                });
+        
+                $(document.body).on('click', '.quantity-minus', function() {
+                    var $input = $('form.cart input[name="quantity"]');
+                    if ($input.length) {
+                        var val = parseInt($input.val()) || 1;
+                        $input.val(Math.max(1, val - 1)).trigger('change');
+                    }
+                });
+        
+                syncQtyDisplay();
+        
+                function updateOfferHighlight(qty) {
+                    $('.ticket-card').removeClass('border-primary ring-2 ring-primary/10 scale-[1.02] bg-primary-light').addClass('border-orange-100');
+                    if (qty >= 10) $('#ticket-10').addClass('border-primary ring-2 ring-primary/10 scale-[1.02] bg-primary-light').removeClass('border-orange-100');
+                    else if (qty >= 5) $('#ticket-5').addClass('border-primary ring-2 ring-primary/10 scale-[1.02] bg-primary-light').removeClass('border-orange-100');
+                    else if (qty >= 2) $('#ticket-2').addClass('border-primary ring-2 ring-primary/10 scale-[1.02] bg-primary-light').removeClass('border-orange-100');
+                }
+        
+                $(document.body).on('click', '#laracom-add-to-cart', function(e) {
+                    e.preventDefault();
+                    var $form = $('form.cart');
+                    if ($form.hasClass('variations_form')) {
+                        var variation_id = $form.find('input[name="variation_id"]').val();
+                        if (!variation_id || variation_id === "0") {
+                            alert('Please select product options first.');
+                            return;
+                        }
+                    }
+                    var $btn = $form.find('.single_add_to_cart_button');
+                    if ($btn.length) {
+                        if ($btn.hasClass('ajax_add_to_cart') || $btn.attr('data-product_id')) $btn.trigger('click');
+                        else $form.submit();
+                    }
+                });
+        
+                function handleBuyNowClick() {
+                    var $form = $('form.cart');
+                    if ($form.hasClass('variations_form')) {
+                        var variation_id = $form.find('input[name="variation_id"]').val();
+                        if (!variation_id || variation_id === "0") {
+                            alert('Please select product options first.');
+                            return;
+                        }
+                    }
+                    let redirectInput = $form.find('input[name="buy_now_redirect"]');
+                    if (!redirectInput.length) {
+                        redirectInput = $('<input type="hidden" name="buy_now_redirect" value="1">');
+                        $form.append(redirectInput);
+                    } else redirectInput.val('1');
+                    $form.submit();
+                }
+        
+                $(document.body).on('click', '#laracom-buy-now, #laracom-buy-now-mobile', function(e) {
+                    e.preventDefault();
+                    handleBuyNowClick();
+                });
+        
+                // FBT AJAX execution
+                $('#fbt-add-all').on('click', function() {
+                    const btn = $(this);
+                    const originalContent = btn.html();
+                    btn.prop('disabled', true).html('Adding...');
+                    
+                    const itemsData = [];
+                    document.querySelectorAll('.fbt-item').forEach(item => {
+                        const cb = item.querySelector('.fbt-checkbox');
+                        if (cb && cb.checked) {
+                            if (item.classList.contains('fbt-main-item')) {
+                                var $form = $('form.cart');
+                                var variation_id = $form.find('input[name="variation_id"]').val() || 0;
+                                var mainQty = parseInt($form.find('input[name="quantity"]').val()) || 1;
+                                
+                                itemsData.push({
+                                    product_id: parseInt(item.querySelector('.fbt-id').value),
+                                    variation_id: parseInt(variation_id),
+                                    quantity: mainQty,
+                                    variation: {}
+                                });
+                            } else {
+                                itemsData.push({
+                                    product_id: parseInt(item.querySelector('.fbt-id').value),
+                                    variation_id: 0,
+                                    quantity: 1,
+                                    variation: {}
+                                });
+                            }
+                        }
+                    });
+        
+                    if (itemsData.length === 0) {
+                        btn.prop('disabled', false).html(originalContent);
+                        return;
+                    }
+        
+                    $.ajax({
+                        url: '<?php echo admin_url("admin-ajax.php"); ?>',
+                        type: 'POST',
+                        data: {
+                            action: 'add_multiple_products_to_cart',
+                            nonce: (window.woocom_ajax && window.woocom_ajax.cart_nonce) || (window.wc_add_to_cart_params && window.wc_add_to_cart_params.nonce) || '',
+                            items: itemsData
+                        },
+                        success: function(response) {
+                            if (response.success !== false) {
+                                $(document.body).trigger('added_to_cart', [response.fragments, response.cart_hash]);
+                                btn.prop('disabled', false).text('Added Successfully!');
+                                setTimeout(() => {
+                                    btn.html(originalContent);
+                                    updateFbtTotalLaracom();
+                                }, 2000);
+                            } else {
+                                btn.prop('disabled', false).text('Error!');
+                                setTimeout(() => btn.html(originalContent), 2000);
+                            }
+                        },
+                        error: function() {
+                            btn.prop('disabled', false).text('Error!');
+                            setTimeout(() => btn.html(originalContent), 2000);
+                        }
+                    });
+                });
+            });
+        }
+        initLaracomProductScript();
+
         function showToastNotification(msg) {
             const toast = document.getElementById('laracom-toast-overlay');
             const text = document.getElementById('laracom-toast-message');
-            text.innerText = msg;
-            toast.classList.remove('hidden');
-            setTimeout(() => { toast.classList.add('hidden'); }, 3000);
+            if (toast && text) {
+                text.innerText = msg;
+                toast.classList.remove('hidden');
+                setTimeout(() => { toast.classList.add('hidden'); }, 3000);
+            }
         }
     </script>
     <?php
