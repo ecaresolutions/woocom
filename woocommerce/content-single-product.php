@@ -1686,6 +1686,24 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
     <?php do_action( 'woocommerce_after_single_product' ); ?>
     
     <script type="text/javascript">
+        window.addEventListener('error', function(e) {
+            console.error("Global JS Error Captured: ", e.message, " in ", e.filename, " at line ", e.lineno);
+            const errDiv = document.createElement('div');
+            errDiv.style.position = 'fixed';
+            errDiv.style.bottom = '20px';
+            errDiv.style.left = '20px';
+            errDiv.style.background = '#ef4444';
+            errDiv.style.color = '#ffffff';
+            errDiv.style.padding = '12px 20px';
+            errDiv.style.fontSize = '13px';
+            errDiv.style.fontWeight = 'bold';
+            errDiv.style.zIndex = '999999';
+            errDiv.style.borderRadius = '10px';
+            errDiv.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
+            errDiv.innerText = "🚨 JS Error: " + e.message + " (" + e.filename.split('/').pop() + ":" + e.lineno + ")";
+            document.body.appendChild(errDiv);
+        });
+
         const currentProductId = <?php echo $main_product_id; ?>;
         const currentProductTitle = "<?php echo esc_js( $product_title ); ?>";
         const currentProductImage = "<?php echo esc_url( wp_get_attachment_image_url( $main_image_id, 'medium' ) ?: wc_placeholder_img_src() ); ?>";
