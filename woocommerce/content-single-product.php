@@ -609,54 +609,8 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
         array_unshift( $attachment_ids, $main_image_id );
     }
     ?>
-    <div class="single-product-container bg-transparent text-slate-800 dark:bg-transparent dark:text-slate-100 p-0">
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script>
-            tailwind.config = {
-                corePlugins: {
-                    preflight: false,
-                },
-                darkMode: 'class',
-                theme: {
-                    extend: {
-                        colors: {
-                            primary: 'var(--color-primary, #2563EB)',
-                            secondary: 'var(--color-secondary, #F7A501)',
-                            slate: {
-                                50: '#f8fafc',
-                                100: '#f1f5f9',
-                                105: '#f1f5f9',
-                                200: '#e2e8f0',
-                                202: '#e2e8f0',
-                                205: '#cbd5e1',
-                                300: '#cbd5e1',
-                                350: '#cbd5e1',
-                                400: '#94a3b8',
-                                404: '#94a3b8',
-                                405: '#64748b',
-                                450: '#64748b',
-                                455: '#475569',
-                                500: '#64748b',
-                                505: '#64748b',
-                                600: '#475569',
-                                650: '#475569',
-                                700: '#334155',
-                                750: '#334155',
-                                800: '#1e293b',
-                                805: '#1e293b',
-                                808: '#0f172a',
-                                850: '#1e293b',
-                                855: '#0f172a',
-                                900: '#0f172a',
-                                905: '#0f172a',
-                                950: '#020617',
-                                955: '#020617',
-                            }
-                        }
-                    }
-                }
-            };
-        </script>
+    <div class="laracom-single-product">
+
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;950&display=swap" rel="stylesheet" />
@@ -698,28 +652,28 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
         </style>
     
         <!-- Top Navigation -->
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-6 font-poppins px-4 py-2">
-            <div class="flex items-center gap-2.5">
+        <div class="laracom-top-nav font-poppins">
+            <div class="laracom-top-nav-left">
                 <button 
                     onclick="window.location.href='<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>'"
-                    class="flex md:hidden h-8 w-8 items-center justify-center rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-350 shadow-sm active:scale-90 cursor-pointer"
+                    class="laracom-back-btn md-hide-btn"
                     aria-label="Back to Shop"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
                 </button>
     
-                <nav class="flex items-center gap-1.5 text-xs md:text-sm text-slate-505 dark:text-slate-400 font-medium">
-                    <span class="cursor-pointer hover:text-primary transition-colors" onclick="window.location.href='<?php echo esc_url( home_url() ); ?>'">Home</span>
-                    <span class="text-slate-300 dark:text-slate-700">/</span>
-                    <span class="cursor-pointer hover:text-primary transition-colors" onclick="window.location.href='<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>'">Shop</span>
-                    <span class="text-slate-300 dark:text-slate-700">/</span>
-                    <span class="text-slate-700 dark:text-slate-202 truncate max-w-[140px] sm:max-w-xs"><?php echo esc_html( $product_title ); ?></span>
+                <nav class="laracom-breadcrumb">
+                    <span onclick="window.location.href='<?php echo esc_url( home_url() ); ?>'">Home</span>
+                    <span>/</span>
+                    <span onclick="window.location.href='<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>'">Shop</span>
+                    <span>/</span>
+                    <span class="active-item"><?php echo esc_html( $product_title ); ?></span>
                 </nav>
             </div>
             
             <button 
                 onclick="window.location.href='<?php echo esc_url( get_permalink( wc_get_page_id( 'shop' ) ) ); ?>'"
-                class="hidden md:flex items-center gap-1.5 px-4.5 py-1.5 rounded-full border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 text-xs md:text-sm font-bold shadow-sm hover:border-primary hover:text-primary dark:hover:border-primary transition-all duration-200 active:scale-95 cursor-pointer"
+                class="laracom-back-btn md-show-btn"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="h-4 w-4"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
                 <span>Back to Shop</span>
@@ -727,11 +681,11 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
         </div>
     
         <!-- Main Grid Container -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-10 font-poppins px-4">
+        <div class="laracom-product-grid font-poppins">
             
             <!-- Left Side: Gallery -->
-            <div class="lg:col-span-6 flex flex-col gap-4">
-                <div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-2xl p-0 flex items-center justify-center shadow-[0_8px_30px_rgba(0,0,0,0.015)] overflow-hidden relative group w-full aspect-square">
+            <div class="laracom-gallery-col">
+                <div class="laracom-main-image-card group">
                     <div id="main-image-slider-laracom" class="flex w-full h-full" data-current-index="0">
                         <?php
                         if ( $attachment_ids ) {
@@ -759,10 +713,10 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                     </div>
     
                     <?php if ( count( $attachment_ids ) > 1 ) : ?>
-                    <button type="button" onclick="slidePrevLaracom()" class="absolute left-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 dark:bg-slate-900/80 shadow-md rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-primary hover:bg-white transition-all cursor-pointer opacity-0 group-hover:opacity-100 z-10">
+                    <button type="button" onclick="slidePrevLaracom()" class="laracom-gallery-card-btn prev opacity-0 group-hover:opacity-100">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
                     </button>
-                    <button type="button" onclick="slideNextLaracom()" class="absolute right-4 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/80 dark:bg-slate-900/80 shadow-md rounded-full flex items-center justify-center text-slate-600 dark:text-slate-300 hover:text-primary hover:bg-white transition-all cursor-pointer opacity-0 group-hover:opacity-100 z-10">
+                    <button type="button" onclick="slideNextLaracom()" class="laracom-gallery-card-btn next opacity-0 group-hover:opacity-100">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
                     </button>
                     <?php endif; ?>
@@ -775,7 +729,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                 </div>
     
                 <!-- Thumbnails -->
-                <div class="grid grid-cols-4 gap-3">
+                <div class="laracom-thumbnails-grid">
                     <?php
                     for ( $num = 0; $num < 4; $num++ ) {
                         $attachment_id = isset( $attachment_ids[$num] ) ? $attachment_ids[$num] : ( isset( $attachment_ids[0] ) ? $attachment_ids[0] : 0 );
@@ -789,7 +743,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                         <button
                             type="button"
                             onclick="changeMainImageLaracom(this, <?php echo $num; ?>)"
-                            class="thumbnail-btn-laracom aspect-square rounded-xl border-2 p-1 bg-white dark:bg-slate-900 overflow-hidden flex items-center justify-center transition-all <?php echo ( $num === 0 ) ? 'border-primary shadow-sm' : 'border-slate-100 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'; ?>"
+                            class="laracom-thumbnail-btn <?php echo ( $num === 0 ) ? 'active' : ''; ?>"
                         >
                             <img 
                                 src="<?php echo esc_url( wp_get_attachment_image_url( $attachment_id, 'thumbnail' ) ); ?>" 
@@ -810,7 +764,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                         <?php echo esc_html( $brand ); ?>
                     </span>
                     
-                    <div class="flex items-center gap-1.5 text-xs text-slate-505 dark:text-slate-400 font-bold bg-slate-100 dark:bg-slate-850 px-3 py-1 rounded-md">
+                    <div class="laracom-rating-badge">
                         <div class="flex items-center text-amber-500">
                             <?php for ( $i = 0; $i < 5; $i++ ) : ?>
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-3.5 w-3.5"><path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd" /></svg>
@@ -825,7 +779,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                         type="button"
                         onclick="toggleCompareLaracom(<?php echo $main_product_id; ?>, '<?php echo esc_js( $product_title ); ?>')"
                         id="compare-btn-<?php echo $main_product_id; ?>"
-                        class="compare-toggle-btn flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-md border cursor-pointer transition-all active:scale-95 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-350 border-slate-200 dark:border-slate-800 hover:border-primary/40"
+                        class="compare-toggle-btn laracom-compare-btn"
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="h-3 w-3 btn-plus-icon"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" class="h-3 w-3 btn-check-icon hidden"><polyline points="20 6 9 17 4 12"/></svg>
@@ -837,20 +791,20 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                     <?php echo esc_html( $product_title ); ?>
                 </h1>
     
-                <div class="bg-slate-50/50 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-850 rounded-xl p-4 flex items-center justify-between select-none">
+                <div class="laracom-price-card select-none">
                     <div class="flex items-baseline gap-2">
-                        <span id="laracom-price-display" class="text-3xl font-black text-primary">
+                        <span id="laracom-price-display" class="laracom-price-amount">
                             ৳<?php echo esc_html( number_format( $sale_price ) ); ?>
                         </span>
                         <?php if ( $regular_price > $sale_price ) : ?>
-                            <span class="text-sm md:text-base text-slate-400 dark:text-slate-500 line-through">
+                            <span class="laracom-price-regular">
                                 ৳<?php echo esc_html( number_format( $regular_price ) ); ?>
                             </span>
                         <?php endif; ?>
                     </div>
                     
                     <?php if ( $discount_pct > 0 ) : ?>
-                        <span id="laracom-save-badge" class="text-xs bg-red-50 text-red-600 dark:bg-red-955/20 dark:text-red-400 px-2.5 py-1 rounded font-bold border border-red-100 dark:border-red-950/30">
+                        <span id="laracom-save-badge" class="laracom-save-badge">
                             SAVE <?php echo $discount_pct; ?>% OFF
                         </span>
                     <?php endif; ?>
@@ -860,27 +814,27 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                     <?php woocommerce_template_single_add_to_cart(); ?>
                 </div>
     
-                <div class="flex flex-col gap-1.5 mt-2">
-                    <div class="flex items-center justify-between text-xs font-bold text-red-500 dark:text-red-400 animate-pulse">
+                <div class="laracom-stock-warning-wrap">
+                    <div class="laracom-stock-warning-label">
                         <span>🔥 Hurry! Only <span id="stock-left-qty"><?php echo $stock_left; ?></span> items left in stock</span>
                         <span>Selling Fast</span>
                     </div>
-                    <div class="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                    <div class="laracom-stock-bar-wrap">
                         <div 
                             id="stock-progress-bar"
-                            class="h-full bg-gradient-to-r from-red-500 to-primary rounded-full transition-all duration-1000"
+                            class="laracom-stock-bar-inner"
                             style="width: <?php echo ( $stock_left / 10 ) * 100; ?>%"
                         ></div>
                     </div>
                 </div>
     
-                <div class="flex flex-col gap-3 mt-2">
-                    <div class="flex flex-wrap md:flex-nowrap items-center gap-3 w-full">
-                        <div class="flex items-center justify-between border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900 p-2 w-[120px] shrink-0 h-12">
+                <div class="laracom-qty-row-wrapper">
+                    <div class="laracom-actions-row">
+                        <div class="laracom-qty-selector">
                             <button type="button" class="quantity-minus flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-350 transition-colors cursor-pointer">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
                             </button>
-                            <span class="qty-display text-base font-black text-slate-800 dark:text-slate-100 px-2">1</span>
+                            <span class="qty-display laracom-qty-display">1</span>
                             <button type="button" class="quantity-plus flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-350 transition-colors cursor-pointer">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                             </button>
@@ -889,7 +843,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                         <button
                             type="button"
                             id="laracom-add-to-cart"
-                            class="flex-1 flex items-center justify-center gap-2 h-12 bg-primary hover:opacity-90 text-white text-xs md:text-sm font-bold uppercase rounded-xl tracking-wider transition-all duration-300 shadow-md hover:shadow-lg active:scale-95 cursor-pointer text-center"
+                            class="laracom-btn-primary"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4.5 w-4.5"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
                             <span>Add to Cart</span>
@@ -898,7 +852,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                         <button
                             type="button"
                             id="laracom-buy-now"
-                            class="hidden md:flex flex-1 items-center justify-center h-12 bg-slate-900 hover:bg-slate-950 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-black text-xs md:text-sm font-bold uppercase rounded-xl tracking-wider transition-all duration-300 shadow-sm active:scale-95 cursor-pointer text-center"
+                            class="laracom-btn-secondary"
                         >
                             Buy it now
                         </button>
@@ -907,32 +861,32 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                     <button
                         type="button"
                         id="laracom-buy-now-mobile"
-                        class="flex md:hidden w-full h-12 bg-slate-900 hover:bg-slate-955 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-black text-sm font-bold uppercase rounded-xl tracking-wider transition-all duration-300 shadow-sm active:scale-95 cursor-pointer items-center justify-center text-center"
+                        class="laracom-btn-secondary-mobile"
                     >
                         Buy it now
                     </button>
                 </div>
     
                 <!-- Active Offers -->
-                <div class="mt-3 font-poppins">
-                    <h3 class="text-sm font-bold text-slate-800 dark:text-slate-200 uppercase tracking-wider mb-3.5">
+                <div class="mt-3 font-poppins laracom-offers-wrapper">
+                    <h3 class="laracom-offers-title">
                         Active Offers
                     </h3>
-                    <div class="flex overflow-x-auto sm:grid sm:grid-cols-3 gap-5 md:gap-4 select-none snap-x snap-mandatory pb-3 no-scrollbar scroll-smooth">
+                    <div class="laracom-offers-grid select-none snap-x snap-mandatory no-scrollbar scroll-smooth">
                         <!-- Card 1 -->
-                        <div class="relative pt-3 snap-start shrink-0 w-[calc(60%-10px)] sm:w-auto">
-                            <div class="absolute top-0 left-1/2 -translate-x-1/2 bg-primary text-white text-[9px] font-black uppercase tracking-wider px-3.5 py-1 rounded-full shadow-sm z-10">
+                        <div class="laracom-ticket-card snap-start">
+                            <div class="laracom-ticket-badge">
                                 MOST POPULAR
                             </div>
                             <div 
                                 onclick="setOfferQuantity(2)"
-                                class="ticket-card cursor-pointer transition-all duration-300 active:scale-[0.98] border border-orange-100 hover:border-orange-200 bg-gradient-to-b from-orange-50/40 to-orange-100/10 dark:from-orange-955/10 dark:to-orange-900/5 rounded-2xl p-4 pt-5 flex flex-col items-center justify-between shadow-[0_4px_15px_rgba(254,105,5,0.02)] h-full overflow-hidden"
+                                class="ticket-card laracom-ticket-inner"
                                 id="ticket-2"
                             >
                                 <div class="text-center">
                                     <div class="text-xs md:text-sm font-bold text-slate-800 dark:text-slate-200">Buy 2 or more</div>
                                 </div>
-                                <div class="w-full border-t border-dashed border-orange-200 dark:border-orange-900/50 my-3.5 relative">
+                                <div class="laracom-ticket-divider">
                                     <div class="absolute -left-[22px] -top-1.5 w-3 h-3 rounded-full bg-white dark:bg-slate-900 border-r border-orange-100 dark:border-orange-900/40"></div>
                                     <div class="absolute -right-[22px] -top-1.5 w-3 h-3 rounded-full bg-white dark:bg-slate-900 border-l border-orange-100 dark:border-orange-900/40"></div>
                                 </div>
@@ -950,13 +904,13 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                             </div>
                             <div 
                                 onclick="setOfferQuantity(5)"
-                                class="ticket-card cursor-pointer transition-all duration-300 active:scale-[0.98] border border-emerald-100 hover:border-emerald-200 bg-gradient-to-b from-emerald-50/40 to-emerald-100/10 dark:from-emerald-955/10 dark:to-emerald-900/5 rounded-2xl p-4 pt-5 flex flex-col items-center justify-between shadow-[0_4px_15px_rgba(16,185,129,0.02)] h-full overflow-hidden"
+                                class="ticket-card laracom-ticket-inner"
                                 id="ticket-5"
                             >
                                 <div class="text-center">
                                     <div class="text-xs md:text-sm font-bold text-slate-800 dark:text-slate-200">Buy 5 or more</div>
                                 </div>
-                                <div class="w-full border-t border-dashed border-emerald-200 dark:border-emerald-900/50 my-3.5 relative">
+                                <div class="laracom-ticket-divider">
                                     <div class="absolute -left-[22px] -top-1.5 w-3 h-3 rounded-full bg-white dark:bg-slate-900 border-r border-emerald-100 dark:border-emerald-900/40"></div>
                                     <div class="absolute -right-[22px] -top-1.5 w-3 h-3 rounded-full bg-white dark:bg-slate-900 border-l border-emerald-100 dark:border-emerald-900/40"></div>
                                 </div>
@@ -974,13 +928,13 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                             </div>
                             <div 
                                 onclick="setOfferQuantity(10)"
-                                class="ticket-card cursor-pointer transition-all duration-300 active:scale-[0.98] border border-indigo-100 hover:border-indigo-200 bg-gradient-to-b from-indigo-50/40 to-indigo-100/10 dark:from-indigo-955/10 dark:to-indigo-900/5 rounded-2xl p-4 pt-5 flex flex-col items-center justify-between shadow-[0_4px_15px_rgba(79,70,229,0.02)] h-full overflow-hidden"
+                                class="ticket-card laracom-ticket-inner"
                                 id="ticket-10"
                             >
                                 <div class="text-center">
                                     <div class="text-xs md:text-sm font-bold text-slate-800 dark:text-slate-200">Buy 10 or more</div>
                                 </div>
-                                <div class="w-full border-t border-dashed border-indigo-200 dark:border-indigo-900/50 my-3.5 relative">
+                                <div class="laracom-ticket-divider">
                                     <div class="absolute -left-[22px] -top-1.5 w-3 h-3 rounded-full bg-white dark:bg-slate-900 border-r border-indigo-100 dark:border-indigo-900/40"></div>
                                     <div class="absolute -right-[22px] -top-1.5 w-3 h-3 rounded-full bg-white dark:bg-slate-900 border-l border-indigo-100 dark:border-indigo-900/40"></div>
                                 </div>
@@ -1017,7 +971,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                 <?php
                     $main_savings = $regular_price - $sale_price;
                 ?>
-                <div class="fbt-item fbt-product-card fbt-main-item flex flex-row items-center bg-[#f7fafb] dark:bg-slate-955 p-4 rounded-xl border border-primary relative group transition-all w-full"
+                <div class="fbt-item fbt-product-card fbt-main-item laracom-fbt-item main-item"
                      data-base-price="<?php echo esc_attr( $sale_price ); ?>"
                      data-regular-price="<?php echo esc_attr( $regular_price ); ?>"
                      data-sale-price="<?php echo esc_attr( $sale_price ); ?>"
@@ -1055,7 +1009,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                     $rel_sale = (float)$rel_product->get_price();
                     $rel_savings = $rel_regular - $rel_sale;
                 ?>
-                <div class="fbt-item fbt-product-card flex flex-row items-center bg-[#f7fafb] dark:bg-slate-955 p-4 rounded-xl border border-slate-200 dark:border-slate-800 relative group transition-all cursor-pointer w-full" onclick="toggleFbtLaracom(this)">
+                <div class="fbt-item fbt-product-card laracom-fbt-item cursor-pointer" onclick="toggleFbtLaracom(this)">
                     <div class="fbt-product-thumb w-14 h-14 bg-white rounded-lg flex-shrink-0 mr-3 flex items-center justify-center border border-slate-100 overflow-hidden p-1">
                         <img src="<?php echo get_the_post_thumbnail_url($rel_id, 'thumbnail'); ?>" class="w-full h-full object-contain">
                     </div>
@@ -1102,10 +1056,10 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 
                 <!-- Left Column: Tabs & Contents -->
-                <div class="lg:col-span-9 flex flex-col gap-8">
+                <div class="laracom-tabs-col">
                     <!-- Tab Buttons Row -->
-                    <div class="grid grid-cols-4 md:flex md:w-auto md:justify-start gap-1.5 md:gap-3 border-b border-slate-105 dark:border-slate-850 pb-4 sticky top-16 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm z-20 pt-2 w-full">
-                        <button type="button" onclick="scrollToTabSection('specification')" id="tab-btn-specification" class="tab-header-btn w-full md:w-auto text-center px-1.5 md:px-5 py-2.5 rounded-lg text-[10px] sm:text-xs md:text-sm font-black border cursor-pointer truncate bg-primary text-white border-primary shadow-sm">
+                    <div class="laracom-tabs-bar">
+                        <button type="button" onclick="scrollToTabSection('specification')" id="tab-btn-specification" class="tab-header-btn laracom-tab-btn active">
                             Specification
                         </button>
                         <button type="button" onclick="scrollToTabSection('description')" id="tab-btn-description" class="tab-header-btn w-full md:w-auto text-center px-1.5 md:px-5 py-2.5 rounded-lg text-[10px] sm:text-xs md:text-sm font-black border cursor-pointer truncate bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-202 border-slate-200 dark:border-slate-800 hover:border-primary/40">
@@ -1438,8 +1392,8 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                 </div>
                 
                 <!-- Right Column: Sidebar (3 columns) -->
-                <div class="lg:col-span-3 font-poppins">
-                    <div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-2xl p-5 md:p-6 shadow-[0_8px_30px_rgba(0,0,0,0.015)] sticky top-6">
+                <div class="laracom-sidebar-col font-poppins">
+                    <div class="laracom-sidebar-sticky">
                         <h3 class="text-base md:text-lg font-bold text-slate-808 dark:text-slate-100 pb-3 border-b border-slate-100 dark:border-slate-850 mb-5 flex items-center justify-between">
                             <span>Similar Product</span>
                             <span class="text-[10px] text-primary uppercase tracking-wider font-black">Recommendations</span>
@@ -1627,7 +1581,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
         <?php endif; ?>
     
         <!-- Floating Compare Drawer -->
-        <div id="floating-compare-drawer" class="hidden fixed bottom-6 right-6 z-50 max-w-sm w-[calc(100%-48px)] sm:w-[360px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl p-4 flex flex-col gap-3 font-poppins">
+        <div id="floating-compare-drawer" class="hidden laracom-compare-drawer font-poppins">
             <div class="flex items-center justify-between">
                 <span class="text-xs font-black text-slate-800 dark:text-slate-200">
                     Compare Products (<span id="compare-queue-count">0</span>/3)
@@ -1653,8 +1607,8 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
         </div>
     
         <!-- Comparison Modal -->
-        <div id="comparison-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 sm:p-6 font-poppins">
-            <div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-3xl w-full max-w-4xl max-h-[85vh] overflow-y-auto shadow-2xl p-6 md:p-8 relative">
+        <div id="comparison-modal" class="hidden laracom-compare-modal font-poppins">
+            <div class="laracom-compare-modal-inner">
                 <button
                     type="button"
                     onclick="closeComparisonModal()"
@@ -2103,7 +2057,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                 const media = rev.image ? `<img src="${rev.image}" class="w-full h-auto object-cover rounded-xl mb-3 aspect-[4/5]">` : (ytId ? `<div class="relative w-full aspect-video bg-black overflow-hidden rounded-xl mb-3"><iframe class="w-full h-full border-0" src="https://www.youtube.com/embed/${ytId}" allowfullscreen></iframe></div>` : '');
                 
                 cols[idx % 3].insertAdjacentHTML('beforeend', `
-                    <div class="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-850 rounded-2xl p-5 shadow-[0_4px_20px_rgba(0,0,0,0.015)] flex flex-col text-left">
+                    <div class="laracom-review-card">
                         <div class="flex items-center justify-between gap-4 mb-3">
                             <div class="flex items-center gap-0.5">${stars}</div>
                             <span class="text-xs text-slate-400 dark:text-slate-500 font-semibold">${rev.date}</span>

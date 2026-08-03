@@ -1632,3 +1632,866 @@ a.ajax_add_to_cart.loading::after,
     pointer-events: none !important;
     content: none !important;
 }
+
+/* ==========================================================================
+   LARACOM PREMIUM GADGET SINGLE PRODUCT LAYOUT (CUSTOM CSS)
+   ========================================================================== */
+.laracom-single-product {
+    font-family: 'Poppins', sans-serif !important;
+    background-color: transparent !important;
+    color: #334155 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+.dark .laracom-single-product {
+    color: #cbd5e1 !important;
+}
+
+/* Breadcrumbs / Top Navigation */
+.laracom-top-nav {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    margin-bottom: 24px !important;
+    padding: 8px 16px !important;
+}
+.laracom-top-nav-left {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
+.laracom-breadcrumb {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+    color: #64748b !important;
+}
+.dark .laracom-breadcrumb {
+    color: #94a3b8 !important;
+}
+.laracom-breadcrumb span {
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+.laracom-breadcrumb span:hover {
+    color: var(--color-primary, #2563EB) !important;
+}
+.laracom-breadcrumb span.active-item {
+    color: #0f172a !important;
+    font-weight: 700 !important;
+    max-width: 140px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.dark .laracom-breadcrumb span.active-item {
+    color: #f1f5f9 !important;
+}
+.laracom-back-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    padding: 8px 18px !important;
+    border-radius: 9999px !important;
+    border: 1px solid #e2e8f0 !important;
+    background-color: #ffffff !important;
+    color: #334155 !important;
+    font-size: 13px !important;
+    font-weight: 700 !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.02) !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    text-decoration: none !important;
+}
+.dark .laracom-back-btn {
+    border-color: #1e293b !important;
+    background-color: #0f172a !important;
+    color: #cbd5e1 !important;
+}
+.laracom-back-btn:hover {
+    border-color: var(--color-primary, #2563EB) !important;
+    color: var(--color-primary, #2563EB) !important;
+}
+.laracom-back-btn:active {
+    transform: scale(0.95);
+}
+.laracom-back-btn.md-hide-btn { display: inline-flex !important; }
+.laracom-back-btn.md-show-btn { display: none !important; }
+@media (min-width: 768px) {
+    .laracom-back-btn.md-hide-btn { display: none !important; }
+    .laracom-back-btn.md-show-btn { display: inline-flex !important; }
+}
+
+/* Product Grid */
+.laracom-product-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+    padding: 0 16px !important;
+}
+@media (min-width: 1024px) {
+    .laracom-product-grid {
+        grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+        gap: 40px !important;
+    }
+}
+
+.laracom-gallery-col {
+    grid-column: span 1 / span 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+}
+@media (min-width: 1024px) {
+    .laracom-gallery-col {
+        grid-column: span 6 / span 6 !important;
+    }
+}
+
+.laracom-details-col {
+    grid-column: span 1 / span 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 16px !important;
+}
+@media (min-width: 1024px) {
+    .laracom-details-col {
+        grid-column: span 6 / span 6 !important;
+        gap: 20px !important;
+    }
+}
+
+/* Main Image Card */
+.laracom-main-image-card {
+    background-color: #ffffff !important;
+    border: 1px solid #f1f5f9 !important;
+    border-radius: 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.015) !important;
+    position: relative !important;
+    overflow: hidden !important;
+    width: 100% !important;
+    aspect-ratio: 1 / 1 !important;
+}
+.dark .laracom-main-image-card {
+    background-color: #0f172a !important;
+    border-color: #1e293b !important;
+}
+.laracom-main-image-card img {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.laracom-main-image-card:hover img {
+    transform: scale(1.05) !important;
+}
+
+.laracom-gallery-card-btn {
+    position: absolute !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 32px !important;
+    height: 32px !important;
+    background-color: rgba(255, 255, 255, 0.8) !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    z-index: 10 !important;
+    color: #475569 !important;
+}
+.dark .laracom-gallery-card-btn {
+    background-color: rgba(15, 23, 42, 0.8) !important;
+    color: #cbd5e1 !important;
+}
+.laracom-gallery-card-btn:hover {
+    color: var(--color-primary, #2563EB) !important;
+    background-color: #ffffff !important;
+}
+.laracom-gallery-card-btn.prev { left: 16px !important; }
+.laracom-gallery-card-btn.next { right: 16px !important; }
+
+/* Thumbnails */
+.laracom-thumbnails-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+}
+.laracom-thumbnail-btn {
+    aspect-ratio: 1 / 1 !important;
+    border-radius: 12px !important;
+    border: 2px solid #f1f5f9 !important;
+    padding: 4px !important;
+    background-color: #ffffff !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    overflow: hidden !important;
+}
+.dark .laracom-thumbnail-btn {
+    border-color: #1e293b !important;
+    background-color: #0f172a !important;
+}
+.laracom-thumbnail-btn.active {
+    border-color: var(--color-primary, #2563EB) !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+}
+.laracom-thumbnail-btn img {
+    max-width: 100% !important;
+    max-height: 100% !important;
+    object-fit: contain !important;
+    border-radius: 8px !important;
+}
+
+/* Rating badge & Compare */
+.laracom-meta-row {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    flex-wrap: wrap !important;
+    gap: 12px !important;
+}
+.laracom-rating-badge {
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    background-color: #f1f5f9 !important;
+    padding: 6px 12px !important;
+    border-radius: 6px !important;
+    color: #475569 !important;
+}
+.dark .laracom-rating-badge {
+    background-color: #1e293b !important;
+    color: #cbd5e1 !important;
+}
+.laracom-rating-badge svg {
+    color: #f59e0b !important;
+}
+
+.laracom-compare-btn {
+    display: flex !important;
+    align-items: center !important;
+    gap: 4px !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    padding: 6px 12px !important;
+    border-radius: 6px !important;
+    border: 1px solid #e2e8f0 !important;
+    background-color: #ffffff !important;
+    color: #475569 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+.dark .laracom-compare-btn {
+    border-color: #1e293b !important;
+    background-color: #0f172a !important;
+    color: #cbd5e1 !important;
+}
+.laracom-compare-btn:hover {
+    border-color: rgba(37, 99, 235, 0.4) !important;
+}
+.laracom-compare-btn:active {
+    transform: scale(0.95);
+}
+
+.laracom-price-card {
+    background-color: rgba(248, 250, 252, 0.5) !important;
+    border: 1px solid #f1f5f9 !important;
+    border-radius: 12px !important;
+    padding: 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+.dark .laracom-price-card {
+    background-color: rgba(30, 41, 59, 0.4) !important;
+    border-color: #1e293b !important;
+}
+.laracom-price-amount {
+    font-size: 30px !important;
+    font-weight: 900 !important;
+    color: var(--color-primary, #2563EB) !important;
+}
+.laracom-price-regular {
+    font-size: 15px !important;
+    color: #94a3b8 !important;
+    text-decoration: line-through !important;
+    margin-left: 8px !important;
+}
+.laracom-save-badge {
+    font-size: 12px !important;
+    background-color: #fef2f2 !important;
+    color: #dc2626 !important;
+    padding: 4px 10px !important;
+    border-radius: 6px !important;
+    font-weight: 700 !important;
+    border: 1px solid #fee2e2 !important;
+}
+.dark .laracom-save-badge {
+    background-color: rgba(127, 29, 29, 0.2) !important;
+    color: #f87171 !important;
+    border-color: rgba(127, 29, 29, 0.3) !important;
+}
+
+/* Stock progress */
+.laracom-stock-warning-wrap {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 6px !important;
+    margin-top: 8px !important;
+}
+.laracom-stock-warning-label {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    font-size: 12px !important;
+    font-weight: 700 !important;
+    color: #ef4444 !important;
+}
+.laracom-stock-bar-wrap {
+    height: 8px !important;
+    width: 100% !important;
+    background-color: #f1f5f9 !important;
+    border-radius: 9999px !important;
+    overflow: hidden !important;
+}
+.dark .laracom-stock-bar-wrap {
+    background-color: #1e293b !important;
+}
+.laracom-stock-bar-inner {
+    height: 100% !important;
+    background-image: linear-gradient(to right, #ef4444, var(--color-primary, #2563EB)) !important;
+    border-radius: 9999px !important;
+    transition: all 1s ease !important;
+}
+
+/* Actions Wrapper */
+.laracom-qty-row-wrapper {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    margin-top: 8px !important;
+}
+.laracom-actions-row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 12px !important;
+    width: 100% !important;
+}
+@media (min-width: 768px) {
+    .laracom-actions-row {
+        flex-wrap: nowrap !important;
+    }
+}
+
+.laracom-qty-selector {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    background-color: #ffffff !important;
+    padding: 8px !important;
+    width: 120px !important;
+    height: 48px !important;
+    flex-shrink: 0 !important;
+}
+.dark .laracom-qty-selector {
+    border-color: #1e293b !important;
+    background-color: #0f172a !important;
+}
+.laracom-qty-selector button {
+    display: flex !important;
+    height: 32px !important;
+    width: 32px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 8px !important;
+    background-color: #f8fafc !important;
+    border: none !important;
+    color: #334155 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}
+.dark .laracom-qty-selector button {
+    background-color: #1e293b !important;
+    color: #cbd5e1 !important;
+}
+.laracom-qty-selector button:hover {
+    background-color: #f1f5f9 !important;
+}
+.dark .laracom-qty-selector button:hover {
+    background-color: #334155 !important;
+}
+.laracom-qty-display {
+    font-size: 16px !important;
+    font-weight: 900 !important;
+    color: #1e293b !important;
+    padding: 0 8px !important;
+}
+.dark .laracom-qty-display {
+    color: #f1f5f9 !important;
+}
+
+.laracom-btn-primary {
+    flex-grow: 1 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 8px !important;
+    height: 48px !important;
+    background-color: var(--color-primary, #2563EB) !important;
+    color: #ffffff !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    border-radius: 12px !important;
+    border: none !important;
+    letter-spacing: 0.05em !important;
+    cursor: pointer !important;
+    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.1) !important;
+    transition: all 0.3s ease !important;
+    text-decoration: none !important;
+}
+.laracom-btn-primary:hover {
+    opacity: 0.9 !important;
+    box-shadow: 0 6px 12px rgba(37, 99, 235, 0.15) !important;
+}
+.laracom-btn-primary:active {
+    transform: scale(0.95) !important;
+}
+
+.laracom-btn-secondary {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 48px !important;
+    background-color: #0f172a !important;
+    color: #ffffff !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    border-radius: 12px !important;
+    border: none !important;
+    letter-spacing: 0.05em !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    flex-grow: 1 !important;
+    text-decoration: none !important;
+}
+.dark .laracom-btn-secondary {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+}
+.laracom-btn-secondary:hover {
+    background-color: #000000 !important;
+}
+.dark .laracom-btn-secondary:hover {
+    background-color: #f1f5f9 !important;
+}
+.laracom-btn-secondary:active {
+    transform: scale(0.95) !important;
+}
+.laracom-btn-secondary-mobile {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    height: 48px !important;
+    margin-top: 8px !important;
+}
+@media (min-width: 768px) {
+    .laracom-btn-secondary-mobile {
+        display: none !important;
+    }
+    .laracom-btn-secondary {
+        display: inline-flex !important;
+    }
+}
+@media (max-width: 767px) {
+    .laracom-btn-secondary {
+        display: none !important;
+    }
+}
+
+/* Active Offers */
+.laracom-offers-title {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    color: #1e293b !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    margin-top: 24px !important;
+    margin-bottom: 14px !important;
+}
+.dark .laracom-offers-title {
+    color: #e2e8f0 !important;
+}
+
+.laracom-offers-grid {
+    display: flex !important;
+    overflow-x: auto !important;
+    gap: 16px !important;
+    padding-bottom: 12px !important;
+}
+@media (min-width: 640px) {
+    .laracom-offers-grid {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+}
+
+.laracom-ticket-card {
+    position: relative !important;
+    padding-top: 12px !important;
+    flex-shrink: 0 !important;
+    width: calc(60% - 10px) !important;
+}
+@media (min-width: 640px) {
+    .laracom-ticket-card {
+        width: auto !important;
+    }
+}
+
+.laracom-ticket-inner {
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    border: 1px solid #fee2e2 !important;
+    background-image: linear-gradient(to bottom, rgba(254, 242, 242, 0.4), rgba(254, 242, 242, 0.1)) !important;
+    border-radius: 16px !important;
+    padding: 16px !important;
+    padding-top: 20px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    height: 100% !important;
+    overflow: hidden !important;
+}
+.dark .laracom-ticket-inner {
+    border-color: rgba(127, 29, 29, 0.3) !important;
+    background-image: linear-gradient(to bottom, rgba(127, 29, 29, 0.05), rgba(127, 29, 29, 0.02)) !important;
+}
+.laracom-ticket-inner.active {
+    border-color: var(--color-primary, #2563EB) !important;
+    background-color: color-mix(in srgb, var(--color-primary, #2563EB) 5%, transparent) !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.05) !important;
+    transform: scale(1.02) !important;
+}
+.laracom-ticket-badge {
+    position: absolute !important;
+    top: 0 !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    background-color: var(--color-primary, #2563EB) !important;
+    color: #ffffff !important;
+    font-size: 9px !important;
+    font-weight: 900 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    padding: 4px 14px !important;
+    border-radius: 9999px !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+    z-index: 10 !important;
+}
+
+.laracom-ticket-divider {
+    width: 100% !important;
+    border-top: 1px dashed #fee2e2 !important;
+    margin: 14px 0 !important;
+    position: relative !important;
+}
+.dark .laracom-ticket-divider {
+    border-color: rgba(127, 29, 29, 0.3) !important;
+}
+.laracom-ticket-divider-dot {
+    position: absolute !important;
+    top: -6px !important;
+    width: 12px !important;
+    height: 12px !important;
+    border-radius: 50% !important;
+    background-color: #ffffff !important; /* Page Background match */
+}
+.dark .laracom-ticket-divider-dot {
+    background-color: #0b0f19 !important;
+}
+.laracom-ticket-divider-dot.left {
+    left: -22px !important;
+    border-right: 1px solid #fee2e2 !important;
+}
+.dark .laracom-ticket-divider-dot.left {
+    border-color: rgba(127, 29, 29, 0.3) !important;
+}
+.laracom-ticket-divider-dot.right {
+    right: -22px !important;
+    border-left: 1px solid #fee2e2 !important;
+}
+.dark .laracom-ticket-divider-dot.right {
+    border-color: rgba(127, 29, 29, 0.3) !important;
+}
+
+/* Bottom layout (Tabs and Sidebar) */
+.laracom-bottom-layout {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+    margin-top: 48px !important;
+    padding: 0 16px !important;
+}
+@media (min-width: 1024px) {
+    .laracom-bottom-layout {
+        grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+        gap: 40px !important;
+    }
+}
+.laracom-tabs-col {
+    grid-column: span 1 / span 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 32px !important;
+}
+@media (min-width: 1024px) {
+    .laracom-tabs-col {
+        grid-column: span 9 / span 9 !important;
+    }
+}
+
+.laracom-sidebar-col {
+    grid-column: span 1 / span 1 !important;
+}
+@media (min-width: 1024px) {
+    .laracom-sidebar-col {
+        grid-column: span 3 / span 3 !important;
+    }
+}
+
+.laracom-tabs-bar {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 6px !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    padding-bottom: 16px !important;
+    position: sticky !important;
+    top: 64px !important;
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(4px) !important;
+    z-index: 20 !important;
+    padding-top: 8px !important;
+    width: 100% !important;
+}
+.dark .laracom-tabs-bar {
+    border-color: #1e293b !important;
+    background-color: rgba(15, 23, 42, 0.95) !important;
+}
+@media (min-width: 768px) {
+    .laracom-tabs-bar {
+        display: flex !important;
+        justify-content: flex-start !important;
+        gap: 12px !important;
+    }
+}
+
+.laracom-tab-btn {
+    text-align: center !important;
+    padding: 10px 20px !important;
+    border-radius: 8px !important;
+    font-size: 12px !important;
+    font-weight: 900 !important;
+    border: 1px solid #e2e8f0 !important;
+    background-color: #ffffff !important;
+    color: #475569 !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+.dark .laracom-tab-btn {
+    border-color: #1e293b !important;
+    background-color: #0f172a !important;
+    color: #cbd5e1 !important;
+}
+.laracom-tab-btn.active {
+    background-color: var(--color-primary, #2563EB) !important;
+    color: #ffffff !important;
+    border-color: var(--color-primary, #2563EB) !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important;
+}
+
+.laracom-tab-section {
+    padding-top: 24px !important;
+}
+.laracom-tab-section-title {
+    font-size: 20px !important;
+    font-weight: 900 !important;
+    color: #0f172a !important;
+    margin-bottom: 16px !important;
+}
+.dark .laracom-tab-section-title {
+    color: #cbd5e1 !important;
+}
+
+/* Sidebar sticky content */
+.laracom-sidebar-sticky {
+    background-color: #ffffff !important;
+    border: 1px solid #f1f5f9 !important;
+    border-radius: 16px !important;
+    padding: 20px !important;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.015) !important;
+    position: sticky !important;
+    top: 80px !important;
+}
+.dark .laracom-sidebar-sticky {
+    background-color: #0f172a !important;
+    border-color: #1e293b !important;
+}
+.laracom-sidebar-title {
+    font-size: 16px !important;
+    font-weight: 900 !important;
+    color: #0f172a !important;
+    padding-bottom: 12px !important;
+    border-bottom: 1px solid #f1f5f9 !important;
+    margin-bottom: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+.dark .laracom-sidebar-title {
+    color: #cbd5e1 !important;
+    border-color: #1e293b !important;
+}
+
+.laracom-rec-card {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    transition: all 0.3s ease !important;
+    cursor: pointer !important;
+    position: relative !important;
+    margin-bottom: 16px !important;
+}
+.dark .laracom-rec-card {
+    background-color: #0f172a !important;
+    border-color: #1e293b !important;
+}
+.laracom-rec-card:hover {
+    border-color: var(--color-primary, #2563EB) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03) !important;
+}
+
+/* Comparison Floating Bar & Modal */
+.laracom-compare-drawer {
+    position: fixed !important;
+    bottom: 24px !important;
+    right: 24px !important;
+    z-index: 50 !important;
+    max-width: 360px !important;
+    width: calc(100% - 48px) !important;
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 16px !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+    padding: 16px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+}
+.dark .laracom-compare-drawer {
+    background-color: #0f172a !important;
+    border-color: #1e293b !important;
+}
+
+.laracom-compare-modal {
+    position: fixed !important;
+    inset: 0 !important;
+    z-index: 50 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background-color: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(4px) !important;
+    padding: 16px !important;
+}
+.laracom-compare-modal-inner {
+    background-color: #ffffff !important;
+    border: 1px solid #f1f5f9 !important;
+    border-radius: 24px !important;
+    width: 100% !important;
+    max-width: 896px !important;
+    max-height: 85vh !important;
+    overflow-y: auto !important;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15) !important;
+    padding: 24px !important;
+    position: relative !important;
+}
+.dark .laracom-compare-modal-inner {
+    background-color: #0f172a !important;
+    border-color: #1e293b !important;
+}
+
+/* Review Cards & Masonry Grid */
+.laracom-reviews-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+}
+@media (min-width: 768px) {
+    .laracom-reviews-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
+}
+.laracom-review-card {
+    background-color: #ffffff !important;
+    border: 1px solid #f1f5f9 !important;
+    border-radius: 16px !important;
+    padding: 20px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.015) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    text-align: left !important;
+}
+.dark .laracom-review-card {
+    background-color: #0f172a !important;
+    border-color: #1e293b !important;
+}
+
+/* FBT item card classes */
+.laracom-fbt-item {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    background-color: rgba(248, 250, 252, 0.5) !important;
+    padding: 16px !important;
+    border-radius: 12px !important;
+    border: 1px solid #e2e8f0 !important;
+    position: relative !important;
+    width: 100% !important;
+    transition: all 0.3s ease !important;
+}
+.dark .laracom-fbt-item {
+    background-color: rgba(30, 41, 59, 0.4) !important;
+    border-color: #1e293b !important;
+}
+.laracom-fbt-item.main-item {
+    border-color: var(--color-primary, #2563EB) !important;
+}
