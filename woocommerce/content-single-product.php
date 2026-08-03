@@ -691,6 +691,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
             form.cart table.variations td.label { padding: 0 !important; font-size: 11px !important; font-weight: 700 !important; color: #64748B !important; text-transform: uppercase !important; letter-spacing: 0.05em !important; }
             form.cart table.variations td.value { padding: 0 !important; }
             form.cart .quantity, form.cart .single_add_to_cart_button { display: none !important; }
+            .premium-product-actions { display: none !important; }
         </style>
     
         <!-- Top Navigation -->
