@@ -2499,6 +2499,7 @@ a.ajax_add_to_cart.loading::after,
 
 
 
+
 /* ==========================================================================
    COMPREHENSIVE NATIVE CSS UTILITIES FOR GADGET SINGLE PRODUCT LAYOUT
    ========================================================================== */
@@ -2560,6 +2561,8 @@ a.ajax_add_to_cart.loading::after,
 .-right-\[22px\] { right: -22px !important; }
 .-top-1\.5 { top: -0.375rem !important; }
 .-bottom-\[1px\] { bottom: -1px !important; }
+.translate-x-full { transform: translateX(100%) !important; }
+.-translate-x-full { transform: translateX(-100%) !important; }
 .-translate-x-1\/2 { transform: translateX(-50%) !important; }
 .-translate-y-1\/2 { transform: translateY(-50%) !important; }
 .flex-col { flex-direction: column !important; }
@@ -2898,6 +2901,12 @@ a.ajax_add_to_cart.loading::after,
 .scroll-mt-28 { scroll-margin-top: 7rem !important; }
 .scroll-mt-32 { scroll-margin-top: 8rem !important; }
 .origin-top-left { transform-origin: top left !important; }
+.transition-transform { transition-property: transform !important; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important; }
+.transition-opacity { transition-property: opacity !important; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important; }
+.duration-200 { transition-duration: 200ms !important; }
+.duration-300 { transition-duration: 300ms !important; }
+.duration-500 { transition-duration: 500ms !important; }
+.ease-in-out { transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important; }
 .last\:border-0 { border-width: 0 !important; }
 .last\:pb-0 { padding-bottom: 0 !important; }
 .animate-fade-in { animation: fadeIn 0.2s ease-out !important; }
@@ -2943,8 +2952,8 @@ a.ajax_add_to_cart.loading::after,
 .dark .dark\:bg-slate-850 { background-color: #1e293b !important; }
 .dark .dark\:bg-slate-855 { background-color: #0f172a !important; }
 .dark .dark\:bg-slate-900 { background-color: #0f172a !important; }
-.dark .dark\:bg-slate-955 { background-color: #020617 !important; }
 .dark .dark\:bg-slate-950 { background-color: #020617 !important; }
+.dark .dark\:bg-slate-955 { background-color: #020617 !important; }
 .dark .dark\:bg-slate-955\/10 { background-color: rgba(2, 6, 23, 0.1) !important; }
 .dark .dark\:bg-slate-955\/20 { background-color: rgba(2, 6, 23, 0.2) !important; }
 .dark .dark\:bg-emerald-955\/20 { background-color: rgba(6, 78, 59, 0.2) !important; }
