@@ -1740,14 +1740,34 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
         ];
     
         let allReviews = commentsList.length > 0 ? commentsList : mockReviews;
-            // Global utility functions assigned to window (accessible to inline onclick attributes)
+        let reviewsSortMode = 'newest';
+        let reviewsVisibleCount = 5;
+
+        // Safe global reference definition
+        const getCompareQueue = function() {
+            try { return JSON.parse(localStorage.getItem('laracom_compared_items') || '[]'); } catch (e) { return []; }
+        };
+
+        const saveCompareQueue = function(queue) {
+            localStorage.setItem('laracom_compared_items', JSON.stringify(queue));
+            if (typeof updateCompareWidgetUI === 'function') {
+                updateCompareWidgetUI();
+            }
+        };
+
+        // Vanilla JS implementations of window methods (to be ready before jQuery loads)
         window.changeMainImageLaracom = function(thumbnailEl, index) {
             const slider = document.getElementById('main-image-slider-laracom');
             if (!slider) return;
-            slider.style.transform = `translateX(-${index * 100}%)`;
+            slider.style.transform = 'translateX(-' + (index * 100) + '%)';
             slider.dataset.currentIndex = index;
-            $('.thumbnail-btn-laracom').removeClass('border-primary shadow-sm').addClass('border-slate-100 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700');
-            $(thumbnailEl).addClass('border-primary shadow-sm').removeClass('border-slate-100 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700');
+            
+            document.querySelectorAll('.thumbnail-btn-laracom').forEach(function(el) {
+                el.classList.remove('border-primary', 'shadow-sm');
+                el.classList.add('border-slate-100', 'dark:border-slate-800', 'hover:border-slate-300', 'dark:hover:border-slate-700');
+            });
+            thumbnailEl.classList.add('border-primary', 'shadow-sm');
+            thumbnailEl.classList.remove('border-slate-100', 'dark:border-slate-800', 'hover:border-slate-300', 'dark:hover:border-slate-700');
         };
 
         window.slidePrevLaracom = function() {
@@ -1771,9 +1791,12 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
         };
 
         window.setOfferQuantity = function(qty) {
-            var $input = $('form.cart input[name="quantity"]');
-            if ($input.length) {
-                $input.val(qty).trigger('change');
+            document.querySelectorAll('form.cart input[name="quantity"]').forEach(function(input) {
+                input.value = qty;
+                const event = new Event('change', { bubbles: true });
+                input.dispatchEvent(event);
+            });
+            if (typeof showToastNotification === 'function') {
                 showToastNotification("Bulk quantity of " + qty + " selected!");
             }
         };
@@ -1812,8 +1835,17 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                 const elementPosition = el.getBoundingClientRect().top;
                 const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
                 window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-                $('.tab-header-btn').removeClass('bg-primary text-white border-primary shadow-sm').addClass('bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-202 border-slate-200 dark:border-slate-800 hover:border-primary/40');
-                $('#tab-btn-' + id).addClass('bg-primary text-white border-primary shadow-sm').removeClass('bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-202 border-slate-200 dark:border-slate-800 hover:border-primary/40');
+                
+                document.querySelectorAll('.tab-header-btn').forEach(function(btn) {
+                    btn.classList.remove('bg-primary', 'text-white', 'border-primary', 'shadow-sm');
+                    btn.classList.add('bg-white', 'dark:bg-slate-900', 'text-slate-700', 'dark:text-slate-202', 'border-slate-200', 'dark:border-slate-800', 'hover:border-primary/40');
+                });
+                
+                const activeBtn = document.getElementById('tab-btn-' + id);
+                if (activeBtn) {
+                    activeBtn.classList.add('bg-primary', 'text-white', 'border-primary', 'shadow-sm');
+                    activeBtn.classList.remove('bg-white', 'dark:bg-slate-900', 'text-slate-700', 'dark:text-slate-202', 'border-slate-200', 'dark:border-slate-800', 'hover:border-primary/40');
+                }
             }
         };
 
@@ -1845,239 +1877,6 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
             }
         }
 
-        jQuery(document).ready(function($) {
-            renderReviewsList();
-            initQuestionsSection();
-            updateCompareWidgetUI();
-            updateFbtTotalLaracom();
-    
-            const slides = document.querySelectorAll('.slider-slide');
-            slides.forEach(slide => {
-                const img = slide.querySelector('img');
-                if (!img) return;
-                img.style.transition = 'transform 0.15s ease-out';
-                img.style.cursor = 'zoom-in';
-                slide.addEventListener('mousemove', function(e) {
-                    if (window.matchMedia('(min-width: 1024px)').matches) {
-                        const rect = slide.getBoundingClientRect();
-                        const x = ((e.clientX - rect.left) / rect.width) * 100;
-                        const y = ((e.clientY - rect.top) / rect.height) * 100;
-                        img.style.transformOrigin = `${x}% ${y}%`;
-                        img.style.transform = 'scale(2.3)';
-                    }
-                });
-                slide.addEventListener('mouseleave', function() {
-                    if (window.matchMedia('(min-width: 1024px)').matches) {
-                        img.style.transform = 'scale(1)';
-                    }
-                });
-            });
-    
-            function setupCustomVariationButtons() {
-                $('form.variations_form select').each(function() {
-                    var $select = $(this);
-                    if ($select.hasClass('laracom-mapped')) return;
-                    $select.addClass('laracom-mapped').hide();
-                    
-                    var $container = $('<div class="flex flex-wrap gap-2 mt-2 select-button-container-wrap"></div>');
-                    $select.find('option').each(function() {
-                        var val = $(this).val();
-                        var text = $(this).text();
-                        if (!val) return;
-                        
-                        var $btn = $('<button type="button" class="px-4 py-1.5 rounded-lg text-xs md:text-sm font-semibold border transition-all border-slate-200 dark:border-slate-800 hover:border-primary text-slate-700 dark:text-slate-355 hover:text-primary cursor-pointer">' + text + '</button>');
-                        $btn.attr('data-value', val);
-                        
-                        if ($select.val() === val) {
-                            $btn.addClass('border-primary bg-primary/5 text-primary').removeClass('border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-355');
-                        }
-                        
-                        $btn.on('click', function(e) {
-                            e.preventDefault();
-                            $select.val(val).trigger('change');
-                            $container.find('button').removeClass('border-primary bg-primary/5 text-primary').addClass('border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300');
-                            $(this).addClass('border-primary bg-primary/5 text-primary').removeClass('border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300');
-                            applyImageColorTint(val);
-                        });
-                        $container.append($btn);
-                    });
-                    $select.after($container);
-                });
-            }
-    
-            function applyImageColorTint(colorName) {
-                const c = colorName.toLowerCase();
-                let filterClass = "";
-                if (c.includes('blue')) filterClass = "hue-rotate-[180deg] saturate-[1.2]";
-                else if (c.includes('pink') || c.includes('cherry')) filterClass = "hue-rotate-[290deg] saturate-[1.3]";
-                else if (c.includes('black')) filterClass = "brightness-[0.75] contrast-[1.1] saturate-[0.1]";
-                else if (c.includes('gray')) filterClass = "brightness-[0.9] contrast-[1.05] grayscale-[0.5]";
-                else if (c.includes('silver')) filterClass = "brightness-[1.1] contrast-[0.95] grayscale-[0.8]";
-                else if (c.includes('gold')) filterClass = "hue-rotate-[35deg] saturate-[1.4] sepia-[0.3]";
-                $('.gallery-main-img').attr('class', 'w-full h-full object-contain select-none pointer-events-none transition-all duration-500 group-hover:scale-105 gallery-main-img ' + filterClass);
-            }
-    
-            setupCustomVariationButtons();
-    
-            $(document.body).on('woocommerce_variation_has_changed', function() {
-                $('form.variations_form select').each(function() {
-                    var $select = $(this);
-                    var val = $select.val();
-                    var $container = $select.next('.select-button-container-wrap');
-                    if ($container.length) {
-                        $container.find('button').removeClass('border-primary bg-primary/5 text-primary').addClass('border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300');
-                        if (val) {
-                            $container.find('button[data-value="' + val + '"]').addClass('border-primary bg-primary/5 text-primary').removeClass('border-slate-200 dark:border-slate-800 text-slate-750 dark:text-slate-355');
-                            applyImageColorTint(val);
-                        }
-                    }
-                });
-                setTimeout(function() {
-                    var variation_price = $('.woocommerce-variation .price .amount').html();
-                    if (variation_price) $('#laracom-price-display').html(variation_price);
-                }, 100);
-            });
-    
-            function syncQtyDisplay() {
-                var val = $('form.cart input[name="quantity"]').val() || 1;
-                $('.qty-display').text(val);
-                updateOfferHighlight(parseInt(val));
-            }
-    
-            $(document.body).on('change', 'form.cart input[name="quantity"]', function() {
-                syncQtyDisplay();
-            });
-    
-            $(document.body).on('click', '.quantity-plus', function() {
-                var $input = $('form.cart input[name="quantity"]');
-                if ($input.length) {
-                    var val = parseInt($input.val()) || 1;
-                    $input.val(val + 1).trigger('change');
-                }
-            });
-    
-            $(document.body).on('click', '.quantity-minus', function() {
-                var $input = $('form.cart input[name="quantity"]');
-                if ($input.length) {
-                    var val = parseInt($input.val()) || 1;
-                    $input.val(Math.max(1, val - 1)).trigger('change');
-                }
-            });
-    
-            syncQtyDisplay();
-    
-            function updateOfferHighlight(qty) {
-                $('.ticket-card').removeClass('border-primary ring-2 ring-primary/10 scale-[1.02] bg-primary-light').addClass('border-orange-100');
-                if (qty >= 10) $('#ticket-10').addClass('border-primary ring-2 ring-primary/10 scale-[1.02] bg-primary-light').removeClass('border-orange-100');
-                else if (qty >= 5) $('#ticket-5').addClass('border-primary ring-2 ring-primary/10 scale-[1.02] bg-primary-light').removeClass('border-orange-100');
-                else if (qty >= 2) $('#ticket-2').addClass('border-primary ring-2 ring-primary/10 scale-[1.02] bg-primary-light').removeClass('border-orange-100');
-            }
-    
-            $(document.body).on('click', '#laracom-add-to-cart', function(e) {
-                e.preventDefault();
-                var $form = $('form.cart');
-                if ($form.hasClass('variations_form')) {
-                    var variation_id = $form.find('input[name="variation_id"]').val();
-                    if (!variation_id || variation_id === "0") {
-                        alert('Please select product options first.');
-                        return;
-                    }
-                }
-                var $btn = $form.find('.single_add_to_cart_button');
-                if ($btn.length) {
-                    if ($btn.hasClass('ajax_add_to_cart') || $btn.attr('data-product_id')) $btn.trigger('click');
-                    else $form.submit();
-                }
-            });
-    
-            function handleBuyNowClick() {
-                var $form = $('form.cart');
-                if ($form.hasClass('variations_form')) {
-                    var variation_id = $form.find('input[name="variation_id"]').val();
-                    if (!variation_id || variation_id === "0") {
-                        alert('Please select product options first.');
-                        return;
-                    }
-                }
-                let redirectInput = $form.find('input[name="buy_now_redirect"]');
-                if (!redirectInput.length) {
-                    redirectInput = $('<input type="hidden" name="buy_now_redirect" value="1">');
-                    $form.append(redirectInput);
-                } else redirectInput.val('1');
-                $form.submit();
-            }
-    
-            $(document.body).on('click', '#laracom-buy-now, #laracom-buy-now-mobile', function(e) {
-                e.preventDefault();
-                handleBuyNowClick();
-            });
-    
-            // FBT AJAX execution
-            $('#fbt-add-all').on('click', function() {
-                const btn = $(this);
-                const originalContent = btn.html();
-                btn.prop('disabled', true).html('Adding...');
-                
-                const itemsData = [];
-                document.querySelectorAll('.fbt-item').forEach(item => {
-                    const cb = item.querySelector('.fbt-checkbox');
-                    if (cb && cb.checked) {
-                        if (item.classList.contains('fbt-main-item')) {
-                            var $form = $('form.cart');
-                            var variation_id = $form.find('input[name="variation_id"]').val() || 0;
-                            var mainQty = parseInt($form.find('input[name="quantity"]').val()) || 1;
-                            
-                            itemsData.push({
-                                product_id: parseInt(item.querySelector('.fbt-id').value),
-                                variation_id: parseInt(variation_id),
-                                quantity: mainQty,
-                                variation: {}
-                            });
-                        } else {
-                            itemsData.push({
-                                product_id: parseInt(item.querySelector('.fbt-id').value),
-                                variation_id: 0,
-                                quantity: 1,
-                                variation: {}
-                            });
-                        }
-                    }
-                });
-    
-                if (itemsData.length === 0) {
-                    btn.prop('disabled', false).html(originalContent);
-                    return;
-                }
-    
-                $.ajax({
-                    url: '<?php echo admin_url("admin-ajax.php"); ?>',
-                    type: 'POST',
-                    data: {
-                        action: 'add_multiple_products_to_cart',
-                        nonce: (window.woocom_ajax && window.woocom_ajax.cart_nonce) || (window.wc_add_to_cart_params && window.wc_add_to_cart_params.nonce) || '',
-                        items: itemsData
-                    },
-                    success: function(response) {
-                        if (response.success !== false) {
-                            $(document.body).trigger('added_to_cart', [response.fragments, response.cart_hash]);
-                            btn.prop('disabled', false).text('Added Successfully!');
-                            setTimeout(() => {
-                                btn.html(originalContent);
-                                updateFbtTotalLaracom();
-                            }, 2000);
-                        } else {
-                            btn.prop('disabled', false).text('Error!');
-                            setTimeout(() => btn.html(originalContent), 2000);
-                        }
-                    },
-                    error: function() {
-                        btn.prop('disabled', false).text('Error!');
-                        setTimeout(() => btn.html(originalContent), 2000);
-                    }
-                });
-            });
-        });-slate-800 hover:border-primary/40');
-                }
             };
         });
     
