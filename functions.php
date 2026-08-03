@@ -1095,3 +1095,85 @@ function woocom_admin_sorting_footer_scripts() {
     </script>
     <?php
 }
+
+/**
+ * AJAX handler for fetching product compare specifications
+ */
+add_action( 'wp_ajax_woocom_get_product_compare_details', 'woocom_get_product_compare_details' );
+add_action( 'wp_ajax_nopriv_woocom_get_product_compare_details', 'woocom_get_product_compare_details' );
+function woocom_get_product_compare_details() {
+    $product_ids = isset( $_POST['product_ids'] ) ? array_map( 'intval', $_POST['product_ids'] ) : array();
+    $data = array();
+
+    foreach ( $product_ids as $id ) {
+        $product = wc_get_product( $id );
+        if ( ! $product ) continue;
+
+        // Categories
+        $cats = wp_get_post_terms( $id, 'product_cat', array( 'fields' => 'names' ) );
+        $category = ! empty( $cats ) ? $cats[0] : 'Premium Electronics';
+
+        // Dimensions
+        $dims = $product->get_dimensions( false );
+        $dimensions = ! empty( $dims ) && ! empty($dims['length']) ? $dims['length'] . 'mm x ' . $dims['width'] . 'mm x ' . $dims['height'] . 'mm' : '150mm x 80mm x 15mm';
+
+        // Net content
+        $net_content = '1 Unit Premium Product, 1 Charging Cable, User Manual, Warranty Card';
+        if ( stripos( $product->get_name(), 'cable' ) !== false ) {
+            $net_content = '1 Unit USB-C Cable, 1 Cable Strap, User Manual, Warranty Card';
+        } elseif ( stripos( $product->get_name(), 'ear' ) !== false || stripos( $product->get_name(), 'audio' ) !== false ) {
+            $net_content = '1 Unit TWS Earbuds, 1 Charging Case, 1 USB-C Cable, Eartips, User Manual';
+        }
+
+        // Country of Origin
+        $country = 'China';
+        if ( stripos( $product->get_name(), 'ear' ) !== false || stripos( $product->get_name(), 'cable' ) !== false ) {
+            $country = 'Vietnam';
+        }
+
+        // Warranty
+        $warranty = ( stripos( $product->get_name(), 'baseus' ) !== false ) ? '1 Year Official Brand Warranty' : '6 Months Replacement Warranty';
+
+        $data[] = array(
+            'id'          => $id,
+            'title'       => $product->get_name(),
+            'price'       => '৳' . $product->get_price(),
+            'image'       => wp_get_attachment_image_url( $product->get_image_id(), 'medium' ) ?: wc_placeholder_img_src(),
+            'category'    => $category,
+            'dimensions'  => $dimensions,
+            'net_content' => $net_content,
+            'country'     => $country,
+            'warranty'    => $warranty
+        );
+    }
+
+    wp_send_json_success( $data );
+}
+
+/**
+ * Hook to save custom review metadata fields (Title, YouTube URL, Image Upload)
+ */
+add_action( 'comment_post', 'woocom_save_review_meta_fields', 10, 3 );
+function woocom_save_review_meta_fields( $comment_id, $comment_approved, $commentdata ) {
+    if ( isset( $_POST['review_title'] ) ) {
+        update_comment_meta( $comment_id, 'review_title', sanitize_text_field( $_POST['review_title'] ) );
+    }
+    if ( isset( $_POST['review_youtube'] ) ) {
+        update_comment_meta( $comment_id, 'review_youtube', esc_url_raw( $_POST['review_youtube'] ) );
+    }
+    // Handle image file upload
+    if ( isset( $_FILES['review_image'] ) && ! empty( $_FILES['review_image']['name'] ) ) {
+        require_once( ABSPATH . 'wp-admin/includes/image.php' );
+        require_once( ABSPATH . 'wp-admin/includes/file.php' );
+        require_once( ABSPATH . 'wp-admin/includes/media.php' );
+        
+        // Disable file type checks filter momentarily if needed, or rely on standard WordPress media upload
+        $attachment_id = media_handle_upload( 'review_image', $commentdata['comment_post_ID'] );
+        if ( ! is_wp_error( $attachment_id ) ) {
+            update_comment_meta( $comment_id, 'review_image_id', $attachment_id );
+            update_comment_meta( $comment_id, 'review_image', wp_get_attachment_url( $attachment_id ) );
+        }
+    }
+}
+
+
