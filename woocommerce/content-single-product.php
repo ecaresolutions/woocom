@@ -2380,8 +2380,20 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                     else if (qty >= 2) $('#ticket-2').addClass('border-primary ring-2 ring-primary/10 scale-[1.02] bg-primary-light').removeClass('border-orange-100');
                 }
         
+                $(document.body).on('added_to_cart', function(event, fragments, cart_hash, $button) {
+                    if ($button && $button.attr('id') === 'single-add-to-cart-btn') {
+                        if (typeof showToastNotification === 'function') {
+                            showToastNotification('"' + currentProductTitle + '" added to cart!');
+                        }
+                    }
+                });
+
                 $(document.body).on('click', '#laracom-add-to-cart', function(e) {
                     e.preventDefault();
+                    
+                    // Suppress opening the cart drawer sidebar
+                    window.woocom_suppress_drawer = true;
+                    
                     var $form = $('form.cart[method="post"], form.cart').filter(function() {
                         return $(this).attr('method') === 'post';
                     }).first();
