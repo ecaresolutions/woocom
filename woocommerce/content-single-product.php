@@ -610,6 +610,50 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
     }
     ?>
     <div class="single-product-container bg-[#f7fafb] text-slate-800 dark:bg-[#0a0f12] dark:text-slate-100 p-0">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script>
+            tailwind.config = {
+                darkMode: 'class',
+                theme: {
+                    extend: {
+                        colors: {
+                            primary: 'var(--color-primary, #2563EB)',
+                            secondary: 'var(--color-secondary, #F7A501)',
+                            slate: {
+                                50: '#f8fafc',
+                                100: '#f1f5f9',
+                                105: '#f1f5f9',
+                                200: '#e2e8f0',
+                                202: '#e2e8f0',
+                                205: '#cbd5e1',
+                                300: '#cbd5e1',
+                                350: '#cbd5e1',
+                                400: '#94a3b8',
+                                404: '#94a3b8',
+                                405: '#64748b',
+                                450: '#64748b',
+                                455: '#475569',
+                                500: '#64748b',
+                                505: '#64748b',
+                                600: '#475569',
+                                650: '#475569',
+                                700: '#334155',
+                                750: '#334155',
+                                800: '#1e293b',
+                                805: '#1e293b',
+                                808: '#0f172a',
+                                850: '#1e293b',
+                                855: '#0f172a',
+                                900: '#0f172a',
+                                905: '#0f172a',
+                                950: '#020617',
+                                955: '#020617',
+                            }
+                        }
+                    }
+                }
+            };
+        </script>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;950&display=swap" rel="stylesheet" />
