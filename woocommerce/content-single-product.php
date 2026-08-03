@@ -609,7 +609,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
         array_unshift( $attachment_ids, $main_image_id );
     }
     ?>
-    <div class="single-product-container bg-[#f7fafb] text-slate-800 dark:bg-[#0a0f12] dark:text-slate-100 p-0">
+    <div class="single-product-container bg-white text-slate-800 dark:bg-slate-900 dark:text-slate-100 p-0">
         <script src="https://cdn.tailwindcss.com"></script>
         <script>
             tailwind.config = {
@@ -930,8 +930,8 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                                     <div class="text-xs md:text-sm font-bold text-slate-800 dark:text-slate-200">Buy 2 or more</div>
                                 </div>
                                 <div class="w-full border-t border-dashed border-orange-200 dark:border-orange-900/50 my-3.5 relative">
-                                    <div class="absolute -left-[22px] -top-1.5 w-3 h-3 rounded-full bg-[#f7fafb] dark:bg-[#0a0f12] border-r border-orange-100 dark:border-orange-900/40"></div>
-                                    <div class="absolute -right-[22px] -top-1.5 w-3 h-3 rounded-full bg-[#f7fafb] dark:bg-[#0a0f12] border-l border-orange-100 dark:border-orange-900/40"></div>
+                                    <div class="absolute -left-[22px] -top-1.5 w-3 h-3 rounded-full bg-white dark:bg-slate-900 border-r border-orange-100 dark:border-orange-900/40"></div>
+                                    <div class="absolute -right-[22px] -top-1.5 w-3 h-3 rounded-full bg-white dark:bg-slate-900 border-l border-orange-100 dark:border-orange-900/40"></div>
                                 </div>
                                 <div class="text-center w-full mt-auto">
                                     <div class="text-xs font-bold text-primary">Get 6% Off</div>
@@ -954,8 +954,8 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                                     <div class="text-xs md:text-sm font-bold text-slate-800 dark:text-slate-200">Buy 5 or more</div>
                                 </div>
                                 <div class="w-full border-t border-dashed border-emerald-200 dark:border-emerald-900/50 my-3.5 relative">
-                                    <div class="absolute -left-[22px] -top-1.5 w-3 h-3 rounded-full bg-[#f7fafb] dark:bg-[#0a0f12] border-r border-emerald-100 dark:border-emerald-900/40"></div>
-                                    <div class="absolute -right-[22px] -top-1.5 w-3 h-3 rounded-full bg-[#f7fafb] dark:bg-[#0a0f12] border-l border-emerald-100 dark:border-emerald-900/40"></div>
+                                    <div class="absolute -left-[22px] -top-1.5 w-3 h-3 rounded-full bg-white dark:bg-slate-900 border-r border-emerald-100 dark:border-emerald-900/40"></div>
+                                    <div class="absolute -right-[22px] -top-1.5 w-3 h-3 rounded-full bg-white dark:bg-slate-900 border-l border-emerald-100 dark:border-emerald-900/40"></div>
                                 </div>
                                 <div class="text-center w-full mt-auto">
                                     <div class="text-xs font-bold text-emerald-600 dark:text-emerald-400">Get 7% Off</div>
@@ -978,8 +978,8 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                                     <div class="text-xs md:text-sm font-bold text-slate-800 dark:text-slate-200">Buy 10 or more</div>
                                 </div>
                                 <div class="w-full border-t border-dashed border-indigo-200 dark:border-indigo-900/50 my-3.5 relative">
-                                    <div class="absolute -left-[22px] -top-1.5 w-3 h-3 rounded-full bg-[#f7fafb] dark:bg-[#0a0f12] border-r border-indigo-100 dark:border-indigo-900/40"></div>
-                                    <div class="absolute -right-[22px] -top-1.5 w-3 h-3 rounded-full bg-[#f7fafb] dark:bg-[#0a0f12] border-l border-indigo-100 dark:border-indigo-900/40"></div>
+                                    <div class="absolute -left-[22px] -top-1.5 w-3 h-3 rounded-full bg-white dark:bg-slate-900 border-r border-indigo-100 dark:border-indigo-900/40"></div>
+                                    <div class="absolute -right-[22px] -top-1.5 w-3 h-3 rounded-full bg-white dark:bg-slate-900 border-l border-indigo-100 dark:border-indigo-900/40"></div>
                                 </div>
                                 <div class="text-center w-full mt-auto">
                                     <div class="text-xs font-bold text-indigo-600 dark:text-indigo-400">Get 10% Off</div>
@@ -1101,7 +1101,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                 <!-- Left Column: Tabs & Contents -->
                 <div class="lg:col-span-9 flex flex-col gap-8">
                     <!-- Tab Buttons Row -->
-                    <div class="grid grid-cols-4 md:flex md:w-auto md:justify-start gap-1.5 md:gap-3 border-b border-slate-105 dark:border-slate-850 pb-4 sticky top-16 bg-[#f7fafb]/90 dark:bg-[#0a0f12]/90 backdrop-blur-sm z-20 pt-2 w-full">
+                    <div class="grid grid-cols-4 md:flex md:w-auto md:justify-start gap-1.5 md:gap-3 border-b border-slate-105 dark:border-slate-850 pb-4 sticky top-16 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm z-20 pt-2 w-full">
                         <button type="button" onclick="scrollToTabSection('specification')" id="tab-btn-specification" class="tab-header-btn w-full md:w-auto text-center px-1.5 md:px-5 py-2.5 rounded-lg text-[10px] sm:text-xs md:text-sm font-black border cursor-pointer truncate bg-primary text-white border-primary shadow-sm">
                             Specification
                         </button>
