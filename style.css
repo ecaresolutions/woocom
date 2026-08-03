@@ -2498,6 +2498,7 @@ a.ajax_add_to_cart.loading::after,
 
 
 
+
 /* ==========================================================================
    COMPREHENSIVE NATIVE CSS UTILITIES FOR GADGET SINGLE PRODUCT LAYOUT
    ========================================================================== */
@@ -2820,8 +2821,8 @@ a.ajax_add_to_cart.loading::after,
 .bg-slate-50 { background-color: #f8fafc !important; }
 .bg-slate-100 { background-color: #f1f5f9 !important; }
 .bg-slate-800 { background-color: #1e293b !important; }
-.bg-slate-900 { background-color: #0f172a !important; }
 .bg-slate-905 { background-color: #0b0f19 !important; }
+.bg-slate-900 { background-color: #0f172a !important; }
 .bg-emerald-50 { background-color: #ecfdf5 !important; }
 .bg-green-50 { background-color: #f0fdf4 !important; }
 .bg-red-50 { background-color: #fef2f2 !important; }
@@ -2942,8 +2943,8 @@ a.ajax_add_to_cart.loading::after,
 .dark .dark\:bg-slate-850 { background-color: #1e293b !important; }
 .dark .dark\:bg-slate-855 { background-color: #0f172a !important; }
 .dark .dark\:bg-slate-900 { background-color: #0f172a !important; }
-.dark .dark\:bg-slate-950 { background-color: #020617 !important; }
 .dark .dark\:bg-slate-955 { background-color: #020617 !important; }
+.dark .dark\:bg-slate-950 { background-color: #020617 !important; }
 .dark .dark\:bg-slate-955\/10 { background-color: rgba(2, 6, 23, 0.1) !important; }
 .dark .dark\:bg-slate-955\/20 { background-color: rgba(2, 6, 23, 0.2) !important; }
 .dark .dark\:bg-emerald-955\/20 { background-color: rgba(6, 78, 59, 0.2) !important; }
@@ -3019,6 +3020,7 @@ a.ajax_add_to_cart.loading::after,
 }
 
 @media (min-width: 1024px) {
+  .lg\:hidden { display: none !important; }
   .lg\:grid-cols-12 { grid-template-columns: repeat(12, minmax(0, 1fr)) !important; }
   .lg\:grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
   .lg\:grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
