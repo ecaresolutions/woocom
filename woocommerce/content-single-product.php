@@ -1643,23 +1643,8 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
     <?php do_action( 'woocommerce_after_single_product' ); ?>
     
     <script type="text/javascript">
-        window.addEventListener('error', function(e) {
-            console.error("Global JS Error Captured: ", e.message, " in ", e.filename, " at line ", e.lineno);
-            const errDiv = document.createElement('div');
-            errDiv.style.position = 'fixed';
-            errDiv.style.bottom = '20px';
-            errDiv.style.left = '20px';
-            errDiv.style.background = '#ef4444';
-            errDiv.style.color = '#ffffff';
-            errDiv.style.padding = '12px 20px';
-            errDiv.style.fontSize = '13px';
-            errDiv.style.fontWeight = 'bold';
-            errDiv.style.zIndex = '999999';
-            errDiv.style.borderRadius = '10px';
-            errDiv.style.boxShadow = '0 10px 25px rgba(0,0,0,0.2)';
-            errDiv.innerText = "🚨 JS Error: " + e.message + " (" + e.filename.split('/').pop() + ":" + e.lineno + ")";
-            document.body.appendChild(errDiv);
-        });
+        // Debug error handler removed
+
 
         const currentProductId = <?php echo $main_product_id; ?>;
         const currentProductTitle = "<?php echo esc_js( $product_title ); ?>";
@@ -2063,7 +2048,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                             <span class="text-xs text-slate-400 dark:text-slate-500 font-semibold">${rev.date}</span>
                         </div>
                         <div class="flex items-center gap-2 mb-3">
-                            <div class="h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-355 font-black text-xs uppercase">	ext{${rev.name.charAt(0)}}</div>
+                            <div class="h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-355 font-black text-xs uppercase">${rev.name.charAt(0)}</div>
                             <div>
                                 <div class="flex items-center gap-1.5">
                                     <span class="text-xs md:text-sm font-bold text-slate-808 dark:text-slate-202">${rev.name}</span>
