@@ -613,6 +613,9 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
         <script src="https://cdn.tailwindcss.com"></script>
         <script>
             tailwind.config = {
+                corePlugins: {
+                    preflight: false,
+                },
                 darkMode: 'class',
                 theme: {
                     extend: {
