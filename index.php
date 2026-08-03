@@ -222,7 +222,7 @@ get_header();
                 </style>
                 <div class="mt-12">
                     <!-- Header -->
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200/60">
+                    <div class="flex flex-row items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-200/60">
                         <div class="flex flex-wrap items-center gap-4 sm:gap-6">
                             <!-- Title -->
                             <div class="flex items-center gap-2">
