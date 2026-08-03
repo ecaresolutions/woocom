@@ -2022,7 +2022,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                     type: 'POST',
                     data: {
                         action: 'add_multiple_products_to_cart',
-                        nonce: woocom_ajax.cart_nonce,
+                        nonce: (window.woocom_ajax && window.woocom_ajax.cart_nonce) || (window.wc_add_to_cart_params && window.wc_add_to_cart_params.nonce) || '',
                         items: itemsData
                     },
                     success: function(response) {
