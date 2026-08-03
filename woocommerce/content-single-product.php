@@ -2346,29 +2346,29 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                 });
         
                 function syncQtyDisplay() {
-                    var val = $('form.cart input[name="quantity"]').val() || 1;
+                    var val = $('form.cart input[name="quantity"]').first().val() || 1;
                     $('.qty-display').text(val);
                     updateOfferHighlight(parseInt(val));
                 }
         
                 $(document.body).on('change', 'form.cart input[name="quantity"]', function() {
-                    syncQtyDisplay();
+                    var val = $(this).val();
+                    $('.qty-display').text(val);
+                    updateOfferHighlight(parseInt(val));
                 });
         
                 $(document.body).on('click', '.quantity-plus', function() {
-                    var $input = $('form.cart input[name="quantity"]');
-                    if ($input.length) {
-                        var val = parseInt($input.val()) || 1;
-                        $input.val(val + 1).trigger('change');
-                    }
+                    var val = parseInt($('.qty-display').first().text()) || 1;
+                    var newVal = val + 1;
+                    $('.qty-display').text(newVal);
+                    $('form.cart input[name="quantity"]').val(newVal).trigger('change');
                 });
         
                 $(document.body).on('click', '.quantity-minus', function() {
-                    var $input = $('form.cart input[name="quantity"]');
-                    if ($input.length) {
-                        var val = parseInt($input.val()) || 1;
-                        $input.val(Math.max(1, val - 1)).trigger('change');
-                    }
+                    var val = parseInt($('.qty-display').first().text()) || 1;
+                    var newVal = Math.max(1, val - 1);
+                    $('.qty-display').text(newVal);
+                    $('form.cart input[name="quantity"]').val(newVal).trigger('change');
                 });
         
                 syncQtyDisplay();
@@ -2382,7 +2382,14 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
         
                 $(document.body).on('click', '#laracom-add-to-cart', function(e) {
                     e.preventDefault();
-                    var $form = $('form.cart');
+                    var $form = $('form.cart[method="post"], form.cart').filter(function() {
+                        return $(this).attr('method') === 'post';
+                    }).first();
+                    
+                    if (!$form.length) {
+                        $form = $('form.cart').first();
+                    }
+        
                     if ($form.hasClass('variations_form')) {
                         var variation_id = $form.find('input[name="variation_id"]').val();
                         if (!variation_id || variation_id === "0") {
@@ -2390,28 +2397,58 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                             return;
                         }
                     }
-                    var $btn = $form.find('.single_add_to_cart_button');
+        
+                    var currentQty = parseInt($('.qty-display').first().text()) || 1;
+                    $form.find('input[name="quantity"]').val(currentQty);
+        
+                    var $btn = $form.find('.single_add_to_cart_button, #single-add-to-cart-btn, [type="submit"]').first();
                     if ($btn.length) {
-                        if ($btn.hasClass('ajax_add_to_cart') || $btn.attr('data-product_id')) $btn.trigger('click');
-                        else $form.submit();
+                        if ($btn.hasClass('ajax_add_to_cart') || $btn.attr('data-product_id')) {
+                            $btn.trigger('click');
+                        } else {
+                            if ($btn.attr('type') === 'submit') {
+                                $btn.trigger('click');
+                            } else {
+                                $form.submit();
+                            }
+                        }
+                    } else {
+                        $form.submit();
                     }
                 });
         
                 function handleBuyNowClick() {
-                    var $form = $('form.cart');
-                    if ($form.hasClass('variations_form')) {
-                        var variation_id = $form.find('input[name="variation_id"]').val();
+                    var $variationsForm = $('form.variations_form');
+                    if ($variationsForm.length) {
+                        var variation_id = $variationsForm.find('input[name="variation_id"]').val();
                         if (!variation_id || variation_id === "0") {
                             alert('Please select product options first.');
                             return;
                         }
+                        var currentQty = parseInt($('.qty-display').first().text()) || 1;
+                        $variationsForm.find('input[name="quantity"]').val(currentQty);
+        
+                        let redirectInput = $variationsForm.find('input[name="buy_now_redirect"]');
+                        if (!redirectInput.length) {
+                            redirectInput = $('<input type="hidden" name="buy_now_redirect" value="1">');
+                            $variationsForm.append(redirectInput);
+                        } else {
+                            redirectInput.val('1');
+                        }
+                        $variationsForm.submit();
+                    } else {
+                        var $buyNowForm = $('form.cart').filter(function() {
+                            return $(this).attr('method') === 'get' || ($(this).attr('action') && $(this).attr('action').indexOf('checkout') !== -1);
+                        }).first();
+                        
+                        if (!$buyNowForm.length) {
+                            $buyNowForm = $('form.cart').first();
+                        }
+        
+                        var currentQty = parseInt($('.qty-display').first().text()) || 1;
+                        $buyNowForm.find('input[name="quantity"]').val(currentQty);
+                        $buyNowForm.submit();
                     }
-                    let redirectInput = $form.find('input[name="buy_now_redirect"]');
-                    if (!redirectInput.length) {
-                        redirectInput = $('<input type="hidden" name="buy_now_redirect" value="1">');
-                        $form.append(redirectInput);
-                    } else redirectInput.val('1');
-                    $form.submit();
                 }
         
                 $(document.body).on('click', '#laracom-buy-now, #laracom-buy-now-mobile', function(e) {
