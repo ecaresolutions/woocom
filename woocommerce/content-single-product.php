@@ -1704,8 +1704,6 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
             document.body.appendChild(errDiv);
         });
 
-        const $ = jQuery;
-
         const currentProductId = <?php echo $main_product_id; ?>;
         const currentProductTitle = "<?php echo esc_js( $product_title ); ?>";
         const currentProductImage = "<?php echo esc_url( wp_get_attachment_image_url( $main_image_id, 'medium' ) ?: wc_placeholder_img_src() ); ?>";
