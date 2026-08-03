@@ -1740,42 +1740,116 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
         ];
     
         let allReviews = commentsList.length > 0 ? commentsList : mockReviews;
-        let reviewsSortMode = 'recent';
-        let reviewsVisibleCount = 5;
-    
+            // Global utility functions assigned to window (accessible to inline onclick attributes)
+        window.changeMainImageLaracom = function(thumbnailEl, index) {
+            const slider = document.getElementById('main-image-slider-laracom');
+            if (!slider) return;
+            slider.style.transform = `translateX(-${index * 100}%)`;
+            slider.dataset.currentIndex = index;
+            $('.thumbnail-btn-laracom').removeClass('border-primary shadow-sm').addClass('border-slate-100 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700');
+            $(thumbnailEl).addClass('border-primary shadow-sm').removeClass('border-slate-100 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700');
+        };
+
+        window.slidePrevLaracom = function() {
+            const slider = document.getElementById('main-image-slider-laracom');
+            if (!slider) return;
+            const total = slider.children.length;
+            let current = parseInt(slider.dataset.currentIndex || 0);
+            current = (current - 1 + total) % total;
+            const thumbs = document.querySelectorAll('.thumbnail-btn-laracom');
+            if (thumbs[current]) thumbs[current].click();
+        };
+
+        window.slideNextLaracom = function() {
+            const slider = document.getElementById('main-image-slider-laracom');
+            if (!slider) return;
+            const total = slider.children.length;
+            let current = parseInt(slider.dataset.currentIndex || 0);
+            current = (current + 1) % total;
+            const thumbs = document.querySelectorAll('.thumbnail-btn-laracom');
+            if (thumbs[current]) thumbs[current].click();
+        };
+
+        window.setOfferQuantity = function(qty) {
+            var $input = $('form.cart input[name="quantity"]');
+            if ($input.length) {
+                $input.val(qty).trigger('change');
+                showToastNotification("Bulk quantity of " + qty + " selected!");
+            }
+        };
+
+        window.copyCouponCode = function(event, code) {
+            event.stopPropagation();
+            navigator.clipboard.writeText(code).then(() => {
+                alert("Coupon code '" + code + "' copied successfully!");
+            });
+        };
+
+        window.toggleFbtLaracom = function(el) {
+            const cb = el.querySelector('.fbt-checkbox');
+            const customCb = el.querySelector('.custom-cb');
+            const customTick = el.querySelector('.custom-cb-tick');
+            cb.checked = !cb.checked;
+            
+            if(cb.checked) {
+                el.classList.add('border-primary');
+                el.classList.remove('border-slate-200', 'dark:border-slate-800', 'opacity-60');
+                if(customCb) customCb.classList.add('bg-primary', 'border-primary');
+                if(customTick) customTick.classList.remove('hidden');
+            } else {
+                el.classList.remove('border-primary');
+                el.classList.add('border-slate-200', 'dark:border-slate-800', 'opacity-60');
+                if(customCb) customCb.classList.remove('bg-primary', 'border-primary');
+                if(customTick) customTick.classList.add('hidden');
+            }
+            updateFbtTotalLaracom();
+        };
+
+        window.scrollToTabSection = function(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                const headerOffset = 180;
+                const elementPosition = el.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
+                $('.tab-header-btn').removeClass('bg-primary text-white border-primary shadow-sm').addClass('bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-202 border-slate-200 dark:border-slate-800 hover:border-primary/40');
+                $('#tab-btn-' + id).addClass('bg-primary text-white border-primary shadow-sm').removeClass('bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-202 border-slate-200 dark:border-slate-800 hover:border-primary/40');
+            }
+        };
+
+        function updateFbtTotalLaracom() {
+            let total = 0;
+            let totalRegular = 0;
+            let count = 0;
+            
+            document.querySelectorAll('.fbt-item').forEach(item => {
+                const cb = item.querySelector('.fbt-checkbox');
+                if (cb && cb.checked) {
+                    total += parseFloat(item.querySelector('.fbt-price').value) || 0;
+                    totalRegular += parseFloat(item.querySelector('.fbt-regular-price')?.value || item.querySelector('.fbt-price').value) || 0;
+                    count++;
+                }
+            });
+            
+            const totalDisplay = document.getElementById('fbt-total-display');
+            if (totalDisplay) totalDisplay.innerText = '৳' + total.toLocaleString('en-US');
+            const fbtCount = document.getElementById('fbt-count');
+            if (fbtCount) fbtCount.innerText = count;
+            const savings = totalRegular - total;
+            const savingsBadge = document.getElementById('fbt-save-display');
+            if (savingsBadge) {
+                if (savings > 0) {
+                    savingsBadge.innerText = 'Save ৳' + Math.round(savings).toLocaleString('en-US');
+                    savingsBadge.classList.remove('invisible');
+                } else savingsBadge.classList.add('invisible');
+            }
+        }
+
         jQuery(document).ready(function($) {
             renderReviewsList();
             initQuestionsSection();
             updateCompareWidgetUI();
-    
-            window.changeMainImageLaracom = function(thumbnailEl, index) {
-                const slider = document.getElementById('main-image-slider-laracom');
-                if (!slider) return;
-                slider.style.transform = `translateX(-${index * 100}%)`;
-                slider.dataset.currentIndex = index;
-                $('.thumbnail-btn-laracom').removeClass('border-primary shadow-sm').addClass('border-slate-100 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700');
-                $(thumbnailEl).addClass('border-primary shadow-sm').removeClass('border-slate-100 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700');
-            };
-    
-            window.slidePrevLaracom = function() {
-                const slider = document.getElementById('main-image-slider-laracom');
-                if (!slider) return;
-                const total = slider.children.length;
-                let current = parseInt(slider.dataset.currentIndex || 0);
-                current = (current - 1 + total) % total;
-                const thumbs = document.querySelectorAll('.thumbnail-btn-laracom');
-                if (thumbs[current]) thumbs[current].click();
-            };
-    
-            window.slideNextLaracom = function() {
-                const slider = document.getElementById('main-image-slider-laracom');
-                if (!slider) return;
-                const total = slider.children.length;
-                let current = parseInt(slider.dataset.currentIndex || 0);
-                current = (current + 1) % total;
-                const thumbs = document.querySelectorAll('.thumbnail-btn-laracom');
-                if (thumbs[current]) thumbs[current].click();
-            };
+            updateFbtTotalLaracom();
     
             const slides = document.querySelectorAll('.slider-slide');
             slides.forEach(slide => {
@@ -1811,11 +1885,11 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                         var text = $(this).text();
                         if (!val) return;
                         
-                        var $btn = $('<button type="button" class="px-4 py-1.5 rounded-lg text-xs md:text-sm font-semibold border transition-all border-slate-200 dark:border-slate-800 hover:border-primary text-slate-700 dark:text-slate-350 hover:text-primary cursor-pointer">' + text + '</button>');
+                        var $btn = $('<button type="button" class="px-4 py-1.5 rounded-lg text-xs md:text-sm font-semibold border transition-all border-slate-200 dark:border-slate-800 hover:border-primary text-slate-700 dark:text-slate-355 hover:text-primary cursor-pointer">' + text + '</button>');
                         $btn.attr('data-value', val);
                         
                         if ($select.val() === val) {
-                            $btn.addClass('border-primary bg-primary/5 text-primary').removeClass('border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-350');
+                            $btn.addClass('border-primary bg-primary/5 text-primary').removeClass('border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-355');
                         }
                         
                         $btn.on('click', function(e) {
@@ -1853,7 +1927,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                     if ($container.length) {
                         $container.find('button').removeClass('border-primary bg-primary/5 text-primary').addClass('border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300');
                         if (val) {
-                            $container.find('button[data-value="' + val + '"]').addClass('border-primary bg-primary/5 text-primary').removeClass('border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-350');
+                            $container.find('button[data-value="' + val + '"]').addClass('border-primary bg-primary/5 text-primary').removeClass('border-slate-200 dark:border-slate-800 text-slate-750 dark:text-slate-355');
                             applyImageColorTint(val);
                         }
                     }
@@ -1892,27 +1966,12 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
     
             syncQtyDisplay();
     
-            window.setOfferQuantity = function(qty) {
-                var $input = $('form.cart input[name="quantity"]');
-                if ($input.length) {
-                    $input.val(qty).trigger('change');
-                    showToastNotification("Bulk quantity of " + qty + " selected!");
-                }
-            };
-    
             function updateOfferHighlight(qty) {
                 $('.ticket-card').removeClass('border-primary ring-2 ring-primary/10 scale-[1.02] bg-primary-light').addClass('border-orange-100');
                 if (qty >= 10) $('#ticket-10').addClass('border-primary ring-2 ring-primary/10 scale-[1.02] bg-primary-light').removeClass('border-orange-100');
                 else if (qty >= 5) $('#ticket-5').addClass('border-primary ring-2 ring-primary/10 scale-[1.02] bg-primary-light').removeClass('border-orange-100');
                 else if (qty >= 2) $('#ticket-2').addClass('border-primary ring-2 ring-primary/10 scale-[1.02] bg-primary-light').removeClass('border-orange-100');
             }
-    
-            window.copyCouponCode = function(event, code) {
-                event.stopPropagation();
-                navigator.clipboard.writeText(code).then(() => {
-                    alert("Coupon code '" + code + "' copied successfully!");
-                });
-            };
     
             $(document.body).on('click', '#laracom-add-to-cart', function(e) {
                 e.preventDefault();
@@ -1952,53 +2011,6 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                 e.preventDefault();
                 handleBuyNowClick();
             });
-    
-            window.toggleFbtLaracom = function(el) {
-                const cb = el.querySelector('.fbt-checkbox');
-                const customCb = el.querySelector('.custom-cb');
-                const customTick = el.querySelector('.custom-cb-tick');
-                cb.checked = !cb.checked;
-                
-                if(cb.checked) {
-                    el.classList.add('border-primary');
-                    el.classList.remove('border-slate-200', 'dark:border-slate-800', 'opacity-60');
-                    if(customCb) customCb.classList.add('bg-primary', 'border-primary');
-                    if(customTick) customTick.classList.remove('hidden');
-                } else {
-                    el.classList.remove('border-primary');
-                    el.classList.add('border-slate-200', 'dark:border-slate-800', 'opacity-60');
-                    if(customCb) customCb.classList.remove('bg-primary', 'border-primary');
-                    if(customTick) customTick.classList.add('hidden');
-                }
-                updateFbtTotalLaracom();
-            };
-    
-            function updateFbtTotalLaracom() {
-                let total = 0;
-                let totalRegular = 0;
-                let count = 0;
-                
-                document.querySelectorAll('.fbt-item').forEach(item => {
-                    const cb = item.querySelector('.fbt-checkbox');
-                    if (cb && cb.checked) {
-                        total += parseFloat(item.querySelector('.fbt-price').value) || 0;
-                        totalRegular += parseFloat(item.querySelector('.fbt-regular-price')?.value || item.querySelector('.fbt-price').value) || 0;
-                        count++;
-                    }
-                });
-                
-                document.getElementById('fbt-total-display').innerText = '৳' + total.toLocaleString('en-US');
-                document.getElementById('fbt-count').innerText = count;
-                const savings = totalRegular - total;
-                const savingsBadge = document.getElementById('fbt-save-display');
-                if (savingsBadge) {
-                    if (savings > 0) {
-                        savingsBadge.innerText = 'Save ৳' + Math.round(savings).toLocaleString('en-US');
-                        savingsBadge.classList.remove('invisible');
-                    } else savingsBadge.classList.add('invisible');
-                }
-            }
-            updateFbtTotalLaracom();
     
             // FBT AJAX execution
             $('#fbt-add-all').on('click', function() {
@@ -2064,16 +2076,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                     }
                 });
             });
-    
-            window.scrollToTabSection = function(id) {
-                const el = document.getElementById(id);
-                if (el) {
-                    const headerOffset = 180;
-                    const elementPosition = el.getBoundingClientRect().top;
-                    const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-                    window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
-                    $('.tab-header-btn').removeClass('bg-primary text-white border-primary shadow-sm').addClass('bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-202 border-slate-200 dark:border-slate-800 hover:border-primary/40');
-                    $('#tab-btn-' + id).addClass('bg-primary text-white border-primary shadow-sm').removeClass('bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-202 border-slate-200 dark:border-slate-800 hover:border-primary/40');
+        });-slate-800 hover:border-primary/40');
                 }
             };
         });
