@@ -9,6 +9,7 @@
  */
 
 defined( 'ABSPATH' ) || exit;
+echo "<!-- TEST: CONTENT SINGLE PRODUCT TEMPLATE IS LOADED -->";
 
 global $product;
 $main_product_id = $product->get_id();
