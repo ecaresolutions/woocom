@@ -2500,6 +2500,7 @@ a.ajax_add_to_cart.loading::after,
 
 
 
+
 /* ==========================================================================
    COMPREHENSIVE NATIVE CSS UTILITIES FOR GADGET SINGLE PRODUCT LAYOUT
    ========================================================================== */
@@ -3057,3 +3058,6 @@ a.ajax_add_to_cart.loading::after,
   .lg\:pr-6 { padding-right: 1.5rem !important; }
   .lg\:px-6 { padding-left: 1.5rem !important; padding-right: 1.5rem !important; }
 }
+
+/* Overrides to ensure hidden display always wins over flex/grid/block */
+.hidden { display: none !important; }
