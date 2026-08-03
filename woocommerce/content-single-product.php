@@ -1549,7 +1549,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                             </div>
     
                             <div class="mt-2">
-                                <div class="border-t border-slate-100 dark:border-slate-800/50 my-2" />
+                                <div class="border-t border-slate-100 dark:border-slate-800/50 my-2"></div>
     
                                 <div class="flex items-baseline justify-between pb-2.5 flex-wrap">
                                     <span class="text-[17px] font-black text-primary">
