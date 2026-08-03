@@ -277,15 +277,15 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
         <div class="mt-16">
             <div class="flex items-center gap-2 mb-6 bg-white border border-gray-100 p-1 rounded-lg shadow-sm w-full lg:inline-flex lg:w-auto">
                 <?php if ( $has_content ) : ?>
-                    <a href="#product-details-sec" class="anchor-tab-btn active bg-secondary text-white shadow-sm px-5 py-2 rounded-md text-[13px] sm:text-[14px] font-bold transition-all whitespace-nowrap text-center">Description</a>
+                    <a href="#product-details-sec" onclick="scrollToSectionLaracom(this, event)" class="anchor-tab-btn active bg-secondary text-white shadow-sm px-5 py-2 rounded-md text-[13px] sm:text-[14px] font-bold transition-all whitespace-nowrap text-center">Description</a>
                 <?php endif; ?>
                 
                 <?php if ( $has_video ) : ?>
-                    <a href="#product-video-sec" class="anchor-tab-btn bg-transparent text-[#7E7E7E] px-5 py-2 rounded-md text-[13px] sm:text-[14px] font-bold hover:bg-gray-50 hover:text-[#7E7E7E] transition-all whitespace-nowrap text-center">Product Video</a>
+                    <a href="#product-video-sec" onclick="scrollToSectionLaracom(this, event)" class="anchor-tab-btn bg-transparent text-[#7E7E7E] px-5 py-2 rounded-md text-[13px] sm:text-[14px] font-bold hover:bg-gray-50 hover:text-[#7E7E7E] transition-all whitespace-nowrap text-center">Product Video</a>
                 <?php endif; ?>
                 
                 <?php if ( comments_open() ) : ?>
-                    <a href="#product-reviews-sec" class="anchor-tab-btn bg-transparent text-[#7E7E7E] px-5 py-2 rounded-md text-[13px] sm:text-[14px] font-bold hover:bg-gray-50 hover:text-[#7E7E7E] transition-all whitespace-nowrap text-center">Reviews (<?php echo $product->get_review_count(); ?>)</a>
+                    <a href="#product-reviews-sec" onclick="scrollToSectionLaracom(this, event)" class="anchor-tab-btn bg-transparent text-[#7E7E7E] px-5 py-2 rounded-md text-[13px] sm:text-[14px] font-bold hover:bg-gray-50 hover:text-[#7E7E7E] transition-all whitespace-nowrap text-center">Reviews (<?php echo $product->get_review_count(); ?>)</a>
                 <?php endif; ?>
             </div>
     
@@ -832,11 +832,11 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                 <div class="laracom-qty-row-wrapper">
                     <div class="laracom-actions-row">
                         <div class="laracom-qty-selector">
-                            <button type="button" class="quantity-minus flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-350 transition-colors cursor-pointer">
+                            <button type="button" onclick="adjustQtyLaracom(-1)" class="quantity-minus flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-350 transition-colors cursor-pointer">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
                             </button>
                             <span class="qty-display laracom-qty-display">1</span>
-                            <button type="button" class="quantity-plus flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-350 transition-colors cursor-pointer">
+                            <button type="button" onclick="adjustQtyLaracom(1)" class="quantity-plus flex h-8 w-8 items-center justify-center rounded-lg bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-350 transition-colors cursor-pointer">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                             </button>
                         </div>
@@ -844,6 +844,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                         <button
                             type="button"
                             id="laracom-add-to-cart"
+                            onclick="handleAddToCartLaracom()"
                             class="laracom-btn-primary"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-4.5 w-4.5"><circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/></svg>
@@ -853,6 +854,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                         <button
                             type="button"
                             id="laracom-buy-now"
+                            onclick="handleBuyNowLaracom()"
                             class="laracom-btn-secondary"
                         >
                             Buy it now
@@ -862,6 +864,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                     <button
                         type="button"
                         id="laracom-buy-now-mobile"
+                        onclick="handleBuyNowLaracom()"
                         class="laracom-btn-secondary-mobile"
                     >
                         Buy it now
@@ -1044,7 +1047,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
                 <div class="fbt-total-card bg-primary rounded-xl p-4 flex flex-col items-center justify-center text-white text-center flex-shrink-0 w-full lg:w-[220px] shadow-md">
                     <div class="text-[20px] font-black leading-none mb-1" id="fbt-total-display">৳0.00</div>
                     <div class="text-[11px] mb-3 font-semibold min-h-[14px] invisible" id="fbt-save-display">Save ৳0</div>
-                    <button type="button" id="fbt-add-all" class="bg-white hover:bg-slate-50 text-primary text-[12px] font-bold py-2.5 px-4 rounded-xl transition-all w-full leading-tight flex items-center justify-center gap-1 cursor-pointer">
+                    <button type="button" id="fbt-add-all" onclick="addAllFbtLaracom(this)" class="bg-white hover:bg-slate-50 text-primary text-[12px] font-bold py-2.5 px-4 rounded-xl transition-all w-full leading-tight flex items-center justify-center gap-1 cursor-pointer">
                         Add <span id="fbt-count"><?php echo count($related_ids) + 1; ?></span> items to cart
                     </button>
                 </div>
@@ -1729,6 +1732,201 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
             current = (current + 1) % total;
             const thumbs = document.querySelectorAll('.thumbnail-btn-laracom');
             if (thumbs[current]) thumbs[current].click();
+        };
+
+        window.adjustQtyLaracom = function(direction) {
+            var qtyDisplay = document.querySelector('.qty-display');
+            if (!qtyDisplay) return;
+            var val = parseInt(qtyDisplay.innerText) || 1;
+            var newVal = Math.max(1, val + direction);
+            qtyDisplay.innerText = newVal;
+            
+            document.querySelectorAll('form.cart input[name="quantity"]').forEach(function(input) {
+                input.value = newVal;
+                var event = new Event('change', { bubbles: true });
+                input.dispatchEvent(event);
+            });
+            
+            updateOfferHighlightLaracom(newVal);
+        };
+        
+        function updateOfferHighlightLaracom(qty) {
+            document.querySelectorAll('.ticket-card').forEach(function(card) {
+                card.classList.remove('border-primary', 'ring-2', 'ring-primary/10', 'scale-[1.02]', 'bg-primary-light');
+                card.classList.add('border-orange-100');
+            });
+            if (qty >= 10) {
+                var el = document.getElementById('ticket-10');
+                if (el) { el.classList.add('border-primary', 'ring-2', 'ring-primary/10', 'scale-[1.02]', 'bg-primary-light'); el.classList.remove('border-orange-100'); }
+            } else if (qty >= 5) {
+                var el = document.getElementById('ticket-5');
+                if (el) { el.classList.add('border-primary', 'ring-2', 'ring-primary/10', 'scale-[1.02]', 'bg-primary-light'); el.classList.remove('border-orange-100'); }
+            } else if (qty >= 2) {
+                var el = document.getElementById('ticket-2');
+                if (el) { el.classList.add('border-primary', 'ring-2', 'ring-primary/10', 'scale-[1.02]', 'bg-primary-light'); el.classList.remove('border-orange-100'); }
+            }
+        }
+
+        window.scrollToSectionLaracom = function(el, e) {
+            if (e) e.preventDefault();
+            var targetId = el.getAttribute('href');
+            var target = document.querySelector(targetId);
+            if (target) {
+                var headerOffset = 120;
+                var elementPosition = target.getBoundingClientRect().top;
+                var offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
+                
+                document.querySelectorAll('.anchor-tab-btn').forEach(function(btn) {
+                    btn.classList.remove('active', 'bg-secondary', 'text-white', 'shadow-sm');
+                    btn.classList.add('bg-transparent', 'text-[#7E7E7E]');
+                });
+                el.classList.add('active', 'bg-secondary', 'text-white', 'shadow-sm');
+                el.classList.remove('bg-transparent', 'text-[#7E7E7E]');
+            }
+        };
+
+        window.handleAddToCartLaracom = function() {
+            var form = document.querySelector('form.cart');
+            if (!form) return;
+            
+            window.woocom_suppress_drawer = true;
+            
+            if (form.classList.contains('variations_form')) {
+                var varInput = form.querySelector('input[name="variation_id"]');
+                var variation_id = varInput ? varInput.value : "";
+                if (!variation_id || variation_id === "0") {
+                    alert('Please select product options first.');
+                    return;
+                }
+            }
+            
+            var qtyDisplay = document.querySelector('.qty-display');
+            var currentQty = qtyDisplay ? (parseInt(qtyDisplay.innerText) || 1) : 1;
+            
+            var qtyInput = form.querySelector('input[name="quantity"]');
+            if (qtyInput) qtyInput.value = currentQty;
+            
+            var submitBtn = form.querySelector('.single_add_to_cart_button, #single-add-to-cart-btn, [type="submit"]');
+            if (submitBtn) {
+                submitBtn.click();
+            } else {
+                form.submit();
+            }
+        };
+
+        window.handleBuyNowLaracom = function() {
+            var form = document.querySelector('form.cart');
+            if (!form) return;
+            
+            if (form.classList.contains('variations_form')) {
+                var varInput = form.querySelector('input[name="variation_id"]');
+                var variation_id = varInput ? varInput.value : "";
+                if (!variation_id || variation_id === "0") {
+                    alert('Please select product options first.');
+                    return;
+                }
+                
+                var qtyDisplay = document.querySelector('.qty-display');
+                var currentQty = qtyDisplay ? (parseInt(qtyDisplay.innerText) || 1) : 1;
+                
+                var qtyInput = form.querySelector('input[name="quantity"]');
+                if (qtyInput) qtyInput.value = currentQty;
+                
+                var redirectInput = form.querySelector('input[name="buy_now_redirect"]');
+                if (!redirectInput) {
+                    redirectInput = document.createElement('input');
+                    redirectInput.type = 'hidden';
+                    redirectInput.name = 'buy_now_redirect';
+                    redirectInput.value = '1';
+                    form.appendChild(redirectInput);
+                } else {
+                    redirectInput.value = '1';
+                }
+                form.submit();
+            } else {
+                var qtyDisplay = document.querySelector('.qty-display');
+                var currentQty = qtyDisplay ? (parseInt(qtyDisplay.innerText) || 1) : 1;
+                
+                var qtyInput = form.querySelector('input[name="quantity"]');
+                if (qtyInput) qtyInput.value = currentQty;
+                
+                form.submit();
+            }
+        };
+
+        window.addAllFbtLaracom = function(btn) {
+            if (typeof jQuery === 'undefined') return;
+            const $ = jQuery;
+            const originalContent = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = 'Adding...';
+            
+            const itemsData = [];
+            document.querySelectorAll('.fbt-item').forEach(item => {
+                const cb = item.querySelector('.fbt-checkbox');
+                if (cb && cb.checked) {
+                    if (item.classList.contains('fbt-main-item')) {
+                        var $form = $('form.cart');
+                        var variation_id = $form.find('input[name="variation_id"]').val() || 0;
+                        var mainQty = parseInt($form.find('input[name="quantity"]').val()) || 1;
+                        
+                        itemsData.push({
+                            product_id: parseInt(item.querySelector('.fbt-id').value),
+                            variation_id: parseInt(variation_id),
+                            quantity: mainQty,
+                            variation: {}
+                        });
+                    } else {
+                        itemsData.push({
+                            product_id: parseInt(item.querySelector('.fbt-id').value),
+                            variation_id: 0,
+                            quantity: 1,
+                            variation: {}
+                        });
+                    }
+                }
+            });
+
+            if (itemsData.length === 0) {
+                btn.disabled = false;
+                btn.innerHTML = originalContent;
+                return;
+            }
+
+            $.ajax({
+                url: '<?php echo admin_url("admin-ajax.php"); ?>',
+                type: 'POST',
+                data: {
+                    action: 'add_multiple_products_to_cart',
+                    nonce: (window.woocom_ajax && window.woocom_ajax.cart_nonce) || (window.wc_add_to_cart_params && window.wc_add_to_cart_params.nonce) || '',
+                    items: itemsData
+                },
+                success: function(response) {
+                    if (response.success !== false) {
+                        $(document.body).trigger('added_to_cart', [response.fragments, response.cart_hash]);
+                        btn.disabled = false;
+                        btn.innerHTML = 'Added Successfully!';
+                        setTimeout(() => {
+                            btn.innerHTML = originalContent;
+                            updateFbtTotalLaracom();
+                        }, 2000);
+                    } else {
+                        btn.disabled = false;
+                        btn.innerHTML = 'Error!';
+                        setTimeout(() => btn.innerHTML = originalContent, 2000);
+                    }
+                },
+                error: function() {
+                    btn.disabled = false;
+                    btn.innerHTML = 'Error!';
+                    setTimeout(() => btn.innerHTML = originalContent, 2000);
+                }
+            });
         };
 
         window.setOfferQuantity = function(qty) {
