@@ -13,6 +13,7 @@ echo "<!-- TEST: CONTENT SINGLE PRODUCT TEMPLATE IS LOADED -->";
 
 global $product;
 $main_product_id = $product->get_id();
+$cat_ids = wp_get_post_terms( $main_product_id, 'product_cat', array( 'fields' => 'ids' ) );
 
 /**
  * Determine if the product belongs to grocery/organic categories or if the active demo style is grocery.
