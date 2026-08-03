@@ -609,7 +609,7 @@ if ( woocom_is_grocery_product( $main_product_id ) ) {
         array_unshift( $attachment_ids, $main_image_id );
     }
     ?>
-    <div class="single-product-container bg-white text-slate-800 dark:bg-slate-900 dark:text-slate-100 p-0">
+    <div class="single-product-container bg-transparent text-slate-800 dark:bg-transparent dark:text-slate-100 p-0">
         <script src="https://cdn.tailwindcss.com"></script>
         <script>
             tailwind.config = {
