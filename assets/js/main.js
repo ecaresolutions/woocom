@@ -75,11 +75,6 @@ function initWoocomTheme() {
     // Open Drawer function
     function openCartDrawer() {
         console.log('woocom: openCartDrawer called');
-        if (window.woocom_suppress_drawer) {
-            window.woocom_suppress_drawer = false;
-            console.log('woocom: openCartDrawer suppressed by flag');
-            return;
-        }
         if (!cartDrawer || !cartOverlay) {
             console.warn('woocom: openCartDrawer aborted, missing drawer or overlay element');
             return;

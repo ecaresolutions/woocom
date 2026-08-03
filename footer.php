@@ -922,8 +922,8 @@ $show_cart_floating_widget       = ! ( function_exists( 'is_checkout' ) && is_ch
 
     // Inline Bulletproof Drawer Trigger & AJAX Add to Cart Handler (Fallback)
     (function() {
-        function openCart() {
-            if (window.woocom_suppress_drawer) {
+        function openCart(isAutomatic) {
+            if (isAutomatic && window.woocom_suppress_drawer) {
                 window.woocom_suppress_drawer = false;
                 return;
             }
@@ -957,7 +957,7 @@ $show_cart_floating_widget       = ! ( function_exists( 'is_checkout' ) && is_ch
                     btn.addEventListener('click', function(e) {
                         e.preventDefault();
                         e.stopPropagation();
-                        openCart();
+                        openCart(false);
                     });
                 }
             });
